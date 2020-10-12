@@ -10,11 +10,21 @@ on:
   pull_request:
     branches: [ main ]
 
-# https://github.com/marketplace/actions/run-jest
+
+
+# https://stackoverflow.com/questions/59399061/how-do-i-create-a-github-action-to-run-jest-tests-with-yarn
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x]
     steps:
-    - uses: actions/checkout@v1
-    - name: Run Jest
-      uses: stefanoeb/jest-action@1.0.3
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: yarn install
+    - run: yarn test
+      
