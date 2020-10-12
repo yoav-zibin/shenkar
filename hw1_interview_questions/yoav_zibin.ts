@@ -5,18 +5,18 @@ this method returns an array were every cell represents the avg of the x numbers
 Example: movingAvg(5, [1,2,3,4,5,6]) = [1,1.5,2,2.5,3,4].
  */
 export function movingAvg(x: number, a: number[]): number[] {
-    let result: number[] = [];
-    let currentSum = 0;
-    let currentElemNum = 0;
-    for (let i = 0; i < a.length; i++) {
-        let currentElem = a[i];
-        currentSum += currentElem;
-        currentElemNum++;
-        if (currentElemNum > x) {
-            currentSum -= a[i - x];
-            currentElemNum--;
-        }
-        result[i] = currentSum / currentElemNum;
+  let result: number[] = [];
+  let currentSum = 0;
+  let currentElemNum = 0;
+  for (let i = 0; i < a.length; i++) {
+    let currentElem = a[i];
+    currentSum += currentElem;
+    currentElemNum++;
+    if (currentElemNum > x) {
+      currentSum -= a[i - x];
+      currentElemNum--;
     }
-    return result;
+    result[i] = currentSum / currentElemNum;
+  }
+  return result;
 }

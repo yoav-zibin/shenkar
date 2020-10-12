@@ -1,4 +1,7 @@
-# If you add anything here, also add to .prettierignore
+# Ignore artifacts:
+build
+coverage
+
 node_modules/**/*
 .expo/*
 npm-debug.*

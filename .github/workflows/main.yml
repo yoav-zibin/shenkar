@@ -6,10 +6,9 @@ name: CI
 # events but only for the main branch
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
-
+    branches: [main]
 
 
 # https://stackoverflow.com/questions/59399061/how-do-i-create-a-github-action-to-run-jest-tests-with-yarn
@@ -27,4 +26,4 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn install
     - run: yarn testFinal
-      
+    - run: yarn prettier --check .
