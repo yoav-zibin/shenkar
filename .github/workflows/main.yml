@@ -10,7 +10,6 @@ on:
   pull_request:
     branches: [main]
 
-
 # https://stackoverflow.com/questions/59399061/how-do-i-create-a-github-action-to-run-jest-tests-with-yarn
 jobs:
   build:
@@ -19,11 +18,11 @@ jobs:
       matrix:
         node-version: [10.x, 12.x]
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn install
-    - run: yarn testFinal
-    - run: yarn prettier --check .
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn install
+      - run: yarn testFinal
+      - run: yarn prettier --check .
