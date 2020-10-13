@@ -4,6 +4,7 @@ coverage
 yarn.lock
 
 # Like .gitignore
+.eslintcache
 node_modules/**/*
 .expo/*
 npm-debug.*
@@ -14,6 +15,5 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-
 # macOS
 .DS_Store
