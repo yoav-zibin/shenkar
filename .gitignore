@@ -1,4 +1,6 @@
 # If you add anything here, also add to .prettierignore
+build
+coverage
 .eslintcache
 node_modules/**/*
 .expo/*

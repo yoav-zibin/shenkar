@@ -1,9 +1,9 @@
-# Ignore artifacts:
-build
-coverage
+# prettier doesn't know how to style it.
 yarn.lock
 
 # Like .gitignore
+build
+coverage
 .eslintcache
 node_modules/**/*
 .expo/*

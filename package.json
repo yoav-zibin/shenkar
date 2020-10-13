@@ -13,8 +13,8 @@
     "eject": "expo eject",
     "prettier": "node_modules/.bin/prettier --write .",
     "prettierCheck": "node_modules/.bin/prettier --check .",
-    "eslint": "node_modules/.bin/eslint **/*.ts[x]",
-    "eslintFix": "node_modules/.bin/eslint --fix **/*.ts[x]"
+    "eslint": "node_modules/.bin/eslint .",
+    "eslintFix": "node_modules/.bin/eslint --fix ."
   },
   "husky": {
     "hooks": {
@@ -22,8 +22,8 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "eslint --cache --fix",
-    "*.{js,jsx,json,ts,tsx}": "prettier --write"
+    "*.{js,jsx,ts,tsx}": "node_modules/.bin/eslint",
+    "*.{js,jsx,json,ts,tsx}": "node_modules/.bin/prettier --write"
   },
   "jest": {
     "preset": "jest-expo",
@@ -53,6 +53,7 @@
     "@typescript-eslint/parser": "^4.4.1",
     "eslint": "^7.11.0",
     "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^6.12.0",
     "eslint-config-universe": "^5.0.0",
     "eslint-plugin-react": "^7.21.4",
     "husky": "^4.3.0",
