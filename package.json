@@ -22,8 +22,8 @@
     }
   },
   "lint-staged": {
-    "*.{ts,tsx}": "eslint --cache --fix",
-    "*": "prettier --write"
+    "*.{js,jsx,ts,tsx}": "eslint --cache --fix",
+    "*.{js,jsx,json,ts,tsx}": "prettier --write"
   },
   "jest": {
     "preset": "jest-expo",
@@ -35,9 +35,6 @@
       "!**/babel.config.js",
       "!**/jest.setup.js"
     ]
-  },
-  "eslintConfig": {
-    "extends": "universe/native"
   },
   "dependencies": {
     "@types/jest": "^26.0.14",

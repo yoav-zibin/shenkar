@@ -5,8 +5,8 @@ module.exports = {
   },
   extends: [
     // Choose from universe/native, universe/node, universe/web
-    // 'universe/native',
-    // 'universe/web',
+    'universe/native',
+    'universe/web',
     'plugin:react/recommended',
     'google',
   ],

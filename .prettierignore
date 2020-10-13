@@ -1,7 +1,9 @@
 # Ignore artifacts:
 build
 coverage
+yarn.lock
 
+# Like .gitignore
 node_modules/**/*
 .expo/*
 npm-debug.*
