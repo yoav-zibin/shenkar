@@ -11,7 +11,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "prettier": "prettier --write ."
+    "prettier": "node_modules/.bin/prettier --write .",
+    "prettierCheck": "node_modules/.bin/prettier --check .",
+    "eslint": "node_modules/.bin/eslint **/*.ts[x]"
   },
   "husky": {
     "hooks": {
