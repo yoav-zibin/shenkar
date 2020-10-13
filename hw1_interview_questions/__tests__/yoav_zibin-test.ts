@@ -1,4 +1,4 @@
-import { movingAvg } from '../yoav_zibin';
+import {movingAvg} from '../yoav_zibin';
 
 test('movingAvg of empty arr', () => {
   expect(movingAvg(5, [])).toEqual([]);
