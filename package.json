@@ -10,7 +10,13 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "prettier": "prettier --write ."
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run prettier"
+    }
   },
   "jest": {
     "preset": "jest-expo",
@@ -44,9 +50,11 @@
     "eslint-config-google": "^0.14.0",
     "eslint-config-universe": "^5.0.0",
     "eslint-plugin-react": "^7.21.4",
+    "husky": "^4.3.0",
     "jest": "^26.5.3",
     "jest-expo": "^39.0.0",
-    "prettier": "2.1.2",
+    "lint-staged": "^10.4.0",
+    "prettier": "^2.1.2",
     "react-native-web": "~0.13.7",
     "react-test-renderer": "^16.13.1",
     "typescript": "~3.9.5"
