@@ -13,12 +13,17 @@
     "eject": "expo eject",
     "prettier": "node_modules/.bin/prettier --write .",
     "prettierCheck": "node_modules/.bin/prettier --check .",
-    "eslint": "node_modules/.bin/eslint **/*.ts[x]"
+    "eslint": "node_modules/.bin/eslint **/*.ts[x]",
+    "eslintFix": "node_modules/.bin/eslint --fix **/*.ts[x]"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run prettier"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --cache --fix",
+    "*": "prettier --write"
   },
   "jest": {
     "preset": "jest-expo",
