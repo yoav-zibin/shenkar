@@ -52,6 +52,8 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint'],
   rules: {
+    'react/jsx-uses-react': 'error',
+    'react/jsx-uses-vars': 'error',
     'max-len': ['error', {code: 120}],
     'valid-jsdoc': 'off',
     'require-jsdoc': 'off',
