@@ -24,6 +24,4 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn install
-      - run: yarn testFinal
-      - run: yarn prettierCheck
-      - run: yarn eslint
+      - run: yarn checkAll
