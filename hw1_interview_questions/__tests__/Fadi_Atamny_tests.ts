@@ -1,6 +1,6 @@
 import {minimumWindow} from '../Fadi_Atamny';
 
-test('Minimum window substring test - Empty', () => {
+test('Minimum window substring test - Empty strings', () => {
   expect(minimumWindow('', '')).toEqual('');
 });
 

@@ -55,13 +55,11 @@ const minimumWindow = (s: string, t: string): string => {
                 tmpST--;
                 if (tmpFT && tmpST < tmpFT) matchCount--;
             }
-
             left++;
         }
-
         right++;
     }
-
+    
     return s.substring(minStart, minEnd + 1);
 };
 
