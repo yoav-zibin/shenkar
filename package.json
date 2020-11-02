@@ -16,7 +16,9 @@
     "eslint": "node_modules/.bin/eslint --fix .",
     "checkAll": "yarn checkPrettier && yarn checkEslint && yarn testFinal",
     "checkPrettier": "node_modules/.bin/prettier --check .",
-    "checkEslint": "node_modules/.bin/eslint ."
+    "checkEslint": "node_modules/.bin/eslint .",
+    "npmCheckAll": "npm run checkPrettier && npm run checkEslint && npm run testFinal",
+    "npmFixAll": "npm run prettier && npm run eslint"
   },
   "husky": {
     "hooks": {
