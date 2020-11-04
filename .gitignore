@@ -5,6 +5,7 @@ coverage
 node_modules/**/*
 .expo/*
 npm-debug.*
+/.idea
 *.jks
 *.p8
 *.p12
