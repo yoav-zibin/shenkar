@@ -40,7 +40,6 @@
     ]
   },
   "dependencies": {
-    "@types/jest": "^26.0.14",
     "expo": "~39.0.2",
     "expo-status-bar": "~1.0.2",
     "react": "16.13.1",
@@ -49,20 +48,22 @@
     "react-native-web": "~0.13.12"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.14",
     "@types/react": "~16.9.35",
     "@types/react-dom": "~16.9.8",
     "@types/react-native": "~0.63.2",
     "@typescript-eslint/eslint-plugin": "^4.4.1",
     "@typescript-eslint/parser": "^4.4.1",
-    "eslint": "^7.11.0",
+    "eslint": "^7.13.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^6.12.0",
     "eslint-config-universe": "^5.0.0",
+    "eslint-plugin-jest": "^24.1.0",
     "eslint-plugin-react": "^7.21.4",
     "husky": "^4.3.0",
     "jest": "^26.5.3",
-    "jest-resolve": "^26.5.2",
     "jest-expo": "^39.0.0",
+    "jest-resolve": "^26.5.2",
     "lint-staged": "^10.4.0",
     "prettier": "^2.1.2",
     "react-test-renderer": "^16.13.1",
