@@ -15,32 +15,33 @@ Output: 9
 
 Constraints:
 0 <= nums.length <= 104
--231 <= nums[i] <= 231 - 1
+0 <= nums[i] <= 231 - 1
 */
 
-function compareNumbers(a: number, b: number) {
-    return a - b;
-};
+export function longestConsecutive(nums: number[]): number {
 
-function longestConsecutive(nums: number[]): number {
-    let numsArray: number[] = nums;
-    let tempSequence: number = 1;
+    let maxNumber: number = nums.length > 0 ? Math.max(...nums) : 0;    // finding the max element in the array, if the array is empty we use 0
+    let countingArray: number[] = new Array(maxNumber).fill(undefined); // creating array with in the max number length initialized with undefined values for the counting sort
+    let tempSequence: number = 0;
     let maxSequence: number = 0;
-    
-    // sorting the array
-    numsArray.sort(compareNumbers);
-    
-    // moving forward and counting consecutive elements sequence
-    for (let i: number = 0; i < numsArray.length; i++) {
-        if (numsArray[i] + 1 == numsArray[i + 1]) {
+
+    // filling the counting array
+    for (let i: number = 0; i < nums.length; i++) {
+        countingArray[nums[i]] = nums[i];
+    };
+
+    // travers in the counting sort array and count the longest consecutive
+    for (let i: number = 0; i < countingArray.length; i++) {
+        if (countingArray[i] !== undefined) {
             tempSequence += 1;
             if (tempSequence > maxSequence) {
                 maxSequence = tempSequence;
             }
         }
         else {
-            tempSequence = 1;
+            tempSequence = 0;
         }
-    }
-    return maxSequence;
+    };
+    
+    return maxSequence; 
 };
