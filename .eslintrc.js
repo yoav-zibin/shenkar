@@ -3,9 +3,10 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    jest: true,
+    'jest/globals': true,
   },
   extends: [
+    'plugin:jest/recommended',
     // https://github.com/expo/expo/tree/master/packages/eslint-config-universe
     // Choose from universe/native, universe/node, universe/web
     // 'universe/native',
@@ -51,7 +52,7 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ['jest', 'react', '@typescript-eslint'],
   rules: {
     'react/jsx-uses-react': 'error',
     'react/jsx-uses-vars': 'error',
