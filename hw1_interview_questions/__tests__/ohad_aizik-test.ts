@@ -5,8 +5,13 @@ test('longestConsecutive of empty array', () => {
 });
 
 test('longestConsecutive of 1 element array', () => {
+<<<<<<< HEAD
   expect(longestConsecutive([1])).toEqual(1);
 });
+=======
+    expect(longestConsecutive([1])).toEqual(1);
+  });
+>>>>>>> 522d086 (added test file)
 
 test('longestConsecutive of 1 element array with Duplicates', () => {
   expect(longestConsecutive([2, 2, 2, 2])).toEqual(1);
