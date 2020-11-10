@@ -19,6 +19,7 @@ Constraints:
 */
 
 export function longestConsecutive(nums: number[]): number {
+<<<<<<< HEAD
   // finding the max element in the array, if the array is empty we use 0
   const maxNumber: number = nums.length > 0 ? Math.max(...nums) : 0;
   // creating array with in the max number length initialized with undefined values for the counting sort
@@ -45,3 +46,31 @@ export function longestConsecutive(nums: number[]): number {
 
   return maxSequence;
 }
+=======
+
+    let maxNumber: number = nums.length > 0 ? Math.max(...nums) : 0;    // finding the max element in the array, if the array is empty we use 0
+    let countingArray: number[] = new Array(maxNumber).fill(undefined); // creating array with in the max number length initialized with undefined values for the counting sort
+    let tempSequence: number = 0;
+    let maxSequence: number = 0;
+
+    // filling the counting array
+    for (let i: number = 0; i < nums.length; i++) {
+        countingArray[nums[i]] = nums[i];
+    };
+
+    // travers in the counting sort array and count the longest consecutive
+    for (let i: number = 0; i < countingArray.length; i++) {
+        if (countingArray[i] !== undefined) {
+            tempSequence += 1;
+            if (tempSequence > maxSequence) {
+                maxSequence = tempSequence;
+            }
+        }
+        else {
+            tempSequence = 0;
+        }
+    };
+    
+    return maxSequence; 
+};
+>>>>>>> 730599d (algorithem fixes)
