@@ -3,6 +3,7 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
+    jest: true,
   },
   extends: [
     // https://github.com/expo/expo/tree/master/packages/eslint-config-universe
