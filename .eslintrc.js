@@ -54,6 +54,7 @@ module.exports = {
   },
   plugins: ['jest', 'react', '@typescript-eslint'],
   rules: {
+    'jest/expect-expect': 'off',
     'react/jsx-uses-react': 'error',
     'react/jsx-uses-vars': 'error',
     'max-len': ['error', {code: 120}],
