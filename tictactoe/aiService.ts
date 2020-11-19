@@ -40,7 +40,7 @@ export function createComputerMove(move: IMove<IState>, alphaBetaLimits: IAlphaB
   return alphaBetaDecision(move, move.turnIndex, getNextStates, getStateScoreForIndex0, null, alphaBetaLimits);
 }
 
-function getStateScoreForIndex0(move: IMove<IState>, playerIndex: number): number {
+function getStateScoreForIndex0(move: IMove<IState>): number {
   const endMatchScores = move.endMatchScores;
   if (endMatchScores) {
     return endMatchScores[0] > endMatchScores[1]

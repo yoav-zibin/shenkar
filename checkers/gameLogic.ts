@@ -47,7 +47,7 @@ const ILLEGAL_CODE = ENUM.ILLEGAL_CODE;
 const DIRECTION = ENUM.DIRECTION;
 const MOVE_TYPE = ENUM.MOVE_TYPE;
 
-export const CONSTANTS: any = {
+export const CONSTANTS = {
   ROW: 8,
   // Since only the dark square may contain pieces, for both the
   // gameApiState and logicState, I only concern the dark squares.
@@ -701,8 +701,8 @@ export function getAllPossibleMoves(board: Board, delta: BoardDelta, turnIndex: 
  */
 export function getWinner(board: Board, turnIndex: number): string {
   let allPossibleMoves: BoardDelta[] = [];
-  let hasWhite: boolean = false;
-  let hasBlack: boolean = false;
+  let hasWhite = false;
+  let hasBlack = false;
   const coordinate: BoardDelta = {row: -1, col: -1};
   let row: number;
   let col: number;
@@ -806,8 +806,8 @@ export function createMiniMove(
   }
   const originalBoard = deepClone(board);
 
-  let isAJumpMove: boolean = false;
-  let isASimpleMove: boolean = false;
+  let isAJumpMove = false;
+  let isASimpleMove = false;
   let possibleSimpleMoves: BoardDelta[];
   let jumpedCoord: BoardDelta;
 
@@ -923,9 +923,10 @@ export function createMove(board: Board | null, miniMoves: MiniMove[], turnIndex
     megaMove = createMiniMove(board, miniMove.fromDelta, miniMove.toDelta, turnIndexBeforeMove);
     board = deepClone(megaMove.state.board);
   }
-  megaMove!.state.miniMoves = miniMoves;
-  megaMove!.state.boardBeforeMove = originalBoard;
-  return megaMove!;
+  if (!megaMove) throw new Error('Impossible: we had at least one mini-move');
+  megaMove.state.miniMoves = miniMoves;
+  megaMove.state.boardBeforeMove = originalBoard;
+  return megaMove;
 }
 
 export function createInitialMove(): IMove<IState> {

@@ -14,9 +14,11 @@ module.exports = {
     'eslint:recommended',
     'plugin:react/recommended',
     'google',
+    'plugin:@typescript-eslint/recommended',
     // Must be last so it gets the chance to override other configs.
     // see https://github.com/prettier/eslint-config-prettier
     'prettier',
+    'prettier/@typescript-eslint',
   ],
   // See https://github.com/yannickcr/eslint-plugin-react#configuration
   settings: {
@@ -54,7 +56,12 @@ module.exports = {
   },
   plugins: ['jest', 'react', '@typescript-eslint'],
   rules: {
+    // We have unit tests that call helper methods that call expect,
+    // so this rule flags such unit tests as violations.
     'jest/expect-expect': 'off',
+    // I don't like adding return types to only public functions.
+    // (We don't write a library, so it's not critical for us to have explicit return types)
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
     'react/jsx-uses-react': 'error',
     'react/jsx-uses-vars': 'error',
     'max-len': ['error', {code: 120}],

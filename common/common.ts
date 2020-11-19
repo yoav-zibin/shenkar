@@ -1,11 +1,14 @@
+import {GestureResponderEvent} from 'react-native';
+
 // Making a move either ends the game (then <endMatchScores> must be set)
 // or the game continues (then <turnIndex> must be set, which determines which player plays next).
 // Always set the <state> to be the state after making the move.
 
+export type EndMatchScores = number[] | null;
 export interface IMove<T> {
   // When the match ends: turnIndex is -1 and endMatchScores is an array of scores.
   // When the match is ongoing: turnIndex is a valid index and endMatchScores to null.
-  endMatchScores: number[] | null; // either null or an array of length <numberOfPlayers>.
+  endMatchScores: EndMatchScores; // either null or an array of length <numberOfPlayers>.
   turnIndex: number;
 
   // <state> is the state after making the move.
@@ -13,6 +16,36 @@ export interface IMove<T> {
   // i.e., anything that can be serialized to json
   // (e.g., you can't have DOM elements, classes, or functions in IState).
   state: T;
+}
+
+// For now, humans plays first, and then the AI.
+export const HUMAN_TURN_INDEX = 0;
+export const AI_TURN_INDEX = 1;
+
+export enum GameResult {
+  NO_RESULT = -1,
+  HUMAN_WON,
+  AI_WON,
+  TIE,
+}
+
+export function getGameResult(endMatchScores: EndMatchScores) {
+  if (!endMatchScores) return GameResult.NO_RESULT;
+  if (endMatchScores[HUMAN_TURN_INDEX] == endMatchScores[AI_TURN_INDEX]) return GameResult.TIE;
+  if (endMatchScores[HUMAN_TURN_INDEX] < endMatchScores[AI_TURN_INDEX]) return GameResult.AI_WON;
+  return GameResult.HUMAN_WON;
+}
+
+export function getRelativeTouchLocation(e: GestureResponderEvent) {
+  let {locationX, locationY} = e.nativeEvent;
+  if (locationX == undefined) {
+    // on web we have offsetX, offsetY
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const nativeE = e.nativeEvent as any;
+    locationX = nativeE.offsetX;
+    locationY = nativeE.offsetY;
+  }
+  return {locationX, locationY};
 }
 
 export function deepClone<T>(obj: T): T {
@@ -23,6 +56,7 @@ export function deepEquals<T>(x: T, y: T) {
   return deepEqualsAny(x, y);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function deepEqualsAny(x: any, y: any) {
   // remember that NaN === NaN returns false
   // and isNaN(undefined) returns true
@@ -87,32 +121,3 @@ function deepEqualsAny(x: any, y: any) {
   }
   return true;
 }
-
-/*
-
-      for (const p in x) {
-        if (!(p in y)) {
-              return false;
-          }
-          else if (typeof y[p] !== typeof x[p]) {
-              return false;
-          }
-  
-          switch (typeof (x[p])) {
-              case 'object':
-              case 'function':
-  
-                  if (!compare2Objects (x[p], y[p])) {
-                      return false;
-                  }
-  
-                  break;
-  
-              default:
-                  if (x[p] !== y[p]) {
-                      return false;
-                  }
-                  break;
-          }
-      }
-  */

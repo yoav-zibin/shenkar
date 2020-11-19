@@ -69,7 +69,7 @@ function getSquareValue(square: string, row: number, col: number): number {
  * @returns {*} the board value.
  */
 function getStateValue(board: Board, turnIndex: number): number {
-  let stateValue: number = 0;
+  let stateValue = 0;
   // For different position of the board, there's a different weight.
   const boardWeight: number[][] = [
     [0, 4, 0, 4, 0, 4, 0, 4],
