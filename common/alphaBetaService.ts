@@ -71,10 +71,10 @@ function alphaBetaDecisionMayReturnNull<T>(
     throw new Error('alphaBetaLimits must have either millisecondsLimit or maxDepth');
   }
 
-  if (alphaBetaLimits.millisecondsLimit) {
-    // 400 milliseconds is the max time (otherwise the app feels unresponsive).
-    alphaBetaLimits.millisecondsLimit = Math.min(400, alphaBetaLimits.millisecondsLimit);
-  }
+  const millisecondsLimit = alphaBetaLimits.millisecondsLimit
+    ? // 400 milliseconds is the max time (otherwise the app feels unresponsive).
+      Math.min(400, alphaBetaLimits.millisecondsLimit)
+    : 0;
 
   const startTime = new Date().getTime(); // used for the time limit
   if (alphaBetaLimits.maxDepth) {
@@ -108,7 +108,7 @@ function alphaBetaDecisionMayReturnNull<T>(
       getNextStates,
       getStateScoreForIndex0,
       getDebugStateToString,
-      {maxDepth: maxDepth, millisecondsLimit: alphaBetaLimits.millisecondsLimit},
+      {maxDepth: maxDepth, millisecondsLimit: millisecondsLimit},
       startTime,
       0,
       Number.NEGATIVE_INFINITY,
@@ -124,7 +124,7 @@ function alphaBetaDecisionMayReturnNull<T>(
       }
       return nextBestState;
     }
-    const isHalfTimePassed = isTimeout({millisecondsLimit: alphaBetaLimits.millisecondsLimit! / 2}, startTime);
+    const isHalfTimePassed = isTimeout({millisecondsLimit: millisecondsLimit / 2}, startTime);
     const isAllTimePassed = isTimeout(alphaBetaLimits, startTime);
     if (isHalfTimePassed || isAllTimePassed) {
       // If we run out of half the time, then no point of starting a new search that
@@ -245,5 +245,5 @@ function getScoreForIndex0<T>(
   if (getDebugStateToString != null) {
     console.log('Best next state for playerIndex ' + playerIndex + ' is ', bestState, ' with score of ' + bestScore);
   }
-  return {bestScore: bestScore!, bestState: bestState};
+  return {bestScore: bestScore ? bestScore : 0, bestState: bestState};
 }
