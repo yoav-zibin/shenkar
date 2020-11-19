@@ -8,10 +8,15 @@
  * and that digits are only for those repeat numbers, k. For example, there won't be input like 3a or 2[4].
  */
 
+function isDigit(char: string): boolean {
+  return char >= '0' && char <= '9';
+}
+
 function calcTimesStr(str: string, openBracketIndex: number) {
   let timesStr = str[openBracketIndex - 1];
+
   for (let numberStartIndex: number = openBracketIndex - 2; numberStartIndex >= 0; numberStartIndex--) {
-    if (str[numberStartIndex] >= '0' && str[numberStartIndex] <= '9') {
+    if (isDigit(str[numberStartIndex])) {
       timesStr = str[numberStartIndex] + timesStr;
     } else {
       break;
@@ -21,34 +26,36 @@ function calcTimesStr(str: string, openBracketIndex: number) {
   return timesStr;
 }
 
-function decodeStringHelper(str: string) {
-  const firstClosingBracketIndex: number = str.indexOf(']');
-  let openBracketIndex: number;
-  for (openBracketIndex = firstClosingBracketIndex - 1; openBracketIndex >= 0; openBracketIndex--) {
+function getCorrespondingOpenBracket(str: string, closingBracketIndex: number): number {
+  for (let openBracketIndex = closingBracketIndex - 1; openBracketIndex >= 0; openBracketIndex--) {
     if (str[openBracketIndex] === '[') {
-      break;
+      return openBracketIndex;
     }
   }
+  return -1;
+}
+
+function duplicateStringByTimes(str: string, times: number): string {
+  let result: string = '';
+  for (let i: number = 0; i < times; i++) {
+    result += str;
+  }
+  return result;
+}
+
+function decodeStringHelper(str: string) {
+  const firstClosingBracketIndex: number = str.indexOf(']');
+  const openBracketIndex: number = getCorrespondingOpenBracket(str, firstClosingBracketIndex);
 
   const timesStr: string = calcTimesStr(str, openBracketIndex);
-  const times: number = +timesStr;
-  const timesStrLength = timesStr.length;
 
-  const strBeforeBracket: string = str.slice(0, openBracketIndex - timesStrLength);
-
+  const strBeforeBracket: string = str.slice(0, openBracketIndex - timesStr.length);
   const strAfterBracket: string = str.slice(firstClosingBracketIndex + 1, str.length);
-
   const strBetweenBrakcets: string = str.slice(openBracketIndex + 1, firstClosingBracketIndex);
 
-  let temp: string = '';
+  const duplicatedStr = duplicateStringByTimes(strBetweenBrakcets, +timesStr);
 
-  for (let a: number = 0; a < times; a++) {
-    temp += strBetweenBrakcets;
-  }
-
-  const finalArr: string = `${strBeforeBracket}${temp}${strAfterBracket}`;
-
-  return finalArr;
+  return `${strBeforeBracket}${duplicatedStr}${strAfterBracket}`;
 }
 
 export function decodeString(str: string) {

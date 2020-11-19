@@ -36,24 +36,12 @@ test('when the string is 2[2[2[a]]] it should return aaaaaaaa', () => {
   expect(decodeString('2[2[2[a]]]')).toEqual('aaaaaaaa');
 });
 
-test('when the string is 2[2[2[a]b]] it should return aabaabaabaab', () => {
-  expect(decodeString('2[2[2[a]b]]')).toEqual('aabaabaabaab');
-});
-
-test('when the string is 2[2[2[a]b]3[H]]abc it should return aabaabHHHaabaabHHHabc', () => {
-  expect(decodeString('2[2[2[a]b]3[H]]abc')).toEqual('aabaabHHHaabaabHHHabc');
-});
-
 test('when the string is 10[a] it should return aaaaaaaaaa', () => {
   expect(decodeString('10[a]')).toEqual('aaaaaaaaaa');
 });
 
 test('when the string is 10[a]10[b] it should return aaaaaaaaaabbbbbbbbbb', () => {
   expect(decodeString('10[a]10[b]')).toEqual('aaaaaaaaaabbbbbbbbbb');
-});
-
-test('when the string is c10[a] it should return caaaaaaaaaa', () => {
-  expect(decodeString('c10[a]')).toEqual('caaaaaaaaaa');
 });
 
 test('when the string is c10[ab]v it should return cababababababababababv', () => {
