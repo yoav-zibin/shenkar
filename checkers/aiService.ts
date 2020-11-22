@@ -1,21 +1,19 @@
-import {IAlphaBetaLimits, alphaBetaDecision} from '../common/alphaBetaService';
-import {IMove, deepClone} from '../common/common';
+import {IMove, deepClone, AiService} from '../common/common';
 import {
   Board,
   IState,
   MiniMove,
   BoardDelta,
   createMove,
-  getInitialBoard,
   CONSTANTS,
   getKind,
   getColor,
-  getWinner,
   hasMandatoryJumps,
   getJumpMoves,
   getSimpleMoves,
   isOwnColor,
   createMiniMove,
+  getInitialState,
 } from './gameLogic';
 
 /** *********************************************************************
@@ -64,11 +62,9 @@ function getSquareValue(square: string, row: number, col: number): number {
  * Get the board value.
  *
  * @param board the game API board.
- * @param turnIndex 0 represents the black player and 1
- *        represents the white player.
  * @returns {*} the board value.
  */
-function getStateValue(board: Board, turnIndex: number): number {
+function getStateValue(board: Board): number {
   let stateValue = 0;
   // For different position of the board, there's a different weight.
   const boardWeight: number[][] = [
@@ -85,16 +81,6 @@ function getStateValue(board: Board, turnIndex: number): number {
   let squareValue: number;
   let row: number;
   let col: number;
-
-  const winner = getWinner(board, turnIndex);
-
-  if (winner === CONSTANTS.WHITE) {
-    return Number.MIN_VALUE;
-  }
-
-  if (winner === CONSTANTS.BLACK) {
-    return Number.MAX_VALUE;
-  }
 
   for (row = 0; row < CONSTANTS.ROW; row += 1) {
     for (col = 0; col < CONSTANTS.COLUMN; col += 1) {
@@ -122,9 +108,9 @@ function getStateValue(board: Board, turnIndex: number): number {
 /**
  * Get the state score for player 0, a simple wrapper function
  */
-function getStateScoreForIndex0(move: IMove<IState>, turnIndex: number): number {
+function getStateScoreForIndex0(state: IState): number {
   // getStateValue return the score for player 1.
-  return -getStateValue(move.state.board, turnIndex);
+  return -getStateValue(state.board);
 }
 
 function addMegaJumpMoves(allPossibleMoves: MiniMove[][], board: Board, turnIndex: number, from: BoardDelta) {
@@ -183,8 +169,8 @@ function getAllMoves(board: Board, turnIndex: number): MiniMove[][] {
 /**
  * Get the next state which is extracted from the move operations.
  */
-function getNextStates(move: IMove<IState>, playerIndex: number): IMove<IState>[] {
-  const board: Board = move.state.board;
+function getPossibleMoves(state: IState, playerIndex: number): IMove<IState>[] {
+  const board: Board = state.board;
   const allPossibleMoveDeltas: MiniMove[][] = getAllMoves(board, playerIndex);
   const allPossibleMoves: IMove<IState>[] = [];
 
@@ -195,35 +181,8 @@ function getNextStates(move: IMove<IState>, playerIndex: number): IMove<IState>[
   return allPossibleMoves;
 }
 
-/** *********************************************************************
- * Service part...
- **********************************************************************/
-
-/**
- * Returns the move that the computer player should do for the given board.
- * alphaBetaLimits is an object that sets a limit on the alpha-beta search,
- * and it has either a millisecondsLimit or maxDepth field:
- * millisecondsLimit is a time limit, and maxDepth is a depth limit.
- */
-export function createComputerMove(
-  board: Board,
-  playerIndex: number,
-  alphaBetaLimits: IAlphaBetaLimits
-): IMove<IState> {
-  const move: IMove<IState> = {
-    state: {board: board ? board : getInitialBoard(), boardBeforeMove: getInitialBoard(), miniMoves: []},
-    endMatchScores: null,
-    turnIndex: playerIndex,
-  };
-  return alphaBetaDecision(
-    move,
-    playerIndex,
-    getNextStates,
-    getStateScoreForIndex0,
-    // If you want to see debugging output in the console, then pass
-    // getDebugStateToString instead of null
-    null,
-    // getDebugStateToString,
-    alphaBetaLimits
-  );
-}
+export const aiService: AiService<IState> = {
+  initialState: getInitialState(),
+  getPossibleMoves,
+  getStateScoreForIndex0,
+};

@@ -1,8 +1,32 @@
-import {IMove} from './common';
+import {AiService, IMove} from './common';
 
 export interface IAlphaBetaLimits {
   millisecondsLimit?: number;
   maxDepth?: number;
+}
+
+const debugAlphaBetaService = false;
+
+/**
+ * Returns the move that the computer player should do for the given state.
+ * alphaBetaLimits is an object that sets a limit on the alpha-beta search,
+ * and it has either a millisecondsLimit or maxDepth field:
+ * millisecondsLimit is a time limit, and maxDepth is a depth limit.
+ */
+export function createComputerMove<T>(
+  startingState: T,
+  turnIndex: number,
+  alphaBetaLimits: IAlphaBetaLimits,
+  aiService: AiService<T>
+): IMove<T> {
+  // We use alpha-beta search, where the search states are TicTacToe moves.
+  return alphaBetaDecision(
+    startingState,
+    turnIndex,
+    aiService.getPossibleMoves,
+    aiService.getStateScoreForIndex0,
+    alphaBetaLimits
+  );
 }
 
 /**
@@ -10,7 +34,7 @@ export interface IAlphaBetaLimits {
  * where the first move is done by playerIndex (playerIndex is either 0 or 1),
  * then the next move is done by 1-playerIndex, etc.
  *
- * getNextStates(state, playerIndex) should return an array of the following states
+ * getPossibleMoves(state, playerIndex) should return an array of the following states
  * and if state is a terminal state it should return an empty array.
  *
  * getStateScoreForIndex0(state, playerIndex) should return a score for
@@ -19,50 +43,41 @@ export interface IAlphaBetaLimits {
  * Return Number.POSITIVE_INFINITY is player index 0 is definitely winning,
  * and Number.NEGATIVE_INFINITY if player index 0 is definitely losing.
  *
- * getDebugStateToString can either be null (and then there is no output to console)
- * or it can be a function, where getDebugStateToString(state) should return
- * a string representation of the state (which is used in calls to console.log).
- *
  * alphaBetaLimits is an object that sets a limit on the alpha-beta search,
  * and it has either a millisecondsLimit or maxDepth field:
  * millisecondsLimit is a time limit, and maxDepth is a depth limit.
  */
 export function alphaBetaDecision<T>(
-  startingState: IMove<T>,
+  startingState: T,
   playerIndex: number,
-  getNextStates: (move: IMove<T>, playerIndex: number) => IMove<T>[],
-  getStateScoreForIndex0: (move: IMove<T>, playerIndex: number) => number,
-  // If you want to see debugging output in the console, then surf to game.html?debug
-  getDebugStateToString: null | ((move: IMove<T>) => string),
+  getPossibleMoves: (state: T, playerIndex: number) => IMove<T>[],
+  getStateScoreForIndex0: (state: T, playerIndex: number) => number,
   alphaBetaLimits: IAlphaBetaLimits
 ): IMove<T> {
   const move = alphaBetaDecisionMayReturnNull(
     startingState,
     playerIndex,
-    getNextStates,
+    getPossibleMoves,
     getStateScoreForIndex0,
-    getDebugStateToString,
     alphaBetaLimits
   );
   if (move) {
     return move;
   }
   // We run out of time, but we have to return a non-null move (no matter what).
-  return getNextStates(startingState, playerIndex)[0];
+  return getPossibleMoves(startingState, playerIndex)[0];
 }
 
 function alphaBetaDecisionMayReturnNull<T>(
-  startingState: IMove<T>,
+  startingState: T,
   playerIndex: number,
-  getNextStates: (move: IMove<T>, playerIndex: number) => IMove<T>[],
-  getStateScoreForIndex0: (move: IMove<T>, playerIndex: number) => number,
-  // If you want to see debugging output in the console, then surf to game.html?debug
-  getDebugStateToString: null | ((move: IMove<T>) => string),
+  getPossibleMoves: (state: T, playerIndex: number) => IMove<T>[],
+  getStateScoreForIndex0: (state: T, playerIndex: number) => number,
   alphaBetaLimits: IAlphaBetaLimits
 ): IMove<T> | null {
   // Checking input
-  if (!startingState || !getNextStates || !getStateScoreForIndex0) {
-    throw new Error('startingState or getNextStates or getStateScoreForIndex0 is null/undefined');
+  if (!startingState || !getPossibleMoves || !getStateScoreForIndex0) {
+    throw new Error('startingState or getPossibleMoves or getStateScoreForIndex0 is null/undefined');
   }
   if (playerIndex !== 0 && playerIndex !== 1) {
     throw new Error('playerIndex must be either 0 or 1');
@@ -81,9 +96,8 @@ function alphaBetaDecisionMayReturnNull<T>(
     return getScoreForIndex0(
       startingState,
       playerIndex,
-      getNextStates,
+      getPossibleMoves,
       getStateScoreForIndex0,
-      getDebugStateToString,
       alphaBetaLimits,
       startTime,
       0,
@@ -92,22 +106,21 @@ function alphaBetaDecisionMayReturnNull<T>(
     ).bestState;
   }
   // For time limits (without maxDepth), we do iterative deepening (A* search).
-  if (getDebugStateToString != null) {
+  if (debugAlphaBetaService) {
     console.log('Doing iterative-deepeninh (A*) until we run out of time or find a certain win/lose move.');
   }
   let maxDepth = 1;
   let bestState: IMove<T> | null = null;
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    if (getDebugStateToString != null) {
+    if (debugAlphaBetaService) {
       console.log('Alpha-beta search until maxDepth=' + maxDepth);
     }
     const nextBestStateAndScore = getScoreForIndex0(
       startingState,
       playerIndex,
-      getNextStates,
+      getPossibleMoves,
       getStateScoreForIndex0,
-      getDebugStateToString,
       {maxDepth: maxDepth, millisecondsLimit: millisecondsLimit},
       startTime,
       0,
@@ -119,7 +132,7 @@ function alphaBetaDecisionMayReturnNull<T>(
     if (nextBestScore === Number.POSITIVE_INFINITY || nextBestScore === Number.NEGATIVE_INFINITY) {
       const isWin = nextBestScore === (playerIndex === 0 ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY);
       console.log('Discovered that AI is going to ' + (isWin ? 'win' : 'lose') + ' with maxDepth=' + maxDepth);
-      if (getDebugStateToString != null) {
+      if (debugAlphaBetaService) {
         console.log('Best state is ', nextBestState);
       }
       return nextBestState;
@@ -145,7 +158,7 @@ function alphaBetaDecisionMayReturnNull<T>(
           'Run out of half the time when maxDepth=' + maxDepth + ', so no point of exploring the next depth.'
         );
       }
-      if (getDebugStateToString != null) {
+      if (debugAlphaBetaService) {
         console.log('Best state is ', result);
       }
       return result;
@@ -167,11 +180,10 @@ interface ScoreState<T> {
 }
 
 function getScoreForIndex0<T>(
-  startingState: IMove<T>,
+  startingState: T,
   playerIndex: number,
-  getNextStates: (move: IMove<T>, playerIndex: number) => IMove<T>[],
-  getStateScoreForIndex0: (move: IMove<T>, playerIndex: number) => number,
-  getDebugStateToString: null | ((move: IMove<T>) => string),
+  getPossibleMoves: (state: T, playerIndex: number) => IMove<T>[],
+  getStateScoreForIndex0: (state: T, playerIndex: number) => number,
   alphaBetaLimits: IAlphaBetaLimits,
   startTime: number,
   depth: number,
@@ -181,46 +193,69 @@ function getScoreForIndex0<T>(
   let bestScore: number | null = null;
   let bestState: IMove<T> | null = null;
   if (isTimeout(alphaBetaLimits, startTime)) {
-    if (getDebugStateToString != null) {
+    if (debugAlphaBetaService) {
       console.log('Run out of time, just quitting from this traversal.');
     }
     return {bestScore: 0, bestState: null}; // This traversal is "ruined" anyway because we ran out of time.
   }
   if (depth === alphaBetaLimits.maxDepth) {
     bestScore = getStateScoreForIndex0(startingState, playerIndex);
-    if (getDebugStateToString != null) {
+    if (debugAlphaBetaService) {
       console.log('Max depth reached, score is ' + bestScore);
     }
     return {bestScore: bestScore, bestState: null};
   }
-  const states = getNextStates(startingState, playerIndex);
-  if (getDebugStateToString != null) {
-    console.log(getDebugStateToString(startingState) + ' has ' + states.length + ' next states');
+  const moves = getPossibleMoves(startingState, playerIndex);
+  if (debugAlphaBetaService) {
+    console.log('startingState=', startingState, ' has ' + moves.length + ' next states');
   }
-  if (states.length === 0) {
+  if (moves.length === 0) {
     bestScore = getStateScoreForIndex0(startingState, playerIndex);
-    if (getDebugStateToString != null) {
+    if (debugAlphaBetaService) {
       console.log('Terminal state, score is ' + bestScore);
     }
     return {bestScore: bestScore, bestState: null};
   }
-  for (let i = 0; i < states.length; i++) {
-    const state = states[i];
-    const scoreForIndex0 = getScoreForIndex0(
-      state,
-      1 - playerIndex,
-      getNextStates,
-      getStateScoreForIndex0,
-      getDebugStateToString,
-      alphaBetaLimits,
-      startTime,
-      depth + 1,
-      alpha,
-      beta
-    ).bestScore;
+  for (let i = 0; i < moves.length; i++) {
+    const move = moves[i];
+    const endMatchScores = move.endMatchScores;
+    let scoreForIndex0: number;
+    if (endMatchScores) {
+      if (move.turnIndex != -1) {
+        throw new Error('When game ends with endMatchScores=' + endMatchScores + ' you must set turnIndex to -1');
+      }
+      scoreForIndex0 =
+        endMatchScores[0] > endMatchScores[1]
+          ? Number.POSITIVE_INFINITY
+          : endMatchScores[0] < endMatchScores[1]
+          ? Number.NEGATIVE_INFINITY
+          : 0;
+    } else {
+      const nextTurnIndex = 1 - playerIndex;
+      if (move.turnIndex != nextTurnIndex) {
+        // getPossibleMoves must return moves that switch turns...
+        throw new Error(
+          'Call to getPossibleMoves with playerIndex=' +
+            playerIndex +
+            ' returned a state with turnIndex=' +
+            move.turnIndex
+        );
+      }
+      scoreForIndex0 = getScoreForIndex0(
+        move.state,
+        nextTurnIndex,
+        getPossibleMoves,
+        getStateScoreForIndex0,
+        alphaBetaLimits,
+        startTime,
+        depth + 1,
+        alpha,
+        beta
+      ).bestScore;
+    }
 
-    if (getDebugStateToString != null) {
-      console.log('Score of ' + getDebugStateToString(state) + ' is ' + scoreForIndex0);
+    if (debugAlphaBetaService) {
+      console.log('Score of ', move, ' is ', scoreForIndex0);
     }
     if (
       bestScore === null ||
@@ -228,7 +263,7 @@ function getScoreForIndex0<T>(
       (playerIndex === 1 && scoreForIndex0 < bestScore)
     ) {
       bestScore = scoreForIndex0;
-      bestState = state;
+      bestState = move;
     }
     if (playerIndex === 0) {
       if (bestScore >= beta) {
@@ -242,7 +277,7 @@ function getScoreForIndex0<T>(
       beta = Math.min(beta, bestScore);
     }
   }
-  if (getDebugStateToString != null) {
+  if (debugAlphaBetaService) {
     console.log('Best next state for playerIndex ' + playerIndex + ' is ', bestState, ' with score of ' + bestScore);
   }
   return {bestScore: bestScore ? bestScore : 0, bestState: bestState};

@@ -1,10 +1,12 @@
 import {IMove, deepEquals} from '../../common/common';
-import {Board, IState} from '../gameLogic';
-import {createComputerMove} from '../aiService';
+import {Board, IState, getInitialBoard} from '../gameLogic';
+import {aiService} from '../aiService';
+import {createComputerMove} from '../../common/alphaBetaService';
 
 describe('aiService', function () {
   function createComMove(board: Board, turnIndex: number): IMove<IState> {
-    return createComputerMove(board, turnIndex, {maxDepth: 1});
+    const state: IState = {board: board ? board : getInitialBoard(), boardBeforeMove: getInitialBoard(), miniMoves: []};
+    return createComputerMove(state, turnIndex, {maxDepth: 1}, aiService);
   }
 
   it('returns a legal regular move', function () {

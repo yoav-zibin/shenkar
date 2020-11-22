@@ -130,7 +130,3 @@ export function createMove(
     state: state,
   };
 }
-
-export function createInitialMove(): IMove<IState> {
-  return {endMatchScores: null, turnIndex: 0, state: getInitialState()};
-}

@@ -1,5 +1,5 @@
-import {IMove, deepEquals} from '../../common/common';
-import {Board, IState, createMove, createInitialMove} from '../gameLogic';
+import {IMove, deepEquals, createInitialMove} from '../../common/common';
+import {Board, IState, createMove, getInitialState} from '../gameLogic';
 
 const X_TURN = 0;
 const O_TURN = 1;
@@ -43,7 +43,7 @@ function expectMove(
 }
 
 test('Initial move', function () {
-  const move: IMove<IState> = createInitialMove();
+  const move: IMove<IState> = createInitialMove(getInitialState());
   const expectedMove: IMove<IState> = {
     turnIndex: X_TURN,
     endMatchScores: NO_ONE_WINS,

@@ -929,12 +929,8 @@ export function createMove(board: Board | null, miniMoves: MiniMove[], turnIndex
   return megaMove;
 }
 
-export function createInitialMove(): IMove<IState> {
-  return {
-    endMatchScores: null,
-    turnIndex: 0,
-    state: {miniMoves: [], board: getInitialBoard(), boardBeforeMove: getInitialBoard()},
-  };
+export function getInitialState(): IState {
+  return {miniMoves: [], board: getInitialBoard(), boardBeforeMove: getInitialBoard()};
 }
 
 /**
