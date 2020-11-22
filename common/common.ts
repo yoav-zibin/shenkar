@@ -1,13 +1,10 @@
-import {GestureResponderEvent} from 'react-native';
-
 // Making a move either ends the game (then <endMatchScores> must be set)
 // or the game continues (then <turnIndex> must be set, which determines which player plays next).
 // Always set the <state> to be the state after making the move.
-
 export type EndMatchScores = number[] | null;
 export interface IMove<T> {
   // When the match ends: turnIndex is -1 and endMatchScores is an array of scores.
-  // When the match is ongoing: turnIndex is a valid index and endMatchScores to null.
+  // When the match is ongoing: turnIndex is a valid index (0 or 1) and endMatchScores to null.
   endMatchScores: EndMatchScores; // either null or an array of length <numberOfPlayers>.
   turnIndex: number;
 
@@ -18,34 +15,26 @@ export interface IMove<T> {
   state: T;
 }
 
-// For now, humans plays first, and then the AI.
-export const HUMAN_TURN_INDEX = 0;
-export const AI_TURN_INDEX = 1;
-
-export enum GameResult {
-  NO_RESULT = -1,
-  HUMAN_WON,
-  AI_WON,
-  TIE,
+export interface AiService<T> {
+  initialState: T;
+  // To make AI moves using alpha-beta search
+  getPossibleMoves(state: T, turnIndex: number): IMove<T>[];
+  getStateScoreForIndex0(state: T, turnIndex: number): number;
 }
 
-export function getGameResult(endMatchScores: EndMatchScores) {
-  if (!endMatchScores) return GameResult.NO_RESULT;
-  if (endMatchScores[HUMAN_TURN_INDEX] == endMatchScores[AI_TURN_INDEX]) return GameResult.TIE;
-  if (endMatchScores[HUMAN_TURN_INDEX] < endMatchScores[AI_TURN_INDEX]) return GameResult.AI_WON;
-  return GameResult.HUMAN_WON;
+export interface GameProps<T> {
+  move: IMove<T>;
+  setMove: (state: IMove<T>) => void;
+  yourPlayerIndex: number;
+}
+export interface GameModule<T> extends AiService<T> {
+  gameId: string;
+  gameName: string;
+  component: React.FunctionComponent<GameProps<T>>;
 }
 
-export function getRelativeTouchLocation(e: GestureResponderEvent) {
-  let {locationX, locationY} = e.nativeEvent;
-  if (locationX == undefined) {
-    // on web we have offsetX, offsetY
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const nativeE = e.nativeEvent as any;
-    locationX = nativeE.offsetX;
-    locationY = nativeE.offsetY;
-  }
-  return {locationX, locationY};
+export function createInitialMove<T>(state: T): IMove<T> {
+  return {endMatchScores: null, turnIndex: 0, state};
 }
 
 export function deepClone<T>(obj: T): T {

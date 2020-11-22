@@ -1,6 +1,7 @@
 import {IMove, deepEquals} from '../../common/common';
 import {Board, IState} from '../gameLogic';
-import {createComputerMove, getPossibleMoves, findComputerMove} from '../aiService';
+import {getPossibleMoves, aiService} from '../aiService';
+import {createComputerMove} from '../../common/alphaBetaService';
 
 describe('aiService', function () {
   function createStateFromBoard(board: Board): IState {
@@ -8,12 +9,7 @@ describe('aiService', function () {
   }
 
   function createComMove(board: Board, turnIndex: number, maxDepth: number): IMove<IState> {
-    const move: IMove<IState> = {
-      turnIndex: turnIndex,
-      endMatchScores: null,
-      state: createStateFromBoard(board),
-    };
-    return createComputerMove(move, {maxDepth: maxDepth});
+    return createComputerMove(createStateFromBoard(board), turnIndex, {maxDepth: maxDepth}, aiService);
   }
 
   it('getPossibleMoves returns exactly one cell', function () {
@@ -41,10 +37,8 @@ describe('aiService', function () {
   });
 
   it('X finds an immediate winning move in less than a second', function () {
-    const move = findComputerMove({
-      endMatchScores: null,
-      turnIndex: 0,
-      state: {
+    const move = createComputerMove(
+      {
         board: [
           ['', '', 'O'],
           ['O', 'X', 'X'],
@@ -52,7 +46,11 @@ describe('aiService', function () {
         ],
         delta: null,
       },
-    });
+      0,
+      // at most 1 second for the AI to choose a move (but might be much quicker)
+      {millisecondsLimit: 1000},
+      aiService
+    );
     expect(deepEquals(move.state.delta, {row: 0, col: 1})).toBe(true);
   });
 

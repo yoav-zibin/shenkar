@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 
-import {GameResult} from './common';
+import {GameResult} from './commonUtils';
 
 function generateResultText(result: GameResult) {
   switch (result) {
