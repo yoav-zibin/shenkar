@@ -1,0 +1,52 @@
+function fullJustify(words: string[], maxWidth: number): string[] {
+    const res : string[] = [];
+    let str = '';
+    
+    while (words.length) {
+        const word = words.shift();
+        
+        if (fitsOnLine(word, str)) {
+            str += `${word} `;
+        } else {
+            res.push(str.trim());
+            str = `${word} `;
+        }
+    }
+
+    if (str.trim()) res.push(str.trim());
+
+    return res.map(justify);
+    
+    function justify(str, i, array) {
+        if (i === array.length - 1) {
+            return str.padEnd(maxWidth, ' ');
+        }
+
+        const parts = str.split(' ');
+        
+        if (parts.length === 1) {
+            return str.padEnd(maxWidth, ' ');
+        }
+        
+        const difference = maxWidth - parts.reduce((t, p) => t + p.length, 0);
+        const minSpaces = Math.floor(difference / (parts.length - 1));
+        let remainingSpaces = difference - (minSpaces * (parts.length - 1))
+        
+        for (let i = 0; i < parts.length - 1; i++) {
+            parts[i] += ' '.padStart(minSpaces, ' ');
+        }
+        
+        let j = 0;
+        
+        while (remainingSpaces) {
+            parts[j++] += ' ';
+            remainingSpaces--;
+        }
+        
+        return parts.join('');
+    }
+    
+    function fitsOnLine(word, l) {
+        return (l + word).length <= maxWidth;
+    }
+};
