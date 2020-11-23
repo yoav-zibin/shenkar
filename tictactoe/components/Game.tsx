@@ -1,5 +1,9 @@
 import React from 'react';
+<<<<<<< HEAD
 import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
+=======
+import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground} from 'react-native';
+>>>>>>> c03d13b (Cleanup: delete hw1&2.)
 
 import {GameModule, GameProps} from '../../common/common';
 
