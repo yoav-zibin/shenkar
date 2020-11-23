@@ -31,12 +31,12 @@ export function getInitialState(): IState {
 
 /**
  * Returns true if the game ended in a tie because there are no empty cells.
- * E.g., isTie returns true for the following board:
+ * E.g., isGameOver returns true for the following board:
  *     [['X', 'O', 'X'],
  *      ['X', 'O', 'O'],
  *      ['O', 'X', 'X']]
  */
-function isTie(board: Board): boolean {
+function isGameOver(board: Board): boolean {
   for (let i = 0; i < ROWS; i++) {
     for (let j = 0; j < COLS; j++) {
       if (board[i][j] === '') {
@@ -105,7 +105,7 @@ export function createMove(
   if (board[row][col] !== '') {
     throw new Error('One can only make a move in an empty position!');
   }
-  if (getWinner(board) !== '' || isTie(board)) {
+  if (getWinner(board) !== '' || isGameOver(board)) {
     throw new Error('Can only make a move if the game is not over!');
   }
   const boardAfterMove = deepClone(board);
@@ -113,7 +113,7 @@ export function createMove(
   const winner = getWinner(boardAfterMove);
   let endMatchScores: number[] | null;
   let turnIndex: number;
-  if (winner !== '' || isTie(boardAfterMove)) {
+  if (winner !== '' || isGameOver(boardAfterMove)) {
     // Game over.
     turnIndex = -1;
     endMatchScores = winner === 'X' ? [1, 0] : winner === 'O' ? [0, 1] : [0, 0];
@@ -122,11 +122,11 @@ export function createMove(
     turnIndex = 1 - turnIndexBeforeMove;
     endMatchScores = null;
   }
-  const delta: BoardDelta = {row: row, col: col};
-  const state: IState = {delta: delta, board: boardAfterMove};
+  const delta: BoardDelta = {row, col};
+  const state: IState = {delta, board: boardAfterMove};
   return {
-    endMatchScores: endMatchScores,
-    turnIndex: turnIndex,
-    state: state,
+    endMatchScores,
+    turnIndex,
+    state,
   };
 }
