@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, TouchableWithoutFeedback, View, Text, Image, ImageBackground} from 'react-native';
+import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground} from 'react-native';
 
 import {GameModule, GameProps} from '../../common/common';
 
