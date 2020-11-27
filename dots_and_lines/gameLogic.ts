@@ -1,0 +1,203 @@
+import {deepClone, IMove} from '../common/common';
+
+export enum lineDirection {
+  HORIZONTAL,
+  VERTICAL,
+}
+export enum player {
+  ONE,
+  TWO,
+}
+
+export const cellColor = {
+  NONE: 'transparent',
+  PLAYER_1: '#3B5998',
+  PLAYER_2: '#DD6B4D',
+};
+
+interface Board {
+  isGameOver: boolean;
+  turn: player;
+  horizontalLines: boolean[][];
+  verticalLines: boolean[][];
+  color: string[][]; // color/occupier of each cell/box
+  cellPaintedLines: number[][]; // sum of all filled edges for each cell
+  paintedLinesAmount: number;
+  score: {
+    PLAYER_1: number;
+    PLAYER_2: number;
+  };
+  // 3 reflects board of 3x3 board (9 dots in total), 4 reflects board of 4x4 board (16 dots in total), etc.
+  size: number;
+}
+
+interface BoardDelta {
+  direction: lineDirection;
+  row: number;
+  col: number;
+}
+
+export interface IState {
+  board: Board;
+  delta: BoardDelta | null;
+}
+
+/** Returns the initial Dots_and_Boxes board */
+function createMetrix<T>(rowsize: number, colsize: number, initialFill: T): T[][] {
+  const arr = [];
+  for (let i = 0; i < rowsize; i++) {
+    const temp = [];
+    for (let j = 0; j < colsize; j++) {
+      temp[j] = initialFill;
+    }
+    arr[i] = temp;
+  }
+  return arr;
+}
+
+export function getInitialBoard(): Board {
+  const board = <Board>{};
+  board.size = 3;
+  board.isGameOver = false;
+  board.turn = player.ONE;
+  board.score = {
+    PLAYER_1: 0,
+    PLAYER_2: 0,
+  };
+  board.horizontalLines = createMetrix(board.size + 1, board.size, false);
+  board.verticalLines = createMetrix(board.size, board.size + 1, false);
+  board.color = createMetrix(board.size, board.size, cellColor.NONE);
+  board.cellPaintedLines = createMetrix(board.size, board.size, 0);
+  board.paintedLinesAmount = 0;
+  return board;
+}
+
+export function getInitialState(): IState {
+  return {board: getInitialBoard(), delta: null};
+}
+
+//  helper function for debugging
+export function printBoard(board: Board): void {
+  if (!board) {
+    console.log('board is undefined');
+  } else {
+    const {
+      isGameOver,
+      turn,
+      score,
+      paintedLinesAmount,
+      horizontalLines,
+      verticalLines,
+      size,
+      cellPaintedLines,
+      color,
+    } = board;
+    const linesToEnd = (size ** 2 + size) * 2;
+    console.log(`isGameOver=${isGameOver}`);
+    console.log(`turn=${turn}`);
+    console.log(`score1=${score.PLAYER_1}`);
+    console.log(`score2=${score.PLAYER_2}`);
+    console.log(`paintedLines: ${paintedLinesAmount}/${linesToEnd}`);
+    printBoardItem(horizontalLines, size + 1, size);
+    printBoardItem(verticalLines, size, size + 1);
+    printBoardItem(cellPaintedLines, size, size);
+    printBoardItem(color, size, size);
+  }
+}
+
+function printBoardItem<T>(item: T[][], rowSize: number, colSize: number) {
+  if (item) {
+    let output = '';
+    output += 'color: [';
+    for (let i = 0; i < rowSize; ++i) {
+      output += '[';
+      for (let j = 0; j < colSize; ++j) {
+        output += item[i][j] + ', ';
+      }
+      output += ']';
+    }
+    output += ']';
+    console.log(output);
+  }
+}
+
+export function printDelta(delta: BoardDelta) {
+  let deltaOutput = '';
+  deltaOutput = delta.direction + ':' + delta.row + 'x' + delta.col;
+  console.log(deltaOutput);
+}
+
+export function updateBoard(board: Board, direction: lineDirection, row: number, col: number): Board {
+  const updatedBoard: Board = deepClone(board);
+
+  if (direction === lineDirection.HORIZONTAL) {
+    updatedBoard.horizontalLines[row][col] = true;
+    if (row > 0) {
+      handleLinePaint(board, row - 1, col);
+    }
+    if (row < board.size) {
+      handleLinePaint(board, row, col);
+    }
+  } else {
+    updatedBoard.verticalLines[row][col] = true;
+    if (col > 0) {
+      handleLinePaint(board, row, col - 1);
+    }
+    if (col < board.size) {
+      handleLinePaint(board, row, col);
+    }
+  }
+
+  updatedBoard.paintedLinesAmount++;
+  const linesToEnd = board.size ** 2 + 2 * board.size;
+  if (updatedBoard.paintedLinesAmount === linesToEnd) {
+    updatedBoard.isGameOver = true;
+  }
+
+  return {...updatedBoard};
+}
+
+function handleLinePaint(updatedBoard: Board, row: number, col: number) {
+  if (updatedBoard.cellPaintedLines[row][col] !== 4) {
+    updatedBoard.cellPaintedLines[row][col] += 1; // check lower cell's sum
+  }
+  if (updatedBoard.cellPaintedLines[row][col] === 4) {
+    updatedBoard.color[row][col] = player.ONE ? cellColor.PLAYER_1 : cellColor.PLAYER_2;
+    updatedBoard.turn === player.ONE ? updatedBoard.score.PLAYER_1++ : updatedBoard.score.PLAYER_2++;
+  } else {
+    updatedBoard.turn = updatedBoard.turn === player.ONE ? player.TWO : player.ONE;
+  }
+}
+
+export function createMove(board: Board, direction: lineDirection, row: number, col: number): IMove<IState> {
+  if (!board) {
+    // Initially (at the beginning of the match), the board in state is undefined.
+    board = getInitialBoard();
+  }
+
+  const conditionOne = direction === lineDirection.HORIZONTAL && board.horizontalLines[row][col] === true;
+  const conditionTwo = direction === lineDirection.VERTICAL && board.verticalLines[row][col] === true;
+  const positionIsntFree = conditionOne || conditionTwo;
+  if (positionIsntFree) {
+    console.log(direction, row, col);
+    throw new Error('One can only make a move in an empty position!');
+  }
+  if (board.isGameOver) {
+    throw new Error('Can only make a move if the game is not over!');
+  }
+
+  const updatedBoard: Board = updateBoard(board, direction, row, col);
+
+  const endMatchScores = updatedBoard.isGameOver ? [board.score.PLAYER_1, board.score.PLAYER_2] : null;
+
+  const delta: BoardDelta = {direction, row, col};
+
+  return {
+    endMatchScores,
+    turnIndex: board.turn === player.ONE ? 0 : 1,
+    state: {
+      board,
+      delta,
+    },
+  };
+}
