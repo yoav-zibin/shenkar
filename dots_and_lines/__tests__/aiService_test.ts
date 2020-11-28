@@ -1,7 +1,7 @@
-import * as gameLogic from '../gameLogic';
+import {deepClone} from '../../common/common';
 import * as aiService from '../aiService';
-import {IMove, deepClone, deepEquals} from '../../common/common';
-import {cellColor, player, printBoard} from '../gameLogic';
+import * as gameLogic from '../gameLogic';
+import {cellColor} from '../gameLogic';
 
 describe('aiService', function () {
   it('case1: getPossibleMoves returns two move', function () {
