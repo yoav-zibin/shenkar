@@ -7,7 +7,7 @@ export interface BoardDelta {
 }
 export interface IState {
   board: Board;
-  delta: BoardDelta | null;
+  delta?: BoardDelta;
 }
 
 export const ROWS = 3;
@@ -26,7 +26,7 @@ export function getInitialBoard(): Board {
 }
 
 export function getInitialState(): IState {
-  return {board: getInitialBoard(), delta: null};
+  return {board: getInitialBoard()};
 }
 
 /**

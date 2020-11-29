@@ -6,6 +6,17 @@ export interface IAlphaBetaLimits {
 }
 
 const debugAlphaBetaService = false;
+const MAX_ALLOWED_DEPTH = 100; // no point of looking more than 100 moves into the future.
+export const MAX_ALLOWED_SCORE = 1000000000;
+export const MIN_ALLOWED_SCORE = -1000000000;
+export const MAX_SCORE = 1000000000 + MAX_ALLOWED_DEPTH;
+export const MIN_SCORE = -1000000000 - MAX_ALLOWED_DEPTH;
+
+function assertLegalScore(score: number) {
+  if (score < MIN_ALLOWED_SCORE || score > MAX_ALLOWED_SCORE) {
+    throw new Error('Illegal score=' + score + ', it must be between ' + MIN_ALLOWED_SCORE + ' - ' + MAX_ALLOWED_SCORE);
+  }
+}
 
 /**
  * Returns the move that the computer player should do for the given state.
@@ -40,8 +51,8 @@ export function createComputerMove<T>(
  * getStateScoreForIndex0(state, playerIndex) should return a score for
  * the state as viewed by player index 0, i.e.,
  * if player index 0 is probably winning then the score should be high.
- * Return Number.POSITIVE_INFINITY is player index 0 is definitely winning,
- * and Number.NEGATIVE_INFINITY if player index 0 is definitely losing.
+ * Return MAX_ALLOWED_SCORE is player index 0 is definitely winning,
+ * and MIN_ALLOWED_SCORE if player index 0 is definitely losing.
  *
  * alphaBetaLimits is an object that sets a limit on the alpha-beta search,
  * and it has either a millisecondsLimit or maxDepth field:
@@ -86,10 +97,7 @@ function alphaBetaDecisionMayReturnNull<T>(
     throw new Error('alphaBetaLimits must have either millisecondsLimit or maxDepth');
   }
 
-  const millisecondsLimit = alphaBetaLimits.millisecondsLimit
-    ? // 400 milliseconds is the max time (otherwise the app feels unresponsive).
-      Math.min(400, alphaBetaLimits.millisecondsLimit)
-    : 0;
+  const millisecondsLimit = alphaBetaLimits.millisecondsLimit;
 
   const startTime = new Date().getTime(); // used for the time limit
   if (alphaBetaLimits.maxDepth) {
@@ -101,8 +109,8 @@ function alphaBetaDecisionMayReturnNull<T>(
       alphaBetaLimits,
       startTime,
       0,
-      Number.NEGATIVE_INFINITY,
-      Number.POSITIVE_INFINITY
+      MIN_SCORE,
+      MAX_SCORE
     ).bestState;
   }
   // For time limits (without maxDepth), we do iterative deepening (A* search).
@@ -124,13 +132,13 @@ function alphaBetaDecisionMayReturnNull<T>(
       {maxDepth: maxDepth, millisecondsLimit: millisecondsLimit},
       startTime,
       0,
-      Number.NEGATIVE_INFINITY,
-      Number.POSITIVE_INFINITY
+      MIN_SCORE,
+      MAX_SCORE
     );
     const nextBestScore = nextBestStateAndScore.bestScore;
     const nextBestState = nextBestStateAndScore.bestState;
-    if (nextBestScore === Number.POSITIVE_INFINITY || nextBestScore === Number.NEGATIVE_INFINITY) {
-      const isWin = nextBestScore === (playerIndex === 0 ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY);
+    if (nextBestScore === MAX_SCORE || nextBestScore === MIN_SCORE) {
+      const isWin = nextBestScore === (playerIndex === 0 ? MAX_SCORE : MIN_SCORE);
       console.log('Discovered that AI is going to ' + (isWin ? 'win' : 'lose') + ' with maxDepth=' + maxDepth);
       if (debugAlphaBetaService) {
         console.log('Best state is ', nextBestState);
@@ -165,6 +173,9 @@ function alphaBetaDecisionMayReturnNull<T>(
     }
     bestState = nextBestState;
     maxDepth++;
+    if (maxDepth >= MAX_ALLOWED_DEPTH) {
+      return nextBestState;
+    }
   }
 }
 
@@ -200,6 +211,7 @@ function getScoreForIndex0<T>(
   }
   if (depth === alphaBetaLimits.maxDepth) {
     bestScore = getStateScoreForIndex0(startingState, playerIndex);
+    assertLegalScore(bestScore);
     if (debugAlphaBetaService) {
       console.log('Max depth reached, score is ' + bestScore);
     }
@@ -211,6 +223,7 @@ function getScoreForIndex0<T>(
   }
   if (moves.length === 0) {
     bestScore = getStateScoreForIndex0(startingState, playerIndex);
+    assertLegalScore(bestScore);
     if (debugAlphaBetaService) {
       console.log('Terminal state, score is ' + bestScore);
     }
@@ -224,11 +237,13 @@ function getScoreForIndex0<T>(
       if (move.turnIndex != -1) {
         throw new Error('When game ends with endMatchScores=' + endMatchScores + ' you must set turnIndex to -1');
       }
+      // prefer to do as many moves as possible for riddles
+      // (so the AI tries to block, even if it's going to lose)
       scoreForIndex0 =
         endMatchScores[0] > endMatchScores[1]
-          ? Number.POSITIVE_INFINITY
+          ? MAX_SCORE - depth
           : endMatchScores[0] < endMatchScores[1]
-          ? Number.NEGATIVE_INFINITY
+          ? MIN_SCORE + depth
           : 0;
     } else {
       const nextTurnIndex = 1 - playerIndex;

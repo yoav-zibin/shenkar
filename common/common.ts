@@ -1,5 +1,9 @@
 // Making a move either ends the game (then <endMatchScores> must be set)
 // or the game continues (then <turnIndex> must be set, which determines which player plays next).
+
+import {useEffect} from 'react';
+import {LocalizeId} from './localize';
+
 // Always set the <state> to be the state after making the move.
 export type EndMatchScores = number[] | null;
 export interface IMove<T> {
@@ -19,19 +23,62 @@ export interface AiService<T> {
   initialState: T;
   // To make AI moves using alpha-beta search
   getPossibleMoves(state: T, turnIndex: number): IMove<T>[];
+  // Max&min score are between -1B and 1B. (1000000000)
   getStateScoreForIndex0(state: T, turnIndex: number): number;
 }
 
-export interface GameProps<T> {
-  move: IMove<T>;
-  setMove: (state: IMove<T>) => void;
+export interface GameProps<S, R> {
+  move: IMove<S>;
+  // The riddle/game ends when chosenMove.endMatchScore is not null
+  // (The riddle was solved correctly if endMatchScore[yourPlayerIndex] is highest,
+  // and wrongly otherwise.)
+  setMove: (chosenMove: IMove<S>) => void;
   yourPlayerIndex: number;
+
+  riddleData: R;
+  // For riddles: after some time that the user is stuck,
+  // or if the user requests a hint,
+  // we can show a hint.
+  showHint: boolean;
 }
-export interface GameModule<T> extends AiService<T> {
+
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
+export function secondsToShowHint(difficulty: Difficulty): number {
+  switch (difficulty) {
+    case 'EASY':
+      return 10;
+    case 'MEDIUM':
+      return 20;
+    case 'HARD':
+      return 30;
+  }
+  throw new Error('illegal difficulty=' + difficulty);
+}
+
+export interface RiddlesLevel<S, R> {
+  levelLocalizeId: LocalizeId;
+  difficulty: Difficulty;
+  riddles: Riddle<S, R>[];
+  // How many moves can you make until the riddle is solved?
+  // Let's do riddles with at most 5 moves (i.e., 5 moves by you and AI opponent, which is a lot!)
+  maxMovesNum: 1 | 2 | 3 | 4 | 5;
+  turnIndex: number;
+}
+export interface Riddle<S, R> {
+  state: S;
+  riddleData: R;
+}
+export interface GameModule<S, R> extends AiService<S> {
   gameId: string;
-  gameName: string;
-  component: React.FunctionComponent<GameProps<T>>;
+  gameLocalizeId: LocalizeId;
+  riddleLevels: RiddlesLevel<S, R>[];
+  component: React.FunctionComponent<GameProps<S, R>>;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyMove = IMove<any>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyGameModule = GameModule<any, any>;
 
 export function createInitialMove<T>(state: T): IMove<T> {
   return {endMatchScores: null, turnIndex: 0, state};
@@ -43,6 +90,17 @@ export function deepClone<T>(obj: T): T {
 
 export function deepEquals<T>(x: T, y: T) {
   return deepEqualsAny(x, y);
+}
+
+export function useEffectToSetAndClearTimeout(callbackCallingTimeout: () => NodeJS.Timeout | number | null) {
+  // see https://upmostly.com/tutorials/settimeout-in-react-components-using-hooks
+  useEffect(() => {
+    const timer = callbackCallingTimeout();
+    if (timer) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return () => clearTimeout(timer as any);
+    }
+  });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

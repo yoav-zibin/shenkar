@@ -1,10 +1,13 @@
 import React from 'react';
-import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground} from 'react-native';
+import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
 
 import {GameModule, GameProps} from '../../common/common';
 
 import {createMove, ROWS, COLS, IState, getInitialState} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
+import {RiddleData, riddleLevels} from '../riddles';
+
+const hintLineColor = 'green';
 
 const styles = StyleSheet.create({
   // See how to have a square component using aspectRatio=1
@@ -53,22 +56,54 @@ const styles = StyleSheet.create({
     width: '80%',
     height: '80%',
   },
+  hintLineCol: {
+    position: 'absolute',
+    width: 8,
+    height: '100%',
+    backgroundColor: hintLineColor,
+  },
+  hintLineRow: {
+    position: 'absolute',
+    width: '100%',
+    height: 8,
+    backgroundColor: hintLineColor,
+  },
+  hintLineDiagonal1: {
+    position: 'absolute',
+    width: 8,
+    height: '100%',
+    backgroundColor: hintLineColor,
+    transform: [{rotate: '135deg'}],
+    left: '50%',
+  },
+  hintLineDiagonal2: {
+    position: 'absolute',
+    width: 8,
+    height: '100%',
+    backgroundColor: hintLineColor,
+    transform: [{rotate: '45deg'}],
+    left: '50%',
+  },
 });
 
-export default function getTicTacToeGameModule(): GameModule<IState> {
+export default function getTicTacToeGameModule(): GameModule<IState, RiddleData> {
   return {
     gameId: 'tictactoe',
-    gameName: 'TicTacToe',
+    gameLocalizeId: 'TICTACTOE_GAME_NAME',
     initialState: getInitialState(),
     component: TicTacToeComponent,
+    riddleLevels,
     getPossibleMoves: getPossibleMoves,
     getStateScoreForIndex0: getStateScoreForIndex0,
   };
 }
 
-const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProps<IState>) => {
-  const {move, setMove, yourPlayerIndex} = props;
+const TicTacToeComponent: React.FunctionComponent<GameProps<IState, RiddleData>> = (
+  props: GameProps<IState, RiddleData>
+) => {
+  const {move, setMove, yourPlayerIndex, showHint, riddleData} = props;
   const {turnIndex, state} = move;
+  console.log('Render TicTacToe props=', props);
 
   function clickedOn(row: number, col: number) {
     if (turnIndex != yourPlayerIndex) {
@@ -95,6 +130,25 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
     }
   }
 
+  let hintLine = null;
+  if (showHint && riddleData) {
+    let style: ViewStyle = {};
+    if (riddleData.startsWith('r')) {
+      style = {...styles.hintLineRow};
+      const row = Number(riddleData.charAt(1)) - 1;
+      style.top = 100 / 6 + row * (100 / 3) + '%';
+    } else if (riddleData.startsWith('c')) {
+      style = {...styles.hintLineCol};
+      const col = Number(riddleData.charAt(1)) - 1;
+      style.left = 100 / 6 + col * (100 / 3) + '%';
+    } else if (riddleData == 'd1') {
+      style = styles.hintLineDiagonal1;
+    } else if (riddleData == 'd2') {
+      style = styles.hintLineDiagonal2;
+    } else throw new Error('Illegal riddleData=' + riddleData);
+    hintLine = <View style={style} />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.fixedRatio}>
@@ -118,6 +172,7 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
             ))}
           </View>
         </ImageBackground>
+        {hintLine}
       </View>
     </View>
   );

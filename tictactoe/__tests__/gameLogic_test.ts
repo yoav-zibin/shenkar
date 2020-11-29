@@ -10,7 +10,7 @@ const O_WIN_SCORES = [0, 1];
 const TIE_SCORES = [0, 0];
 
 function expectException(turnIndexBeforeMove: number, boardBeforeMove: Board, row: number, col: number): void {
-  const stateBeforeMove: IState | null = boardBeforeMove ? {board: boardBeforeMove, delta: null} : null;
+  const stateBeforeMove: IState | null = boardBeforeMove ? {board: boardBeforeMove} : null;
   // We expect an exception to be thrown :)
   let didThrowException = false;
   try {
@@ -37,7 +37,7 @@ function expectMove(
     endMatchScores: endMatchScores,
     state: {board: boardAfterMove, delta: {row: row, col: col}},
   };
-  const stateBeforeMove: IState | null = boardBeforeMove ? {board: boardBeforeMove, delta: null} : null;
+  const stateBeforeMove: IState | null = boardBeforeMove ? {board: boardBeforeMove} : null;
   const move: IMove<IState> = createMove(stateBeforeMove, row, col, turnIndexBeforeMove);
   expect(deepEquals(move, expectedMove)).toBe(true);
 }
@@ -53,7 +53,6 @@ test('Initial move', function () {
         ['', '', ''],
         ['', '', ''],
       ],
-      delta: null,
     },
   };
   expect(deepEquals(move, expectedMove)).toBe(true);
