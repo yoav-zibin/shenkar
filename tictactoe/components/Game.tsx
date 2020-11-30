@@ -117,18 +117,8 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState, RiddleData>>
     }
   }
 
-  const allCircles: number[] = [];
-  const allCrosses: number[] = [];
   const rows = [0, 1, 2];
   const cols = [0, 1, 2];
-  for (let i = 0; i < ROWS; i++) {
-    for (let j = 0; j < COLS; j++) {
-      const cell = state.board[i][j];
-      const id = ROWS * i + j;
-      if (cell == 'X') allCrosses.push(id);
-      if (cell == 'O') allCircles.push(id);
-    }
-  }
 
   let hintLine = null;
   if (showHint && riddleData) {

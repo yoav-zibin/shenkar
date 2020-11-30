@@ -133,7 +133,7 @@ function ourReducer(appState: AppState, action: AppStateAction) {
     return {...appState, languageId: action.setLanguageId};
   }
   if (action.setSelectedGameId) {
-    return {...appState, selectedGameId: action.setSelectedGameId};
+    return {...appState, activity: undefined, activityState: undefined, selectedGameId: action.setSelectedGameId};
   }
   if (action.setActivity) {
     const activity = action.setActivity;
