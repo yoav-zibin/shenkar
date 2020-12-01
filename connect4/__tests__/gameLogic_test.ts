@@ -6,7 +6,6 @@ const BLUE_TURN = 1;
 const NO_ONE_WINS: number[] | null = null;
 const NO_ONE_TURN = -1;
 
-const R_WIN_SCORES = [1, 0];
 const B_WIN_SCORES = [0, 1];
 const TIE_SCORES = [0, 0];
 function expectException(turnIndexBeforeMove: number, boardBeforeMove: Board, row: number, col: number): void {

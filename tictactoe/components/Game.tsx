@@ -3,7 +3,7 @@ import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, View
 
 import {GameModule, GameProps} from '../../common/common';
 
-import {createMove, ROWS, COLS, IState, getInitialState} from '../gameLogic';
+import {createMove, IState, getInitialState} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {RiddleData, riddleLevels} from '../riddles';
 
