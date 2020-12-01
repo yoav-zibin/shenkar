@@ -287,3 +287,14 @@ export function createEndMove(state: IState, endMatchScores: number[]): IMove<IS
     state: state,
   };
 }
+
+export function getInitialState(): IState {
+  return {
+    board: createNewBoard(9),
+    boardBeforeMove: createNewBoard(9),
+    delta: {row: 0, col: 0},
+    passes: 0,
+    deadBoard: null,
+    posJustCapturedForKo: null,
+  };
+}
