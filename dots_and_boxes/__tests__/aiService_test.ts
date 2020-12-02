@@ -4,7 +4,7 @@ import * as gameLogic from '../gameLogic';
 import {cellColor} from '../gameLogic';
 
 describe('aiService', function () {
-  it('case1: getPossibleMoves returns two move', function () {
+  it('case1: getPossibleMoves returns three possible move', function () {
     console.log('case1');
     const state = gameLogic.getInitialState();
     const boardBeforeLastMove = deepClone(state.board);

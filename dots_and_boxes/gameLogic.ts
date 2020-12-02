@@ -48,9 +48,9 @@ function createMetrix<T>(rowsize: number, colsize: number, initialFill: T): T[][
   for (let i = 0; i < rowsize; i++) {
     const temp = [];
     for (let j = 0; j < colsize; j++) {
-      temp[j] = initialFill;
+      temp.push(initialFill);
     }
-    arr[i] = temp;
+    arr.push(temp);
   }
   return arr;
 }
@@ -105,7 +105,7 @@ export function printBoard(board: Board): void {
   }
 }
 
-function printBoardItem<T>(item: T[][], rowSize: number, colSize: number) {
+export function printBoardItem<T>(item: T[][], rowSize: number, colSize: number) {
   if (item) {
     let output = '';
     output += 'color: [';
@@ -157,7 +157,7 @@ export function updateBoard(board: Board, direction: lineDirection, row: number,
   return {...updatedBoard};
 }
 
-function handleLinePaint(updatedBoard: Board, row: number, col: number) {
+export function handleLinePaint(updatedBoard: Board, row: number, col: number) {
   if (updatedBoard.cellPaintedLines[row][col] !== 4) {
     updatedBoard.cellPaintedLines[row][col] += 1; // check lower cell's sum
   }
@@ -169,17 +169,29 @@ function handleLinePaint(updatedBoard: Board, row: number, col: number) {
   }
 }
 
+export function positionIsntFree(board: Board, direction: lineDirection, row: number, col: number): boolean {
+  const conditionOne = direction === lineDirection.HORIZONTAL && board.horizontalLines[row][col] === true;
+  const conditionTwo = direction === lineDirection.VERTICAL && board.verticalLines[row][col] === true;
+  return conditionOne || conditionTwo;
+}
+
+export function moveIsIllegal(boardSize: number, direction: lineDirection, row: number, col: number): boolean {
+  const verticallyIllegal =
+    direction === lineDirection.VERTICAL && (row < 0 || row >= boardSize || (col < 0 && col > boardSize));
+  const horizontallyIllegal =
+    direction === lineDirection.HORIZONTAL && (row < 0 || row > boardSize || col < 0 || col >= boardSize);
+  return verticallyIllegal || horizontallyIllegal;
+}
+
 export function createMove(board: Board, direction: lineDirection, row: number, col: number): IMove<IState> {
   if (!board) {
-    // Initially (at the beginning of the match), the board in state is undefined.
     board = getInitialBoard();
   }
 
-  const conditionOne = direction === lineDirection.HORIZONTAL && board.horizontalLines[row][col] === true;
-  const conditionTwo = direction === lineDirection.VERTICAL && board.verticalLines[row][col] === true;
-  const positionIsntFree = conditionOne || conditionTwo;
-  if (positionIsntFree) {
-    console.log(direction, row, col);
+  if (moveIsIllegal(board.size, direction, row, col)) {
+    throw new Error('Move is illegal. Either row or column are out of bounds.');
+  }
+  if (positionIsntFree(board, direction, row, col)) {
     throw new Error('One can only make a move in an empty position!');
   }
   if (board.isGameOver) {
