@@ -187,7 +187,6 @@ export function createMove(board: Board, direction: lineDirection, row: number, 
   if (!board) {
     board = getInitialBoard();
   }
-
   if (moveIsIllegal(board.size, direction, row, col)) {
     throw new Error('Move is illegal. Either row or column are out of bounds.');
   }
