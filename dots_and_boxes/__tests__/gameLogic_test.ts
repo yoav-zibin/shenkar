@@ -17,10 +17,6 @@ describe('In Dots_and_Boxes', function () {
     expectMove(move, false);
   }
 
-  function expectIllegalMove(move: IMove<gameLogic.IState>): void {
-    expectMove(move, true);
-  }
-
   // stage1: board's original state, cases when no one complete any cells
   it('YOU filling edge in hor:0x0 position from initial state is legal', function () {
     const board = gameLogic.getInitialBoard();
