@@ -23,6 +23,37 @@ export interface IState {
   riddleData?: RiddleData;
 }
 
+function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
+  switch (hint) {
+    case 'r1':
+      return row == 0;
+    case 'r2':
+      return row == 1;
+    case 'r3':
+      return row == 2;
+    case 'c1':
+      return col == 0;
+    case 'c2':
+      return col == 1;
+    case 'c3':
+      return col == 2;
+    case 'd1':
+      return col == row;
+    case 'd2':
+      return col == 2 - row;
+  }
+}
+
+export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
+  const {riddleData} = state;
+  return !riddleData
+    ? false
+    : firstMoveSolutions.some(
+        (firstMove) =>
+          firstMove.state.delta && isPosOnHintLine(firstMove.state.delta.row, firstMove.state.delta.col, riddleData)
+      );
+}
+
 export const ROWS = 3;
 export const COLS = 3;
 

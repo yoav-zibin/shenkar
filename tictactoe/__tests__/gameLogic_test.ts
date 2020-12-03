@@ -1,5 +1,5 @@
 import {IMove, deepEquals, createInitialMove} from '../../common/common';
-import {Board, IState, createMove, getInitialState} from '../gameLogic';
+import {Board, IState, createMove, getInitialState, checkRiddleData} from '../gameLogic';
 
 const X_TURN = 0;
 const O_TURN = 1;
@@ -203,4 +203,19 @@ test('placing X outside the board (in 0x3) is illegal', function () {
     0,
     3
   );
+});
+
+test('checkRiddleData', () => {
+  const state: IState = {
+    board: [
+      ['X', 'X', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ],
+    riddleData: 'r1',
+  };
+  const turnIndex = 0;
+  expect(checkRiddleData(state, turnIndex, [createMove(state, 0, 2, turnIndex)])).toBe(true);
+  expect(checkRiddleData(state, turnIndex, [createMove(state, 1, 2, turnIndex)])).toBe(false);
+  expect(checkRiddleData(state, turnIndex, [createMove(state, 2, 2, turnIndex)])).toBe(false);
 });

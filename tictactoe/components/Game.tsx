@@ -1,9 +1,9 @@
 import React from 'react';
-import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
+import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
 
-import {GameModule, GameProps, IMove} from '../../common/common';
+import {GameModule, GameProps} from '../../common/common';
 
-import {createMove, IState, getInitialState, RiddleData} from '../gameLogic';
+import {createMove, IState, getInitialState, checkRiddleData} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {riddleLevels} from '../riddles';
 
@@ -86,36 +86,6 @@ const styles = StyleSheet.create({
   },
 });
 
-function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
-  switch (hint) {
-    case 'r1':
-      return row == 0;
-    case 'r2':
-      return row == 1;
-    case 'r3':
-      return row == 2;
-    case 'c1':
-      return col == 0;
-    case 'c2':
-      return col == 1;
-    case 'c3':
-      return col == 2;
-    case 'd1':
-      return col == row;
-    case 'd2':
-      return col == 2 - row;
-  }
-}
-function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
-  const {riddleData} = state;
-  return !riddleData
-    ? false
-    : firstMoveSolutions.some(
-        (firstMove) =>
-          firstMove.state.delta && isPosOnHintLine(firstMove.state.delta.row, firstMove.state.delta.col, riddleData)
-      );
-}
-
 export default function getTicTacToeGameModule(): GameModule<IState> {
   return {
     gameId: 'tictactoe',
@@ -132,8 +102,19 @@ export default function getTicTacToeGameModule(): GameModule<IState> {
 const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProps<IState>) => {
   const {move, setMove, yourPlayerIndex, showHint} = props;
   const {turnIndex, state} = move;
-  const riddleData = state.riddleData;
-  console.log('Render TicTacToe props=', props);
+  const {riddleData, board, delta} = state;
+  console.log('Render TicTacToe delta=', delta);
+
+  const animValue = new Animated.Value(0);
+  React.useEffect(() => {
+    if (delta) {
+      Animated.timing(animValue, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [animValue]);
 
   function clickedOn(row: number, col: number) {
     if (turnIndex != yourPlayerIndex) {
@@ -169,6 +150,31 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
     hintLine = <View style={style} />;
   }
 
+  function getAnimatedPiece(r: number, c: number) {
+    if (delta && delta.row == r && delta.col == c) {
+      return (
+        <Animated.View
+          style={{
+            // opacity: animValue,
+            transform: [{scale: animValue}],
+          }}>
+          {getPiece(r, c)}
+        </Animated.View>
+      );
+    }
+    return getPiece(r, c);
+  }
+
+  function getPiece(r: number, c: number) {
+    if (board[r][c] == '') return null;
+    return (
+      <Image
+        style={styles.pieceImage}
+        source={board[r][c] == 'X' ? require('../imgs/X.png') : require('../imgs/O.png')}
+      />
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.fixedRatio}>
@@ -178,14 +184,7 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
               <View key={r} style={styles.boardCellsContainer}>
                 {cols.map((c) => (
                   <TouchableWithoutFeedback key={c} onPress={() => clickedOn(r, c)}>
-                    <View style={styles.boardCell}>
-                      {state.board[r][c] != '' ? (
-                        <Image
-                          style={styles.pieceImage}
-                          source={state.board[r][c] == 'X' ? require('../imgs/X.png') : require('../imgs/O.png')}
-                        />
-                      ) : null}
-                    </View>
+                    <View style={styles.boardCell}>{getAnimatedPiece(r, c)}</View>
                   </TouchableWithoutFeedback>
                 ))}
               </View>
