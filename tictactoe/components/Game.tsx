@@ -1,11 +1,11 @@
 import React from 'react';
 import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
 
-import {GameModule, GameProps} from '../../common/common';
+import {GameModule, GameProps, IMove} from '../../common/common';
 
-import {createMove, IState, getInitialState} from '../gameLogic';
+import {createMove, IState, getInitialState, RiddleData} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
-import {RiddleData, riddleLevels} from '../riddles';
+import {riddleLevels} from '../riddles';
 
 const hintLineColor = 'green';
 
@@ -86,23 +86,53 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function getTicTacToeGameModule(): GameModule<IState, RiddleData> {
+function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
+  switch (hint) {
+    case 'r1':
+      return row == 0;
+    case 'r2':
+      return row == 1;
+    case 'r3':
+      return row == 2;
+    case 'c1':
+      return col == 0;
+    case 'c2':
+      return col == 1;
+    case 'c3':
+      return col == 2;
+    case 'd1':
+      return col == row;
+    case 'd2':
+      return col == 2 - row;
+  }
+}
+function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
+  const {riddleData} = state;
+  return !riddleData
+    ? false
+    : firstMoveSolutions.some(
+        (firstMove) =>
+          firstMove.state.delta && isPosOnHintLine(firstMove.state.delta.row, firstMove.state.delta.col, riddleData)
+      );
+}
+
+export default function getTicTacToeGameModule(): GameModule<IState> {
   return {
     gameId: 'tictactoe',
     gameLocalizeId: 'TICTACTOE_GAME_NAME',
     initialState: getInitialState(),
     component: TicTacToeComponent,
     riddleLevels,
-    getPossibleMoves: getPossibleMoves,
-    getStateScoreForIndex0: getStateScoreForIndex0,
+    getPossibleMoves,
+    getStateScoreForIndex0,
+    checkRiddleData,
   };
 }
 
-const TicTacToeComponent: React.FunctionComponent<GameProps<IState, RiddleData>> = (
-  props: GameProps<IState, RiddleData>
-) => {
-  const {move, setMove, yourPlayerIndex, showHint, riddleData} = props;
+const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProps<IState>) => {
+  const {move, setMove, yourPlayerIndex, showHint} = props;
   const {turnIndex, state} = move;
+  const riddleData = state.riddleData;
   console.log('Render TicTacToe props=', props);
 
   function clickedOn(row: number, col: number) {

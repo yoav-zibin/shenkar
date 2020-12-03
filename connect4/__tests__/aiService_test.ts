@@ -71,8 +71,6 @@ describe('aiService', function () {
       1,
       2
     );
-    console.log('move.state.delta');
-    console.log(move.state.delta);
     expect(deepEquals(move.state.delta, {row: 6, col: 3})).toBe(true);
   });
 });

@@ -5,9 +5,22 @@ export interface BoardDelta {
   row: number;
   col: number;
 }
+
+// The riddle data in TicTacToe just includes the hint,
+// which is where to show the "line" hint: either on a row / col / diagonal.
+// E.g., "r1" is:
+// ['X', 'X', 'X'],
+// ['', '', ''],
+// ['', '', ''],
+// And "d1" is:
+// ['X', '', ''],
+// ['', 'X', ''],
+// ['', '', 'X'],
+export type RiddleData = 'r1' | 'r2' | 'r3' | 'c1' | 'c2' | 'c3' | 'd1' | 'd2';
 export interface IState {
   board: Board;
   delta?: BoardDelta;
+  riddleData?: RiddleData;
 }
 
 export const ROWS = 3;

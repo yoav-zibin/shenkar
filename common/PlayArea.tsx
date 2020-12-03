@@ -30,7 +30,7 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
   console.log('Render PlayArea activityState=', activityState, ' activity=', activity);
 
   const {riddleActivity, playActivity} = activity;
-  const {yourPlayerIndex, initialMove, currentMove, currentMoveNum, maxMovesNum, showHint, riddleData} = activityState;
+  const {yourPlayerIndex, initialMove, currentMove, currentMoveNum, maxMovesNum, showHint} = activityState;
   const opponentPlayerIndex = 1 - yourPlayerIndex;
   const {turnIndex, endMatchScores, state} = currentMove;
   const isOverMaxMoves = maxMovesNum && currentMoveNum >= maxMovesNum;
@@ -145,7 +145,6 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
   }
 
   function setMove(chosenMove: IMove<unknown>) {
-    const isYourMove = yourPlayerIndex == currentMove.turnIndex;
     const nextYourPlayerIndex =
       playActivity && playActivity.playType == 'PASS_AND_PLAY' ? 1 - yourPlayerIndex : yourPlayerIndex;
     dispatch({
@@ -153,10 +152,9 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
         yourPlayerIndex: nextYourPlayerIndex,
         initialMove,
         currentMove: chosenMove,
-        currentMoveNum: currentMoveNum + (isYourMove ? 1 : 0),
+        currentMoveNum: currentMoveNum + 1,
         maxMovesNum,
         showHint: false,
-        riddleData,
       },
     });
   }
@@ -167,7 +165,6 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
         move: currentMove,
         setMove: setHumanMove,
         yourPlayerIndex,
-        riddleData,
         showHint,
       })}
       {gameOverLocalizeId && nextActionLocalizeId && (

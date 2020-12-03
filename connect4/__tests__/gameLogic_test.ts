@@ -37,10 +37,6 @@ function expectMove(
   };
   const stateBeforeMove: IState | null = boardBeforeMove ? {board: boardBeforeMove, delta: null} : null;
   const move: IMove<IState> = createMove(stateBeforeMove, row, col, turnIndexBeforeMove);
-  console.log(move);
-  console.log(move.state.board);
-  console.log(expectedMove);
-  console.log(expectedMove.state.board);
   expect(deepEquals(move, expectedMove)).toBe(true);
 }
 

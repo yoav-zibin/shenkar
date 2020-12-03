@@ -27,7 +27,7 @@ export interface AiService<T> {
   getStateScoreForIndex0(state: T, turnIndex: number): number;
 }
 
-export interface GameProps<S, R> {
+export interface GameProps<S> {
   move: IMove<S>;
   // The riddle/game ends when chosenMove.endMatchScore is not null
   // (The riddle was solved correctly if endMatchScore[yourPlayerIndex] is highest,
@@ -35,7 +35,6 @@ export interface GameProps<S, R> {
   setMove: (chosenMove: IMove<S>) => void;
   yourPlayerIndex: number;
 
-  riddleData: R;
   // For riddles: after some time that the user is stuck,
   // or if the user requests a hint,
   // we can show a hint.
@@ -55,33 +54,43 @@ export function secondsToShowHint(difficulty: Difficulty): number {
   throw new Error('illegal difficulty=' + difficulty);
 }
 
-export interface RiddlesLevel<S, R> {
+export interface RiddlesLevel<S> {
   levelLocalizeId: LocalizeId;
   difficulty: Difficulty;
-  riddles: Riddle<S, R>[];
+  riddles: S[];
   // How many moves can you make until the riddle is solved?
-  // Let's do riddles with at most 5 moves (i.e., 5 moves by you and AI opponent, which is a lot!)
+  // Let's do riddles with at most 5 moves (i.e., 3 moves by you and 2 by the AI opponent)
   maxMovesNum: 1 | 2 | 3 | 4 | 5;
   turnIndex: number;
 }
-export interface Riddle<S, R> {
-  state: S;
-  riddleData: R;
-}
-export interface GameModule<S, R> extends AiService<S> {
+
+// Return true if the riddleData is correct
+export type CheckRiddleData<S> = (state: S, turnIndex: number, firstMoveSolutions: IMove<S>[]) => boolean;
+
+export interface GameModule<S> extends AiService<S> {
   gameId: string;
   gameLocalizeId: LocalizeId;
-  riddleLevels: RiddlesLevel<S, R>[];
-  component: React.FunctionComponent<GameProps<S, R>>;
+  riddleLevels: RiddlesLevel<S>[];
+  checkRiddleData: CheckRiddleData<S>; // Used in a unit test checking the riddle data is correct.
+  component: React.FunctionComponent<GameProps<S>>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyMove = IMove<any>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyGameModule = GameModule<any, any>;
+export type AnyGameModule = GameModule<any>;
 
 export function createInitialMove<T>(state: T): IMove<T> {
   return {endMatchScores: null, turnIndex: 0, state};
+}
+
+export function randomElement<T>(arr: T[]) {
+  if (arr.length == 0) throw new Error("Can't select random element from an empty arr");
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+export function toPrettyJson(obj: unknown) {
+  return JSON.stringify(obj, null, 4);
 }
 
 export function deepClone<T>(obj: T): T {

@@ -34,7 +34,6 @@ export interface ActivityState {
   currentMoveNum: number;
   maxMovesNum: number;
   showHint: boolean;
-  riddleData: unknown;
 }
 // The current riddle is gameModule.riddleLevels[levelIndex].riddles[riddleIndex]
 export interface RiddleActivity {
@@ -95,7 +94,6 @@ function getInitialActivityState(appState: AppState, activity: Activity): Activi
           currentMoveNum: 0,
           maxMovesNum: 0, // no limit
           showHint: false,
-          riddleData: null,
         };
       case 'AGAINST_COMPUTER':
       case 'MULTIPLAYER':
@@ -107,14 +105,13 @@ function getInitialActivityState(appState: AppState, activity: Activity): Activi
           currentMoveNum: 0,
           maxMovesNum: 0, // no limit
           showHint: false,
-          riddleData: null,
         };
     }
   }
   if (riddleActivity) {
     const level = gameModule.riddleLevels[riddleActivity.levelIndex];
     const riddle = level.riddles[riddleActivity.riddleIndex];
-    const initialMove = {endMatchScores: null, turnIndex: level.turnIndex, state: riddle.state};
+    const initialMove = {endMatchScores: null, turnIndex: level.turnIndex, state: riddle};
     return {
       yourPlayerIndex: level.turnIndex,
       initialMove: initialMove,
@@ -122,7 +119,6 @@ function getInitialActivityState(appState: AppState, activity: Activity): Activi
       currentMoveNum: 0,
       maxMovesNum: level.maxMovesNum,
       showHint: false,
-      riddleData: riddle.riddleData,
     };
   }
   throw new Error('Set either play/riddle activity');

@@ -12,15 +12,7 @@ const TIE_SCORES = [0, 0];
 function expectException(turnIndexBeforeMove: number, boardBeforeMove: Board, row: number, col: number): void {
   const stateBeforeMove: IState | null = boardBeforeMove ? {board: boardBeforeMove} : null;
   // We expect an exception to be thrown :)
-  let didThrowException = false;
-  try {
-    createMove(stateBeforeMove, row, col, turnIndexBeforeMove);
-  } catch (e) {
-    didThrowException = true;
-  }
-  if (!didThrowException) {
-    throw new Error("We expect an illegal move, but createMove didn't throw any exception!");
-  }
+  expect(() => createMove(stateBeforeMove, row, col, turnIndexBeforeMove)).toThrow(Error);
 }
 
 function expectMove(
