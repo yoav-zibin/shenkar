@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {AnyGameModule, IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
 import {createComputerMove} from './alphaBetaService';
 import {Activity, computerLevelToAiMillis, useStoreContext} from './store';
@@ -7,6 +7,9 @@ import {localize, LocalizeId} from './localize';
 import {DEBUGGING_OPTIONS} from './debugging';
 
 const styles = StyleSheet.create({
+  bottomView: {
+    height: 100,
+  },
   text: {
     marginTop: 20,
     fontSize: 19,
@@ -167,14 +170,16 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
         yourPlayerIndex,
         showHint,
       })}
-      {gameOverLocalizeId && nextActionLocalizeId && (
-        <>
-          <Text style={styles.text}>{localize(gameOverLocalizeId, appState)}</Text>
-          <TouchableOpacity onPress={() => nextAction()}>
-            <Text style={styles.instructions}>{localize(nextActionLocalizeId, appState)}</Text>
-          </TouchableOpacity>
-        </>
-      )}
+      <View style={styles.bottomView}>
+        {gameOverLocalizeId && nextActionLocalizeId && (
+          <>
+            <Text style={styles.text}>{localize(gameOverLocalizeId, appState)}</Text>
+            <TouchableOpacity onPress={() => nextAction()}>
+              <Text style={styles.instructions}>{localize(nextActionLocalizeId, appState)}</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
     </>
   );
 }

@@ -150,28 +150,19 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
     hintLine = <View style={style} />;
   }
 
-  function getAnimatedPiece(r: number, c: number) {
-    if (delta && delta.row == r && delta.col == c) {
-      return (
-        <Animated.View
-          style={{
-            // opacity: animValue,
-            transform: [{scale: animValue}],
-          }}>
-          {getPiece(r, c)}
-        </Animated.View>
-      );
-    }
-    return getPiece(r, c);
-  }
-
   function getPiece(r: number, c: number) {
     if (board[r][c] == '') return null;
     return (
-      <Image
-        style={styles.pieceImage}
-        source={board[r][c] == 'X' ? require('../imgs/X.png') : require('../imgs/O.png')}
-      />
+      <Animated.View
+        style={{
+          // opacity: animValue,
+          transform: [{scale: delta && delta.row == r && delta.col == c ? animValue : 1}],
+        }}>
+        <Image
+          style={styles.pieceImage}
+          source={board[r][c] == 'X' ? require('../imgs/X.png') : require('../imgs/O.png')}
+        />
+      </Animated.View>
     );
   }
 
@@ -184,7 +175,7 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
               <View key={r} style={styles.boardCellsContainer}>
                 {cols.map((c) => (
                   <TouchableWithoutFeedback key={c} onPress={() => clickedOn(r, c)}>
-                    <View style={styles.boardCell}>{getAnimatedPiece(r, c)}</View>
+                    <View style={styles.boardCell}>{getPiece(r, c)}</View>
                   </TouchableWithoutFeedback>
                 ))}
               </View>
