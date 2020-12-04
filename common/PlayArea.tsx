@@ -148,6 +148,7 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
   }
 
   function setMove(chosenMove: IMove<unknown>) {
+    const didTurnIndexChange = currentMove.turnIndex != chosenMove.turnIndex;
     const nextYourPlayerIndex =
       playActivity && playActivity.playType == 'PASS_AND_PLAY' ? 1 - yourPlayerIndex : yourPlayerIndex;
     dispatch({
@@ -155,7 +156,7 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
         yourPlayerIndex: nextYourPlayerIndex,
         initialMove,
         currentMove: chosenMove,
-        currentMoveNum: currentMoveNum + 1,
+        currentMoveNum: currentMoveNum + (didTurnIndexChange ? 1 : 0),
         maxMovesNum,
         showHint: false,
       },
