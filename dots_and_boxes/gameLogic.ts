@@ -158,10 +158,10 @@ export function updateBoard(board: Board, direction: lineDirection, row: number,
 }
 
 export function handleLinePaint(updatedBoard: Board, row: number, col: number) {
-  if (updatedBoard.cellPaintedLines[row][col] !== 4) {
+  if (updatedBoard.cellPaintedLines[row][col] !== 3) {
     updatedBoard.cellPaintedLines[row][col] += 1; // check lower cell's sum
   }
-  if (updatedBoard.cellPaintedLines[row][col] === 4) {
+  if (updatedBoard.cellPaintedLines[row][col] === 3) {
     updatedBoard.color[row][col] = player.ONE ? cellColor.PLAYER_1 : cellColor.PLAYER_2;
     updatedBoard.turn === player.ONE ? updatedBoard.score.PLAYER_1++ : updatedBoard.score.PLAYER_2++;
   } else {

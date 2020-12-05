@@ -1,5 +1,7 @@
 import {IMove} from '../../common/common';
+import {aiService} from '../aiService';
 import * as gameLogic from '../gameLogic';
+import {cellColor} from '../gameLogic';
 
 describe('In Dots_and_Boxes', function () {
   function expectMove(move: IMove<gameLogic.IState>, isIllegal: boolean): void {
@@ -32,5 +34,41 @@ describe('In Dots_and_Boxes', function () {
       new Error('Move is illegal. Either row or column are out of bounds.')
     );
     // expectIllegalMove(boardAfterMove);
+  });
+
+  // stage2: board's original state, cases when no one complete any cells
+  it('Creating move in non-empty place', function () {
+    const state = gameLogic.getInitialState();
+    const board = state.board;
+    board.paintedLinesAmount = 21;
+    board.score = {
+      PLAYER_1: 4,
+      PLAYER_2: 0,
+    };
+    board.horizontalLines = [
+      [true, true, true],
+      [true, true, true],
+      [false, true, true],
+      [true, true, true],
+    ];
+    board.verticalLines = [
+      [true, true, false, true],
+      [true, true, true, true],
+      [true, true, true, false],
+    ];
+    board.color = [
+      [cellColor.PLAYER_1, cellColor.NONE, cellColor.NONE],
+      [cellColor.NONE, cellColor.PLAYER_1, cellColor.PLAYER_1],
+      [cellColor.NONE, cellColor.PLAYER_1, cellColor.NONE],
+    ];
+    board.cellPaintedLines = [
+      [4, 3, 3],
+      [3, 4, 4],
+      [3, 4, 3],
+    ];
+
+    expect(() => gameLogic.createMove(board, gameLogic.lineDirection.HORIZONTAL, 1, 0)).toThrow(
+      new Error('One can only make a move in an empty position!')
+    );
   });
 });
