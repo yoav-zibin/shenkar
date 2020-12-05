@@ -46,7 +46,7 @@ export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 export function secondsToShowHint(difficulty: Difficulty): number {
   switch (difficulty) {
     case 'EASY':
-      return 10;
+      return 50;
     case 'MEDIUM':
       return 20;
     case 'HARD':

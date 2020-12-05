@@ -1,9 +1,9 @@
 import React from 'react';
-import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
+import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground} from 'react-native';
 
 import {GameModule, GameProps} from '../../common/common';
 
-import {createMove, ROWS, COLS, IState, getInitialState} from '../gameLogic';
+import {createMove, IState, getInitialState} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {RiddleData, riddleLevels} from '../riddles';
 
@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
   container: {
     margin: 10,
     flex: 1,
+    borderRadius: 50,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     padding: 0,
     margin: 0,
   },
@@ -40,21 +41,23 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'stretch',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     padding: 0,
-    margin: 0,
+    marginBottom: 5,
   },
   boardCell: {
-    width: '33.3%',
+    width: '12%',
     height: '100%',
+    backgroundColor: 'blue',
     padding: 0,
-    margin: 0,
+    marginTop: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
   },
   pieceImage: {
-    marginTop: '14%',
-    marginLeft: '12%',
-    width: '80%',
-    height: '80%',
+    marginLeft: '17%',
+    marginRight: '10%',
   },
   hintLineCol: {
     position: 'absolute',
@@ -86,26 +89,27 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function getTicTacToeGameModule(): GameModule<IState, RiddleData> {
+export default function getConnect4GameModule(): GameModule<IState, RiddleData> {
   return {
-    gameId: 'tictactoe',
-    gameLocalizeId: 'TICTACTOE_GAME_NAME',
+    gameId: 'connect4',
+    gameLocalizeId: 'CONNECT4_GAME_NAME',
     initialState: getInitialState(),
-    component: TicTacToeComponent,
+    component: connect4Component,
     riddleLevels,
     getPossibleMoves: getPossibleMoves,
     getStateScoreForIndex0: getStateScoreForIndex0,
   };
 }
 
-const TicTacToeComponent: React.FunctionComponent<GameProps<IState, RiddleData>> = (
+const connect4Component: React.FunctionComponent<GameProps<IState, RiddleData>> = (
   props: GameProps<IState, RiddleData>
 ) => {
-  const {move, setMove, yourPlayerIndex, showHint, riddleData} = props;
+  const {move, setMove, yourPlayerIndex, riddleData} = props;
   const {turnIndex, state} = move;
   console.log('Render TicTacToe props=', props);
 
   function clickedOn(row: number, col: number) {
+    console.log(riddleLevels);
     if (turnIndex != yourPlayerIndex) {
       return;
     }
@@ -117,52 +121,51 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState, RiddleData>>
     }
   }
 
-  const rows = [0, 1, 2];
-  const cols = [0, 1, 2];
-
-  let hintLine = null;
-  if (showHint && riddleData) {
-    let style: ViewStyle = {};
-    if (riddleData.startsWith('r')) {
-      style = {...styles.hintLineRow};
-      const row = Number(riddleData.charAt(1)) - 1;
-      style.top = 100 / 6 + row * (100 / 3) + '%';
-    } else if (riddleData.startsWith('c')) {
-      style = {...styles.hintLineCol};
-      const col = Number(riddleData.charAt(1)) - 1;
-      style.left = 100 / 6 + col * (100 / 3) + '%';
-    } else if (riddleData == 'd1') {
-      style = styles.hintLineDiagonal1;
-    } else if (riddleData == 'd2') {
-      style = styles.hintLineDiagonal2;
-    } else throw new Error('Illegal riddleData=' + riddleData);
-    hintLine = <View style={style} />;
-  }
+  const rows = [0, 1, 2, 3, 4, 5];
+  const cols = [0, 1, 2, 3, 4, 5, 6];
 
   return (
     <View style={styles.container}>
       <View style={styles.fixedRatio}>
-        <ImageBackground style={styles.boardImage} source={require('../imgs/Board.png')}>
+        <ImageBackground style={styles.boardImage} source={require('../imgs/connect_board.png')}>
           <View style={styles.boardRowsContainer}>
             {rows.map((r) => (
               <View key={r} style={styles.boardCellsContainer}>
-                {cols.map((c) => (
-                  <TouchableWithoutFeedback key={c} onPress={() => clickedOn(r, c)}>
+                {cols.map((c) =>
+                  r == 5 || state.board[r + 1][c] != ' ' ? (
+                    <TouchableWithoutFeedback key={c} onPress={() => clickedOn(r, c)}>
+                      <View style={styles.boardCell}>
+                        <Image
+                          style={styles.pieceImage}
+                          source={
+                            state.board[r][c] != 'Y' && state.board[r][c] != 'R' && riddleData == 'E'
+                              ? require('../imgs/touch.png')
+                              : null
+                          }
+                        />
+                        {state.board[r][c] != ' ' ? (
+                          <Image
+                            style={styles.pieceImage}
+                            source={state.board[r][c] == 'Y' ? require('../imgs/p1.png') : require('../imgs/p2.png')}
+                          />
+                        ) : null}
+                      </View>
+                    </TouchableWithoutFeedback>
+                  ) : (
                     <View style={styles.boardCell}>
                       {state.board[r][c] != ' ' ? (
                         <Image
                           style={styles.pieceImage}
-                          source={state.board[r][c] == 'X' ? require('../imgs/X.png') : require('../imgs/O.png')}
+                          source={state.board[r][c] == 'Y' ? require('../imgs/p1.png') : require('../imgs/p2.png')}
                         />
                       ) : null}
                     </View>
-                  </TouchableWithoutFeedback>
-                ))}
+                  )
+                )}
               </View>
             ))}
           </View>
         </ImageBackground>
-        {hintLine}
       </View>
     </View>
   );

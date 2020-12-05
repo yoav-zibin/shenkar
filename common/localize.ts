@@ -79,6 +79,10 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'נסה שוב',
   },
   //  TICTACTOE starts.
+  CONNECT4_GAME_NAME: {
+    en: 'Connect4',
+    he: 'ארבע בשורה',
+  },
   TICTACTOE_GAME_NAME: {
     en: 'TicTacToe',
     he: 'איקס עיגול',
@@ -86,6 +90,18 @@ const LOCALIZE_ID_TO_NAME = {
   TICTACTOE_LEVEL1: {
     en: 'X wins in 1 move',
     he: 'X מנצח במסע אחד',
+  },
+  CONNECT4_LEVEL1: {
+    en: 'Y wins in 1 move',
+    he: 'Y מנצח במסע אחד',
+  },
+  CONNECT4_LEVEL2: {
+    en: 'Y wins in 1 move Without help',
+    he: 'ללא עזרה Y מנצח במסע אחד',
+  },
+  CONNECT4_LEVEL3: {
+    en: 'Victory up to 4 step',
+    he: 'ניצחון בטוח עד 4 צעדים',
   },
   TICTACTOE_LEVEL2: {
     en: '◯ wins in 1 move',
