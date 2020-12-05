@@ -31,13 +31,7 @@ export function createComputerMove<T>(
   aiService: AiService<T>
 ): IMove<T> {
   // We use alpha-beta search, where the search states are TicTacToe moves.
-  return alphaBetaDecision(
-    startingState,
-    turnIndex,
-    aiService.getPossibleMoves,
-    aiService.getStateScoreForIndex0,
-    alphaBetaLimits
-  );
+  return alphaBetaDecision(startingState, turnIndex, aiService, alphaBetaLimits);
 }
 
 /**
@@ -61,58 +55,40 @@ export function createComputerMove<T>(
 export function alphaBetaDecision<T>(
   startingState: T,
   playerIndex: number,
-  getPossibleMoves: (state: T, playerIndex: number) => IMove<T>[],
-  getStateScoreForIndex0: (state: T, playerIndex: number) => number,
+  aiService: AiService<T>,
   alphaBetaLimits: IAlphaBetaLimits
 ): IMove<T> {
-  const move = alphaBetaDecisionMayReturnNull(
-    startingState,
-    playerIndex,
-    getPossibleMoves,
-    getStateScoreForIndex0,
-    alphaBetaLimits
-  );
+  const move = alphaBetaDecisionMayReturnNull(startingState, playerIndex, aiService, alphaBetaLimits);
   if (move) {
     return move;
   }
   // We run out of time, but we have to return a non-null move (no matter what).
-  return getPossibleMoves(startingState, playerIndex)[0];
+  return aiService.getPossibleMoves(startingState, playerIndex)[0];
 }
 
 function alphaBetaDecisionMayReturnNull<T>(
   startingState: T,
   playerIndex: number,
-  getPossibleMoves: (state: T, playerIndex: number) => IMove<T>[],
-  getStateScoreForIndex0: (state: T, playerIndex: number) => number,
+  aiService: AiService<T>,
   alphaBetaLimits: IAlphaBetaLimits
 ): IMove<T> | null {
   // Checking input
-  if (!startingState || !getPossibleMoves || !getStateScoreForIndex0) {
-    throw new Error('startingState or getPossibleMoves or getStateScoreForIndex0 is null/undefined');
+  if (!startingState || !aiService) {
+    throw new Error('startingState or aiService is null/undefined');
   }
   if (playerIndex !== 0 && playerIndex !== 1) {
     throw new Error('playerIndex must be either 0 or 1');
   }
-  if (!alphaBetaLimits.millisecondsLimit && !alphaBetaLimits.maxDepth) {
-    throw new Error('alphaBetaLimits must have either millisecondsLimit or maxDepth');
-  }
-
-  const millisecondsLimit = alphaBetaLimits.millisecondsLimit;
 
   const startTime = new Date().getTime(); // used for the time limit
   if (alphaBetaLimits.maxDepth) {
-    return getScoreForIndex0(
-      startingState,
-      playerIndex,
-      getPossibleMoves,
-      getStateScoreForIndex0,
-      alphaBetaLimits,
-      startTime,
-      0,
-      MIN_SCORE,
-      MAX_SCORE
-    ).bestState;
+    return getScoreForIndex0(startingState, playerIndex, aiService, alphaBetaLimits, startTime, 0, MIN_SCORE, MAX_SCORE)
+      .bestState;
   }
+  if (!alphaBetaLimits.millisecondsLimit) {
+    throw new Error('alphaBetaLimits must have either millisecondsLimit or maxDepth');
+  }
+  const millisecondsLimit = alphaBetaLimits.millisecondsLimit;
   // For time limits (without maxDepth), we do iterative deepening (A* search).
   if (debugAlphaBetaService) {
     console.log('Doing iterative-deepeninh (A*) until we run out of time or find a certain win/lose move.');
@@ -127,8 +103,7 @@ function alphaBetaDecisionMayReturnNull<T>(
     const nextBestStateAndScore = getScoreForIndex0(
       startingState,
       playerIndex,
-      getPossibleMoves,
-      getStateScoreForIndex0,
+      aiService,
       {maxDepth: maxDepth, millisecondsLimit: millisecondsLimit},
       startTime,
       0,
@@ -138,9 +113,9 @@ function alphaBetaDecisionMayReturnNull<T>(
     const nextBestScore = nextBestStateAndScore.bestScore;
     const nextBestState = nextBestStateAndScore.bestState;
     if (nextBestScore === MAX_SCORE || nextBestScore === MIN_SCORE) {
-      const isWin = nextBestScore === (playerIndex === 0 ? MAX_SCORE : MIN_SCORE);
-      console.log('Discovered that AI is going to ' + (isWin ? 'win' : 'lose') + ' with maxDepth=' + maxDepth);
       if (debugAlphaBetaService) {
+        const isWin = nextBestScore === (playerIndex === 0 ? MAX_SCORE : MIN_SCORE);
+        console.log('Discovered that AI is going to ' + (isWin ? 'win' : 'lose') + ' with maxDepth=' + maxDepth);
         console.log('Best state is ', nextBestState);
       }
       return nextBestState;
@@ -155,16 +130,20 @@ function alphaBetaDecisionMayReturnNull<T>(
       // immediate children of the starting state.
       const result = !isAllTimePassed || maxDepth === 1 || !bestState ? nextBestState : bestState;
       if (isAllTimePassed) {
-        console.log(
-          'Run out of time when maxDepth=' +
-            maxDepth +
-            ', so returning the best state for maxDepth=' +
-            (maxDepth === 1 ? 1 : maxDepth - 1)
-        );
+        if (debugAlphaBetaService) {
+          console.log(
+            'Run out of time when maxDepth=' +
+              maxDepth +
+              ', so returning the best state for maxDepth=' +
+              (maxDepth === 1 ? 1 : maxDepth - 1)
+          );
+        }
       } else {
-        console.log(
-          'Run out of half the time when maxDepth=' + maxDepth + ', so no point of exploring the next depth.'
-        );
+        if (debugAlphaBetaService) {
+          console.log(
+            'Run out of half the time when maxDepth=' + maxDepth + ', so no point of exploring the next depth.'
+          );
+        }
       }
       if (debugAlphaBetaService) {
         console.log('Best state is ', result);
@@ -190,11 +169,27 @@ interface ScoreState<T> {
   bestState: IMove<T> | null;
 }
 
+function expandMovesTillNextTurn<T>(aiService: AiService<T>, moves: IMove<T>[], playerIndex: number) {
+  const nextTurn = 1 - playerIndex;
+  const okMove = (move: IMove<T>) => move.endMatchScores || move.turnIndex == nextTurn;
+
+  if (moves.every(okMove)) return moves;
+
+  const badMoves = moves.filter((m) => !okMove(m));
+  const okMoves = moves.filter(okMove);
+  while (badMoves.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const badMove = badMoves.pop()!;
+    const moves = aiService.getPossibleMoves(badMove.state, playerIndex);
+    moves.forEach((m) => (okMove(m) ? okMoves.push(m) : badMoves.push(m)));
+  }
+  return okMoves;
+}
+
 function getScoreForIndex0<T>(
   startingState: T,
   playerIndex: number,
-  getPossibleMoves: (state: T, playerIndex: number) => IMove<T>[],
-  getStateScoreForIndex0: (state: T, playerIndex: number) => number,
+  aiService: AiService<T>,
   alphaBetaLimits: IAlphaBetaLimits,
   startTime: number,
   depth: number,
@@ -210,27 +205,26 @@ function getScoreForIndex0<T>(
     return {bestScore: 0, bestState: null}; // This traversal is "ruined" anyway because we ran out of time.
   }
   if (depth === alphaBetaLimits.maxDepth) {
-    bestScore = getStateScoreForIndex0(startingState, playerIndex);
+    bestScore = aiService.getStateScoreForIndex0(startingState, playerIndex);
     assertLegalScore(bestScore);
     if (debugAlphaBetaService) {
       console.log('Max depth reached, score is ' + bestScore);
     }
     return {bestScore: bestScore, bestState: null};
   }
-  const moves = getPossibleMoves(startingState, playerIndex);
+  const moves = aiService.getPossibleMoves(startingState, playerIndex);
   if (debugAlphaBetaService) {
     console.log('startingState=', startingState, ' has ' + moves.length + ' next states');
   }
   if (moves.length === 0) {
-    bestScore = getStateScoreForIndex0(startingState, playerIndex);
+    bestScore = aiService.getStateScoreForIndex0(startingState, playerIndex);
     assertLegalScore(bestScore);
     if (debugAlphaBetaService) {
       console.log('Terminal state, score is ' + bestScore);
     }
     return {bestScore: bestScore, bestState: null};
   }
-  for (let i = 0; i < moves.length; i++) {
-    const move = moves[i];
+  for (const move of expandMovesTillNextTurn(aiService, moves, playerIndex)) {
     const endMatchScores = move.endMatchScores;
     let scoreForIndex0: number;
     if (endMatchScores) {
@@ -259,8 +253,7 @@ function getScoreForIndex0<T>(
       scoreForIndex0 = getScoreForIndex0(
         move.state,
         nextTurnIndex,
-        getPossibleMoves,
-        getStateScoreForIndex0,
+        aiService,
         alphaBetaLimits,
         startTime,
         depth + 1,

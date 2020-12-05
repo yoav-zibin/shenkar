@@ -1,28 +1,14 @@
-import {Riddle, RiddlesLevel} from '../common/common';
-import {Board, IState} from './gameLogic';
+import {RiddlesLevel} from '../common/common';
+import {Board, IState, RiddleData} from './gameLogic';
 
-// The riddle data in TicTacToe just includes the hint,
-// which is where to show the "line" hint: either on a row / col / diagonal.
-// E.g., "r1" is:
-// ['X', 'X', 'X'],
-// ['', '', ''],
-// ['', '', ''],
-// And "d1" is:
-// ['X', '', ''],
-// ['', 'X', ''],
-// ['', '', 'X'],
-export type RiddleData = 'r1' | 'r2' | 'r3' | 'c1' | 'c2' | 'c3' | 'd1' | 'd2';
-
-function r(riddleData: RiddleData, board: Board): Riddle<IState, RiddleData> {
+function r(riddleData: RiddleData, board: Board): IState {
   return {
-    state: {
-      board: board,
-    },
+    board: board,
     riddleData: riddleData,
   };
 }
 
-export const riddleLevels: RiddlesLevel<IState, RiddleData>[] = [
+export const riddleLevels: RiddlesLevel<IState>[] = [
   {
     levelLocalizeId: 'TICTACTOE_LEVEL1',
     difficulty: 'EASY',
@@ -166,7 +152,7 @@ export const riddleLevels: RiddlesLevel<IState, RiddleData>[] = [
   },
   {
     levelLocalizeId: 'TICTACTOE_LEVEL3',
-    maxMovesNum: 2,
+    maxMovesNum: 3,
     difficulty: 'MEDIUM',
     turnIndex: 0,
     riddles: [
@@ -214,7 +200,7 @@ export const riddleLevels: RiddlesLevel<IState, RiddleData>[] = [
   },
   {
     levelLocalizeId: 'TICTACTOE_LEVEL4',
-    maxMovesNum: 2,
+    maxMovesNum: 3,
     difficulty: 'HARD',
     turnIndex: 0,
     riddles: [
@@ -242,7 +228,7 @@ export const riddleLevels: RiddlesLevel<IState, RiddleData>[] = [
   },
   {
     levelLocalizeId: 'TICTACTOE_LEVEL5',
-    maxMovesNum: 3,
+    maxMovesNum: 5,
     difficulty: 'HARD',
     turnIndex: 0,
     riddles: [

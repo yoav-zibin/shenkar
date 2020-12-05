@@ -1,11 +1,11 @@
 import React from 'react';
-import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
+import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
 
 import {GameModule, GameProps} from '../../common/common';
 
-import {createMove, ROWS, COLS, IState, getInitialState} from '../gameLogic';
+import {createMove, IState, getInitialState, checkRiddleData} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
-import {RiddleData, riddleLevels} from '../riddles';
+import {riddleLevels} from '../riddles';
 
 const hintLineColor = 'green';
 
@@ -86,24 +86,35 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function getTicTacToeGameModule(): GameModule<IState, RiddleData> {
+export default function getTicTacToeGameModule(): GameModule<IState> {
   return {
     gameId: 'tictactoe',
     gameLocalizeId: 'TICTACTOE_GAME_NAME',
     initialState: getInitialState(),
     component: TicTacToeComponent,
     riddleLevels,
-    getPossibleMoves: getPossibleMoves,
-    getStateScoreForIndex0: getStateScoreForIndex0,
+    getPossibleMoves,
+    getStateScoreForIndex0,
+    checkRiddleData,
   };
 }
 
-const TicTacToeComponent: React.FunctionComponent<GameProps<IState, RiddleData>> = (
-  props: GameProps<IState, RiddleData>
-) => {
-  const {move, setMove, yourPlayerIndex, showHint, riddleData} = props;
+const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProps<IState>) => {
+  const {move, setMove, yourPlayerIndex, showHint} = props;
   const {turnIndex, state} = move;
-  console.log('Render TicTacToe props=', props);
+  const {riddleData, board, delta} = state;
+  console.log('Render TicTacToe delta=', delta);
+
+  const animValue = new Animated.Value(0);
+  React.useEffect(() => {
+    if (delta) {
+      Animated.timing(animValue, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [animValue]);
 
   function clickedOn(row: number, col: number) {
     if (turnIndex != yourPlayerIndex) {
@@ -117,18 +128,8 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState, RiddleData>>
     }
   }
 
-  const allCircles: number[] = [];
-  const allCrosses: number[] = [];
   const rows = [0, 1, 2];
   const cols = [0, 1, 2];
-  for (let i = 0; i < ROWS; i++) {
-    for (let j = 0; j < COLS; j++) {
-      const cell = state.board[i][j];
-      const id = ROWS * i + j;
-      if (cell == 'X') allCrosses.push(id);
-      if (cell == 'O') allCircles.push(id);
-    }
-  }
 
   let hintLine = null;
   if (showHint && riddleData) {
@@ -149,6 +150,22 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState, RiddleData>>
     hintLine = <View style={style} />;
   }
 
+  function getPiece(r: number, c: number) {
+    if (board[r][c] == '') return null;
+    return (
+      <Animated.View
+        style={{
+          // opacity: animValue,
+          transform: [{scale: delta && delta.row == r && delta.col == c ? animValue : 1}],
+        }}>
+        <Image
+          style={styles.pieceImage}
+          source={board[r][c] == 'X' ? require('../imgs/X.png') : require('../imgs/O.png')}
+        />
+      </Animated.View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.fixedRatio}>
@@ -158,14 +175,7 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState, RiddleData>>
               <View key={r} style={styles.boardCellsContainer}>
                 {cols.map((c) => (
                   <TouchableWithoutFeedback key={c} onPress={() => clickedOn(r, c)}>
-                    <View style={styles.boardCell}>
-                      {state.board[r][c] != '' ? (
-                        <Image
-                          style={styles.pieceImage}
-                          source={state.board[r][c] == 'X' ? require('../imgs/X.png') : require('../imgs/O.png')}
-                        />
-                      ) : null}
-                    </View>
+                    <View style={styles.boardCell}>{getPiece(r, c)}</View>
                   </TouchableWithoutFeedback>
                 ))}
               </View>

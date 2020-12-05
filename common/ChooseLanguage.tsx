@@ -2,7 +2,11 @@ import React from 'react';
 import {LANGUAGES} from './localize';
 import FlatListChooser from './FlatListChooser';
 
-export default function ChooseLanguage(props: {setLanguageId: (lang: string) => void}) {
+interface ChooseLanguageProps {
+  setLanguageId: (lang: string) => void;
+}
+
+export default function ChooseLanguage(props: ChooseLanguageProps) {
   const choices = Object.entries(LANGUAGES).map((i) => {
     return {id: i[0], text: i[1]};
   });

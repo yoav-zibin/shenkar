@@ -68,5 +68,14 @@ module.exports = {
     'max-len': ['error', {code: 120}],
     'valid-jsdoc': 'off',
     'require-jsdoc': 'off',
+    // I don't want to have any warnings (our CI catches only errors).
+    // To see the current config, and make sure we don't have any warnings,
+    // run:
+    // ./node_modules/eslint/bin/eslint.js --print-config tictactoe/components/Game.tsx
+    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-explicit-any': 'error',
+    '@typescript-eslint/no-non-null-assertion': 'error',
+    'jest/no-disabled-tests': 'error',
+    'jest/no-commented-out-tests': 'error',
   },
 };

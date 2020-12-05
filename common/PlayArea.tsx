@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {AnyGameModule, IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
 import {createComputerMove} from './alphaBetaService';
 import {Activity, computerLevelToAiMillis, useStoreContext} from './store';
@@ -7,6 +7,9 @@ import {localize, LocalizeId} from './localize';
 import {DEBUGGING_OPTIONS} from './debugging';
 
 const styles = StyleSheet.create({
+  bottomView: {
+    height: 100,
+  },
   text: {
     marginTop: 20,
     fontSize: 19,
@@ -30,7 +33,7 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
   console.log('Render PlayArea activityState=', activityState, ' activity=', activity);
 
   const {riddleActivity, playActivity} = activity;
-  const {yourPlayerIndex, initialMove, currentMove, currentMoveNum, maxMovesNum, showHint, riddleData} = activityState;
+  const {yourPlayerIndex, initialMove, currentMove, currentMoveNum, maxMovesNum, showHint} = activityState;
   const opponentPlayerIndex = 1 - yourPlayerIndex;
   const {turnIndex, endMatchScores, state} = currentMove;
   const isOverMaxMoves = maxMovesNum && currentMoveNum >= maxMovesNum;
@@ -145,7 +148,7 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
   }
 
   function setMove(chosenMove: IMove<unknown>) {
-    const isYourMove = yourPlayerIndex == currentMove.turnIndex;
+    const didTurnIndexChange = currentMove.turnIndex != chosenMove.turnIndex;
     const nextYourPlayerIndex =
       playActivity && playActivity.playType == 'PASS_AND_PLAY' ? 1 - yourPlayerIndex : yourPlayerIndex;
     dispatch({
@@ -153,10 +156,9 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
         yourPlayerIndex: nextYourPlayerIndex,
         initialMove,
         currentMove: chosenMove,
-        currentMoveNum: currentMoveNum + (isYourMove ? 1 : 0),
+        currentMoveNum: currentMoveNum + (didTurnIndexChange ? 1 : 0),
         maxMovesNum,
         showHint: false,
-        riddleData,
       },
     });
   }
@@ -167,17 +169,18 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
         move: currentMove,
         setMove: setHumanMove,
         yourPlayerIndex,
-        riddleData,
         showHint,
       })}
-      {gameOverLocalizeId && nextActionLocalizeId && (
-        <>
-          <Text style={styles.text}>{localize(gameOverLocalizeId, appState)}</Text>
-          <TouchableOpacity onPress={() => nextAction()}>
-            <Text style={styles.instructions}>{localize(nextActionLocalizeId, appState)}</Text>
-          </TouchableOpacity>
-        </>
-      )}
+      <View style={styles.bottomView}>
+        {gameOverLocalizeId && nextActionLocalizeId && (
+          <>
+            <Text style={styles.text}>{localize(gameOverLocalizeId, appState)}</Text>
+            <TouchableOpacity onPress={() => nextAction()}>
+              <Text style={styles.instructions}>{localize(nextActionLocalizeId, appState)}</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
     </>
   );
 }

@@ -1,5 +1,5 @@
 import {IMove, deepEquals, createInitialMove} from '../../common/common';
-import {Board, BoardDelta, IState, createMove, createNewBoard, getInitialState} from '../gameLogic';
+import {Board, IState, createNewBoard, getInitialState} from '../gameLogic';
 
 test('Create Board', function () {
   const board: Board = createNewBoard(9);

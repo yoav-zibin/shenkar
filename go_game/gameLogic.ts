@@ -215,7 +215,7 @@ export function createMove(
   deadBoard: boolean[][] | null,
   delta: BoardDelta,
   turnIndexBeforeMove: number,
-  previousPosJustCapturedForKo: BoardDelta
+  previousPosJustCapturedForKo: BoardDelta | null
 ): IMove<IState> {
   if (!passes) passes = 0;
 
