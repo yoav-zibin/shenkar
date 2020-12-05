@@ -35,17 +35,3 @@ export const aiService: AiService<IState> = {
   getPossibleMoves,
   getStateScoreForIndex0,
 };
-
-// function getStateScoreForIndex0(move: IMove<any>[], playerIndex: number): number {
-//      //return move[1].set.value.score[0] - move[1].set.value.score[1];
-//      if (move[0].endMatch) {
-//           let endMatchScores = move[0].endMatch.endMatchScores;
-//           return endMatchScores[0] > endMatchScores[1] ? Number.POSITIVE_INFINITY
-//                : endMatchScores[0] < endMatchScores[1] ? Number.NEGATIVE_INFINITY
-//                     : 0;
-//      } else if (move[1].set) {
-//           //console.log("%o", move[0]);
-//           return move[1].set.value.score[0] - move[1].set.value.score[1];
-//      }
-//      return 0;
-// }
