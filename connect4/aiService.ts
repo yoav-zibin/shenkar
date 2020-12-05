@@ -22,10 +22,6 @@ export function getPossibleMoves(state: IState, turnIndex: number): IMove<IState
       }
     }
   }
-  for (let i = 0; i < possibleMoves.length; i++) {
-    console.log(possibleMoves[i]);
-    console.log(possibleMoves[i].state.board);
-  }
   return possibleMoves;
 }
 

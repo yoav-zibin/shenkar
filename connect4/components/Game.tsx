@@ -106,10 +106,8 @@ const connect4Component: React.FunctionComponent<GameProps<IState, RiddleData>> 
 ) => {
   const {move, setMove, yourPlayerIndex, riddleData} = props;
   const {turnIndex, state} = move;
-  console.log('Render TicTacToe props=', props);
 
   function clickedOn(row: number, col: number) {
-    console.log(riddleLevels);
     if (turnIndex != yourPlayerIndex) {
       return;
     }
