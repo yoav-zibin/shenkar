@@ -76,5 +76,8 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'error',
     'jest/no-disabled-tests': 'error',
     'jest/no-commented-out-tests': 'error',
+    'new-cap': 'off',
+    'no-self-assign': 'off',
+    'react/jsx-no-undef': 'off',
   },
 };
