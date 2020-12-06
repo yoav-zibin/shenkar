@@ -3,7 +3,7 @@ import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackgr
 
 import {GameModule, GameProps} from '../../common/common';
 
-import {createMove, IState, getInitialState, checkRiddleData} from '../gameLogic';
+import {createMove, IState, getInitialState, checkRiddleData, ROWS} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {riddleLevels} from '../riddles';
 
@@ -136,8 +136,10 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
     let style: ViewStyle = {};
     if (riddleData.startsWith('r')) {
       style = {...styles.hintLineRow};
+      // riddleData is either "r1", "r2", r3.
+      // row is either 0, 1, 2
       const row = Number(riddleData.charAt(1)) - 1;
-      style.top = 100 / 6 + row * (100 / 3) + '%';
+      style.top = 100 / (ROWS * 2) + row * (100 / ROWS) + '%';
     } else if (riddleData.startsWith('c')) {
       style = {...styles.hintLineCol};
       const col = Number(riddleData.charAt(1)) - 1;
