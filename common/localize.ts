@@ -115,8 +115,21 @@ const LOCALIZE_ID_TO_NAME = {
   },
   GO_LEVEL1: {
     en: 'Black wins in 1 move',
-    he: 'שחוק מנצח במסע אחד',
+    he: 'שחור מנצח במסע אחד',
   },
+  GO_LEVEL2: {
+    en: 'Black wins in 1 move',
+    he: 'שחור מנצח במסע אחד',
+  },
+  GO_LEVEL3: {
+    en: 'Black wins in 1 move',
+    he: 'שחור מנצח במסע אחד',
+  },
+  GO_LEVEL4: {
+    en: 'Black wins in 1 move',
+    he: 'שחור מנצח במסע אחד',
+  },
+
   // GO! ends.
   // Connect4 starts.
   // Connect4 ends.

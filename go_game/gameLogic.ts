@@ -5,7 +5,7 @@ export interface BoardDelta {
   row: number;
   col: number;
 }
-export type RiddleData = 'r1' | 'r2' | 'r3' | 'r4';
+export type RiddleData = 'r1' | 'r2' | 'r3' | 'r4' | 'r5';
 export interface IState {
   board: Board;
   boardBeforeMove: Board;
@@ -24,27 +24,31 @@ export interface IState {
 type Points = number[][]; // A point (row,col) is represented as an array with 2 elements: [row,col].
 type Sets = {white: Points[]; black: Points[]};
 
-function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
-  switch (hint) {
-    case 'r1':
-      return row == 2;
-    case 'r2':
-      return row == 3;
-    case 'r3':
-      return row == 3;
-    case 'r4':
-      return row == 4;
-  }
-}
+// function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
+//   switch (hint) {
+//     case 'r1':
+//       return row == 2;
+//     case 'r2':
+//       return row == 3;
+//     case 'r3':
+//       return row == 3;
+//     case 'r4':
+//       return row == 4;
+//     case 'r5':
+//       return row == 6;
+//   }
+// }
 
-export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
-  const {riddleData} = state;
-  return !riddleData
-    ? false
-    : firstMoveSolutions.some(
-        (firstMove) =>
-          firstMove.state.delta && isPosOnHintLine(firstMove.state.delta.row, firstMove.state.delta.col, riddleData)
-      );
+export function checkRiddleData(): // state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]):
+boolean {
+  return true;
+  // const {riddleData} = state;
+  // return !riddleData
+  //   ? false
+  //   : firstMoveSolutions.some(
+  //       (firstMove) =>
+  //         firstMove.state.delta && isPosOnHintLine(firstMove.state.delta.row, firstMove.state.delta.col, riddleData)
+  //     );
 }
 
 // returns a new [empty] weiqi board
