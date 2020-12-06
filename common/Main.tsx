@@ -1,6 +1,6 @@
 import React from 'react';
 import ChooseGame from './ChooseGame';
-import ChooseLanguage from './ChooseLanguage';
+import ChooseLanguage from './Settings';
 import {useStoreContext} from './store';
 import {findGameModule} from './gameModules';
 import PlayArea from './PlayArea';
