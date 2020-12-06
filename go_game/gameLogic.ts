@@ -5,10 +5,11 @@ export interface BoardDelta {
   row: number;
   col: number;
 }
+export type RiddleData = 'r1' | 'r2' | 'r3' | 'r4';
 export interface IState {
   board: Board;
   boardBeforeMove: Board;
-  delta: BoardDelta; // [-1,-1] means a pass.
+  delta: BoardDelta | null; // [-1,-1] means a pass.
   passes: number;
   deadBoard: boolean[][] | null;
   // For the rule of KO:
@@ -16,9 +17,35 @@ export interface IState {
   // if that stone was played on the previous move,
   // and that move also captured just one stone.
   posJustCapturedForKo: BoardDelta | null;
+  riddleData?: RiddleData;
+  riddleWin?: number[];
+  riddleWon?: boolean;
 }
 type Points = number[][]; // A point (row,col) is represented as an array with 2 elements: [row,col].
 type Sets = {white: Points[]; black: Points[]};
+
+function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
+  switch (hint) {
+    case 'r1':
+      return row == 2;
+    case 'r2':
+      return row == 3;
+    case 'r3':
+      return row == 3;
+    case 'r4':
+      return row == 4;
+  }
+}
+
+export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
+  const {riddleData} = state;
+  return !riddleData
+    ? false
+    : firstMoveSolutions.some(
+        (firstMove) =>
+          firstMove.state.delta && isPosOnHintLine(firstMove.state.delta.row, firstMove.state.delta.col, riddleData)
+      );
+}
 
 // returns a new [empty] weiqi board
 // code adapted from: http://stackoverflow.com/questions/6495187/best-way-to-generate-empty-2d-array
@@ -215,7 +242,9 @@ export function createMove(
   deadBoard: boolean[][] | null,
   delta: BoardDelta,
   turnIndexBeforeMove: number,
-  previousPosJustCapturedForKo: BoardDelta | null
+  previousPosJustCapturedForKo: BoardDelta | null,
+  riddleWin?: number[],
+  riddleData?: RiddleData
 ): IMove<IState> {
   if (!passes) passes = 0;
 
@@ -266,6 +295,17 @@ export function createMove(
     endMatchScores = [-1, -1];
     turnIndexAfterMove = -1;
   }
+
+  let riddleWon = false;
+  if (riddleData) {
+    if (riddleWin)
+      if (riddleWin[0] == delta.row && riddleWin[1] == delta.col) {
+        riddleWon = true;
+        turnIndexAfterMove = -1;
+        endMatchScores = [1, 0];
+      }
+  }
+
   return {
     endMatchScores: endMatchScores,
     turnIndex: turnIndexAfterMove,
@@ -276,6 +316,7 @@ export function createMove(
       passes: passesAfterMove,
       posJustCapturedForKo: posJustCapturedForKo,
       deadBoard: deadBoard,
+      riddleWon: riddleWon,
     },
   };
 }
