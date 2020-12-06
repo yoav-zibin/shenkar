@@ -1,5 +1,4 @@
 import {IMove} from '../../common/common';
-import {aiService} from '../aiService';
 import * as gameLogic from '../gameLogic';
 import {cellColor} from '../gameLogic';
 
