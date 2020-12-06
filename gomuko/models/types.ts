@@ -18,10 +18,12 @@ export type RiddleState = {
   hint: string;
   maxMoves: number;
   solution: number[][];
-  solutionMove: Cell;
+  solutionMoves: Cell[];
   initialBoard: number[][];
   boardInstance: Board;
   playerColor: Player;
+  aiMoves: Cell[] | null;
+  maxTries: number;
 };
 
 export enum CellValue {

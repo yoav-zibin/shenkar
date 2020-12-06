@@ -140,11 +140,15 @@ export class Board {
 
   private CheckRiddleLogic(cell: Cell) {
     if (this.onRiddleCheckEnd && this.onGameFinishedCallback && this.riddle) {
-      if (cell === this.riddle?.solutionMove) {
-        this.onGameFinishedCallback(this.playerColor);
-        this.onRiddleCheckEnd(true, '', -1);
-      } else {
+      if (this.riddle?.solutionMoves[0] === cell) {
         this.riddle.maxMoves--;
+        if (this.riddle.maxMoves === 0) {
+          this.onGameFinishedCallback(this.playerColor);
+        }
+        this.riddle?.solutionMoves.splice(0, 1);
+        this.onRiddleCheckEnd(true, 'Good Hit', -1);
+      } else {
+        this.riddle.maxTries--;
         this.onRiddleCheckEnd(false, this.riddle.hint, this.riddle.maxMoves);
       }
     }
