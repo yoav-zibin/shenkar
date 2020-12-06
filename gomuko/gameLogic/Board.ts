@@ -1,48 +1,58 @@
 import {AI} from './AI';
-import {Cell, Player, CellValue, GameState, Opponent, Difficulty} from '../models/types';
+import {Cell, Player, CellValue, GameState, Opponent, Difficulty, RiddleState} from '../models/types';
 
 export class Board {
-  private readonly length: number;
-  private cells: number[][];
-  private finished: boolean;
-  private turn: Player;
-  private winner: Player;
-  private emptyCellsCount: number;
-  private winnerCells: any[]; // eslint-disable-line
-  private opponent: Opponent;
-  private difficulty: Difficulty;
-  private playerColor: Player;
-  private ai: AI | null;
-  private moveList: Cell[];
+  private readonly length: number = -1;
+  private cells: number[][] = [];
+  private finished = false;
+  private turn: Player = Player.NONE;
+  private winner: Player = Player.NONE;
+  private emptyCellsCount = -1;
+  private winnerCells: any[] = []; // eslint-disable-line
+  private opponent: Opponent = Opponent.HUMAN;
+  private difficulty: Difficulty = Difficulty.NOVICE;
+  private playerColor: Player = Player.NONE;
+  private ai: AI | null = null;
+  private moveList: Cell[] = [];
+  private riddle: RiddleState | null = null;
 
   // #region Events
   public onGameFinishedCallback: ((winner: Player) => void) | null = null;
   public onAIStartEndMove: ((thinking: boolean, cell: Cell | null) => void) | null = null;
+  public onRiddleCheckEnd: ((correct: boolean, hint: string) => void) | null = null;
   // #endregion
 
   public constructor(
     length: number,
+    riddle: RiddleState | null = null,
     opponent: Opponent = Opponent.HUMAN,
     difficulty = Difficulty.MEDIUM,
     color = Player.WHITE,
     turnStart = Player.WHITE
   ) {
-    this.length = length;
-    this.cells = [];
-    this.finished = false;
-    this.turn = turnStart;
-    this.winner = Player.NONE;
-    this.winnerCells = [];
-    this.emptyCellsCount = 0;
-    this.opponent = opponent;
-    this.difficulty = difficulty;
-    this.playerColor = color;
-    this.moveList = [];
-    this.ai = null;
+    if (riddle) {
+      this.riddle = riddle;
+      this.difficulty = difficulty;
+      this.InitRiddle(riddle);
+    } else {
+      this.riddle = null;
+      this.length = length;
+      this.cells = [];
+      this.finished = false;
+      this.turn = turnStart;
+      this.winner = Player.NONE;
+      this.winnerCells = [];
+      this.emptyCellsCount = 0;
+      this.opponent = opponent;
+      this.difficulty = difficulty;
+      this.playerColor = color;
+      this.moveList = [];
+      this.ai = null;
 
-    if (opponent === Opponent.AI) this.ai = new AI(this);
+      if (opponent === Opponent.AI) this.ai = new AI(this);
 
-    this.ResetBoard();
+      this.ResetBoard();
+    }
   }
 
   public Clone(): Board {
@@ -79,8 +89,26 @@ export class Board {
     }
   }
 
-  public Play(cell: Cell, aiTurn = false) {
+  public InitRiddle(riddle: RiddleState | null): void {
+    this.cells = [];
+    this.moveList = [];
+    this.winnerCells = [];
+    this.emptyCellsCount = this.length ^ 2;
+
+    for (let i = 0; i < this.length; i++) {
+      this.cells[i] = [];
+      for (let j = 0; j < this.length; j++) {
+        this.cells[i][j] = riddle ? riddle.initialBoard[i][j] : CellValue.EMPTY;
+      }
+    }
+  }
+
+  public Play(cell: Cell, aiTurn = false): void {
     const {row, column} = cell;
+
+    if (this.riddle) {
+      this.CheckRiddleLogic(cell);
+    }
 
     let color = this.turn;
     if (this.opponent === Opponent.AI)
@@ -91,7 +119,7 @@ export class Board {
     this.EndTurnLogic(cell, aiTurn);
   }
 
-  private EndTurnLogic(cell: Cell, aiTurn: boolean) {
+  private EndTurnLogic(cell: Cell, aiTurn: boolean): void {
     this.moveList.push(cell);
     this.emptyCellsCount--;
     this.CheckWinCondition(cell);
@@ -107,6 +135,13 @@ export class Board {
           if (this.onAIStartEndMove) this.onAIStartEndMove(false, move);
         }
       }, 1);
+    }
+  }
+
+  private CheckRiddleLogic(cell: Cell) {
+    if (this.onRiddleCheckEnd) {
+      if (cell === this.riddle?.solutionMove) this.onRiddleCheckEnd(true, '');
+      else this.onRiddleCheckEnd(false, this.riddle ? this.riddle.hint : '');
     }
   }
 

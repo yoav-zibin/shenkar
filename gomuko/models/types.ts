@@ -1,3 +1,5 @@
+import {Board} from '../gameLogic/Board';
+
 export type Cell = {
   row: number;
   column: number;
@@ -10,6 +12,15 @@ export type GameState = {
   winnerCells: Cell[];
   winner: Player;
   moveList: Cell[];
+};
+
+export type RiddleState = {
+  hint: string;
+  maxMoves: number;
+  solution: number[][];
+  solutionMove: Cell;
+  initialBoard: number[][];
+  boardInstance: Board;
 };
 
 export enum CellValue {
