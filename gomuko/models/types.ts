@@ -21,6 +21,7 @@ export type RiddleState = {
   solutionMove: Cell;
   initialBoard: number[][];
   boardInstance: Board;
+  playerColor: Player;
 };
 
 export enum CellValue {

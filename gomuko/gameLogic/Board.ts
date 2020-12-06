@@ -19,7 +19,7 @@ export class Board {
   // #region Events
   public onGameFinishedCallback: ((winner: Player) => void) | null = null;
   public onAIStartEndMove: ((thinking: boolean, cell: Cell | null) => void) | null = null;
-  public onRiddleCheckEnd: ((correct: boolean, hint: string) => void) | null = null;
+  public onRiddleCheckEnd: ((correct: boolean, hint: string, triesLeft: number) => void) | null = null;
   // #endregion
 
   public constructor(
@@ -30,9 +30,11 @@ export class Board {
     color = Player.WHITE,
     turnStart = Player.WHITE
   ) {
+    this.playerColor = this.playerColor;
+    this.difficulty = difficulty;
+
     if (riddle) {
       this.riddle = riddle;
-      this.difficulty = difficulty;
       this.InitRiddle(riddle);
     } else {
       this.riddle = null;
@@ -48,9 +50,7 @@ export class Board {
       this.playerColor = color;
       this.moveList = [];
       this.ai = null;
-
       if (opponent === Opponent.AI) this.ai = new AI(this);
-
       this.ResetBoard();
     }
   }
@@ -139,9 +139,20 @@ export class Board {
   }
 
   private CheckRiddleLogic(cell: Cell) {
-    if (this.onRiddleCheckEnd) {
-      if (cell === this.riddle?.solutionMove) this.onRiddleCheckEnd(true, '');
-      else this.onRiddleCheckEnd(false, this.riddle ? this.riddle.hint : '');
+    if (this.onRiddleCheckEnd && this.onGameFinishedCallback && this.riddle) {
+      if (cell === this.riddle?.solutionMove) {
+        this.onGameFinishedCallback(this.playerColor);
+        this.onRiddleCheckEnd(true, '', -1);
+      } else {
+        this.riddle.maxMoves--;
+        this.onRiddleCheckEnd(false, this.riddle.hint, this.riddle.maxMoves);
+      }
+    }
+
+    if (this.riddle?.maxMoves === 0) {
+      if (this.onGameFinishedCallback) {
+        this.onGameFinishedCallback(this.playerColor === Player.WHITE ? Player.BLACK : Player.WHITE);
+      }
     }
   }
 
