@@ -36,8 +36,8 @@ function getCorrespondingOpenBracket(str: string, closingBracketIndex: number): 
 }
 
 function duplicateStringByTimes(str: string, times: number): string {
-  let result: string = '';
-  for (let i: number = 0; i < times; i++) {
+  let result = '';
+  for (let i = 0; i < times; i++) {
     result += str;
   }
   return result;

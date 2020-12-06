@@ -1,21 +1,31 @@
-import {StatusBar} from 'expo-status-bar';
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {ThemeProvider} from 'react-native-elements';
+import LoadStateFromLocalStorage from './common/LoadStateFromLocalStorage';
+import {StateProvider} from './common/store';
+import {StyleSheet, View} from 'react-native';
+import Constants from 'expo-constants';
+
+const styles = StyleSheet.create({
+  statusBar: {
+    backgroundColor: '#C2185B',
+    height: Constants.statusBarHeight,
+  },
+  container: {
+    flex: 1,
+  },
+});
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={{flex: 1, backgroundColor: 'rgb(250,250,250)'}}>
+      <ThemeProvider>
+        <StateProvider>
+          <View style={styles.container}>
+            <View style={styles.statusBar} />
+            <LoadStateFromLocalStorage />
+          </View>
+        </StateProvider>
+      </ThemeProvider>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

@@ -19,6 +19,9 @@ And install all dependencies:
 Runs [expo](http://expo.io/) that allows you to run the app in various ways:
 `yarn start`
 
+To share the app run
+`expo publish`
+
 ## Unit test commands
 
 Runs all unit tests using [jest](https://jestjs.io/)

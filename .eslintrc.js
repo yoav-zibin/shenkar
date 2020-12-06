@@ -6,6 +6,7 @@ module.exports = {
     jest: true,
   },
   extends: [
+    'plugin:jest/recommended',
     // https://github.com/expo/expo/tree/master/packages/eslint-config-universe
     // Choose from universe/native, universe/node, universe/web
     // 'universe/native',
@@ -13,9 +14,11 @@ module.exports = {
     'eslint:recommended',
     'plugin:react/recommended',
     'google',
+    'plugin:@typescript-eslint/recommended',
     // Must be last so it gets the chance to override other configs.
     // see https://github.com/prettier/eslint-config-prettier
     'prettier',
+    'prettier/@typescript-eslint',
   ],
   // See https://github.com/yannickcr/eslint-plugin-react#configuration
   settings: {
@@ -51,12 +54,27 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ['jest', 'react', '@typescript-eslint'],
   rules: {
+    // We have unit tests that call helper methods that call expect,
+    // so this rule flags such unit tests as violations.
+    'jest/expect-expect': 'off',
+    // I don't like adding return types to only public functions.
+    // (We don't write a library, so it's not critical for us to have explicit return types)
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
     'react/jsx-uses-react': 'error',
     'react/jsx-uses-vars': 'error',
     'max-len': ['error', {code: 120}],
     'valid-jsdoc': 'off',
     'require-jsdoc': 'off',
+    // I don't want to have any warnings (our CI catches only errors).
+    // To see the current config, and make sure we don't have any warnings,
+    // run:
+    // ./node_modules/eslint/bin/eslint.js --print-config tictactoe/components/Game.tsx
+    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-explicit-any': 'error',
+    '@typescript-eslint/no-non-null-assertion': 'error',
+    'jest/no-disabled-tests': 'error',
+    'jest/no-commented-out-tests': 'error',
   },
 };
