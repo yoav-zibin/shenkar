@@ -14,7 +14,25 @@ export const LANGUAGES: LangToName = {
 };
 
 const LOCALIZE_ID_TO_NAME = {
-  PASS_AND_PLAY_I18N: {
+  // LeftMenu
+  SETTINGS_SCREEN: {
+    en: 'Settings',
+    he: 'הגדרות',
+  },
+  CHOOSE_GAME_SCREEN: {
+    en: 'Change game',
+    he: 'החלף משחק',
+  },
+  CHOOSE_ACTIVITY_SCREEN: {
+    en: 'Change activity',
+    he: 'החלף פעילות',
+  },
+  PLAY_AREA_SCREEN: {
+    en: 'Change activity',
+    he: 'החלף פעילות',
+  },
+
+  PASS_AND_PLAY: {
     en: 'Play against another human',
     he: 'שחק נגד אדם אחר',
   },
@@ -131,5 +149,5 @@ export type LocalizeId = keyof typeof LOCALIZE_ID_TO_NAME;
 export function localize(id: LocalizeId, appState: AppState): string {
   const languageId = appState.languageId;
   const langToStr = LOCALIZE_ID_TO_NAME[id];
-  return langToStr[languageId];
+  return langToStr[languageId ? languageId : 'en'];
 }

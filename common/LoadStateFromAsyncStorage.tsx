@@ -1,15 +1,15 @@
 import React, {useEffect} from 'react';
 import {readAppState, useStoreContext} from './store';
-import Main from './Main';
+import {Main} from './Main';
 
-export default function LoadStateFromLocalStorage() {
+export function LoadStateFromAsyncStorage() {
   const {appState, dispatch} = useStoreContext();
   useEffect(() => {
     readAppState().then((appState) => {
       if (appState) {
-        dispatch({setStateFromLocalStorage: appState});
+        dispatch({setStateFromAsyncStorage: appState});
       } else {
-        dispatch({setNoStateInLocalStorage: true});
+        dispatch({setNoStateInAsyncStorage: true});
       }
     });
   }, []);

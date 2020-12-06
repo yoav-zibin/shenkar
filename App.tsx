@@ -1,6 +1,7 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 import {ThemeProvider} from 'react-native-elements';
-import LoadStateFromLocalStorage from './common/LoadStateFromLocalStorage';
+import {LoadStateFromAsyncStorage} from './common/LoadStateFromAsyncStorage';
 import {StateProvider} from './common/store';
 import {StyleSheet, View} from 'react-native';
 import Constants from 'expo-constants';
@@ -21,7 +22,7 @@ export default function App() {
         <StateProvider>
           <View style={styles.container}>
             <View style={styles.statusBar} />
-            <LoadStateFromLocalStorage />
+            <LoadStateFromAsyncStorage />
           </View>
         </StateProvider>
       </ThemeProvider>

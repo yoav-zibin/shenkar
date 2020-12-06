@@ -1,10 +1,12 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {AnyGameModule, IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
+import {IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
 import {createComputerMove} from './alphaBetaService';
-import {Activity, useStoreContext} from './store';
+import {useStoreContext} from './store';
 import {localize, LocalizeId} from './localize';
 import {DEBUGGING_OPTIONS} from './debugging';
+import {TopBar} from './TopBar';
+import {findGameModule} from './gameModules';
 
 const styles = StyleSheet.create({
   bottomView: {
@@ -24,12 +26,20 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function PlayArea(props: {gameModule: AnyGameModule; activity: Activity}) {
-  const {gameModule, activity} = props;
-
+export function PlayAreaScreen() {
   const {appState, dispatch} = useStoreContext();
-  const {activityState} = appState;
-  if (!activityState) throw new Error('no activityState');
+  const {activityState, selectedGameId, activity} = appState;
+  const gameModuleMaybeNull = findGameModule(selectedGameId);
+  if (!gameModuleMaybeNull) {
+    throw new Error('no selectedGameId in PlayAreaScreen');
+  }
+  const gameModule = gameModuleMaybeNull;
+  if (!activity) {
+    throw new Error('no activity in PlayAreaScreen');
+  }
+  if (!activityState) {
+    throw new Error('no activityState in PlayAreaScreen');
+  }
   console.log('Render PlayArea activityState=', activityState, ' activity=', activity);
 
   const {riddleActivity, playActivity} = activity;
@@ -158,6 +168,7 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
 
   return (
     <>
+      <TopBar />
       {gameModule.component({
         move: currentMove,
         setMove: setHumanMove,

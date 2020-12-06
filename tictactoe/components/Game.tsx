@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function getTicTacToeGameModule(): GameModule<IState> {
+export function getTicTacToeGameModule(): GameModule<IState> {
   return {
     gameId: 'tictactoe',
     gameLocalizeId: 'TICTACTOE_GAME_NAME',

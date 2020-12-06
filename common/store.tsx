@@ -24,8 +24,8 @@ export interface AppStateAction {
   setActivity?: Activity;
   clearActivity?: true;
   setActivityState?: ActivityState;
-  setStateFromLocalStorage?: AppState;
-  setNoStateInLocalStorage?: true;
+  setStateFromAsyncStorage?: AppState;
+  setNoStateInAsyncStorage?: true;
 }
 export interface Activity {
   riddleActivity?: RiddleActivity;
@@ -65,6 +65,10 @@ const initialContext: AppContext = {
 };
 export const store = createContext(initialContext);
 const {Provider} = store;
+
+export function hasTopBar(appState: AppState) {
+  return appState.languageId && appState.selectedGameId ? true : false;
+}
 
 function addDebugOptionsToState(appState: AppState) {
   const nextGameId = DEBUGGING_OPTIONS.SKIP_CHOOSE_GAME_AND_JUMP_TO;
@@ -162,8 +166,8 @@ function ourReducer(appState: AppState, action: AppStateAction) {
     setActivity,
     clearActivity,
     setActivityState,
-    setStateFromLocalStorage,
-    setNoStateInLocalStorage,
+    setStateFromAsyncStorage,
+    setNoStateInAsyncStorage,
   } = action;
   if (setLanguageId) {
     return {...appState, languageId: setLanguageId};
@@ -182,10 +186,10 @@ function ourReducer(appState: AppState, action: AppStateAction) {
   if (setActivityState) {
     return {...appState, activityState: setActivityState};
   }
-  if (setStateFromLocalStorage) {
-    return {...addDebugOptionsToState(setStateFromLocalStorage), isInitialState: false};
+  if (setStateFromAsyncStorage) {
+    return {...addDebugOptionsToState(setStateFromAsyncStorage), isInitialState: false};
   }
-  if (setNoStateInLocalStorage) {
+  if (setNoStateInAsyncStorage) {
     return {...appState, isInitialState: false};
   }
   throw new Error('Illegal action=' + JSON.stringify(action));

@@ -1,13 +1,18 @@
-import FlatListChooser, {Choice} from './FlatListChooser';
+import {Choice, FlatListChooser} from './FlatListChooser';
 import React from 'react';
-import {AnyGameModule} from './common';
 import {PlayActivity, RiddleActivity, useStoreContext} from './store';
 import {localize, LocalizeId} from './localize';
+import {TopBar} from './TopBar';
+import {findGameModule} from './gameModules';
 
-export default function ChooseActivity(props: {gameModule: AnyGameModule}) {
+export function ChooseActivityScreen() {
   const {appState, dispatch} = useStoreContext();
+  const gameModule = findGameModule(appState.selectedGameId);
+  if (!gameModule) {
+    throw new Error('Internal error: missing selectedGameId in ChooseActivityScreen');
+  }
   // We either choose a riddle or play activity.
-  const riddleLevels = props.gameModule.riddleLevels;
+  const riddleLevels = gameModule.riddleLevels;
   const riddleChoices: Choice<RiddleActivity>[] = [];
   for (let levelIndex = 0; levelIndex < riddleLevels.length; levelIndex++) {
     const level = riddleLevels[levelIndex];
@@ -37,10 +42,11 @@ export default function ChooseActivity(props: {gameModule: AnyGameModule}) {
 
   const playChoices: Choice<PlayActivity>[] = [];
   playChoices.push(getPlayChoice('AGAINST_COMPUTER', {playType: 'AGAINST_COMPUTER'}));
-  playChoices.push(getPlayChoice('PASS_AND_PLAY_I18N', {playType: 'PASS_AND_PLAY'}));
+  playChoices.push(getPlayChoice('PASS_AND_PLAY', {playType: 'PASS_AND_PLAY'}));
 
   return (
     <>
+      <TopBar />
       <FlatListChooser
         choices={riddleChoices}
         setChoice={(choice) => {
