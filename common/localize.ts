@@ -97,6 +97,27 @@ const LOCALIZE_ID_TO_NAME = {
   // Reversi starts.
   // Reversi ends.
   // GO! starts.
+  GO_GAME_NAME: {
+    en: 'GO!',
+    he: 'גו!',
+  },
+  GO_LEVEL1: {
+    en: 'Black wins in 1 move',
+    he: 'שחור מנצח במסע אחד',
+  },
+  GO_LEVEL2: {
+    en: 'Black wins in 1 move',
+    he: 'שחור מנצח במסע אחד',
+  },
+  GO_LEVEL3: {
+    en: 'Black wins in 1 move',
+    he: 'שחור מנצח במסע אחד',
+  },
+  GO_LEVEL4: {
+    en: 'Black wins in 1 move',
+    he: 'שחור מנצח במסע אחד',
+  },
+
   // GO! ends.
   // Connect4 starts.
   // Connect4 ends.
