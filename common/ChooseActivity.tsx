@@ -36,13 +36,8 @@ export default function ChooseActivity(props: {gameModule: AnyGameModule}) {
   }
 
   const playChoices: Choice<PlayActivity>[] = [];
-  playChoices.push(getPlayChoice('AGAINST_COMPUTER_EASY_I18N', {playType: 'AGAINST_COMPUTER', computerLevel: 'EASY'}));
-  playChoices.push(
-    getPlayChoice('AGAINST_COMPUTER_MEDIUM_I18N', {playType: 'AGAINST_COMPUTER', computerLevel: 'MEDIUM'})
-  );
-  playChoices.push(getPlayChoice('AGAINST_COMPUTER_HARD_I18N', {playType: 'AGAINST_COMPUTER', computerLevel: 'HARD'}));
+  playChoices.push(getPlayChoice('AGAINST_COMPUTER', {playType: 'AGAINST_COMPUTER'}));
   playChoices.push(getPlayChoice('PASS_AND_PLAY_I18N', {playType: 'PASS_AND_PLAY'}));
-  playChoices.push(getPlayChoice('MULTIPLAYER_I18N', {playType: 'MULTIPLAYER'}));
 
   return (
     <>

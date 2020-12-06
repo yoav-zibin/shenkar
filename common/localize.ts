@@ -15,24 +15,12 @@ export const LANGUAGES: LangToName = {
 
 const LOCALIZE_ID_TO_NAME = {
   PASS_AND_PLAY_I18N: {
-    en: 'Play with a friend seating next to you',
-    he: 'שחק 2 אנשים עם אותו טלפון',
-  },
-  MULTIPLAYER_I18N: {
-    en: 'Play against a random human',
+    en: 'Play against another human',
     he: 'שחק נגד אדם אחר',
   },
-  AGAINST_COMPUTER_EASY_I18N: {
-    en: 'Easy play against the computer',
-    he: 'משחק קל נגד המחשב',
-  },
-  AGAINST_COMPUTER_MEDIUM_I18N: {
-    en: 'Medium play against the computer',
-    he: 'משחק ברמת קושי בינונית נגד המחשב',
-  },
-  AGAINST_COMPUTER_HARD_I18N: {
-    en: 'Hard play against the computer',
-    he: 'משחק קשה נגד המחשב',
+  AGAINST_COMPUTER: {
+    en: 'Play against the computer',
+    he: 'שחק נגד המחשב',
   },
   // For AGAINST_COMPUTER
   YOU_WON: {

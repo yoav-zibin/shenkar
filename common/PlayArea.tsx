@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {AnyGameModule, IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
 import {createComputerMove} from './alphaBetaService';
-import {Activity, computerLevelToAiMillis, useStoreContext} from './store';
+import {Activity, useStoreContext} from './store';
 import {localize, LocalizeId} from './localize';
 import {DEBUGGING_OPTIONS} from './debugging';
 
@@ -44,22 +44,14 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
   useEffectToSetAndClearTimeout(() => {
     // Does the AI need to make a move?
     if (!isActivityOver && turnIndex != yourPlayerIndex) {
-      if (playActivity && playActivity.playType == 'MULTIPLAYER') {
-        // no AI in multiplayer
-      } else {
-        // do AI move after 1 second (to finish any ongoing animations)
-        // Give the AI 1 second to find the best move.
-        let millisecondsLimit = 1000; // for riddles
-        if (playActivity && playActivity.computerLevel) {
-          millisecondsLimit = computerLevelToAiMillis(playActivity.computerLevel);
-        }
-        console.log('millisecondsLimit=' + millisecondsLimit + ' playActivity=' + playActivity);
-        return setTimeout(() => {
-          console.log('Searching AI move...');
-          setMove(createComputerMove(state, turnIndex, {millisecondsLimit}, gameModule));
-          console.log('Found AI move.');
-        }, 1000);
-      }
+      // do AI move after 1 second (to finish any ongoing animations)
+      // Give the AI 1 second to find the best move.
+      const millisecondsLimit = 1000;
+      return setTimeout(() => {
+        console.log('Searching AI move...');
+        setMove(createComputerMove(state, turnIndex, {millisecondsLimit}, gameModule));
+        console.log('Found AI move.');
+      }, 1000);
     }
     return null;
   });
@@ -136,7 +128,7 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
         dispatch({clearActivity: true});
       }
     } else if (nextActionLocalizeId == 'PLAY_AGAIN') {
-      // TODO: if not PASS_AND_PLAY (against computer / multiplayer),
+      // TODO: if AGAINST_COMPUTER,
       // then we should switch colors (change yourPlayerIndex) by calling setActivityState.
       dispatch({setActivity: activity});
     }
