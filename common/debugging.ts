@@ -8,11 +8,13 @@ export const DEBUGGING_OPTIONS = {
   SKIP_CHOOSE_GAME_AND_JUMP_TO: '',
 
   // To skip the <ChooseGame> component, set it to an activity,
-  // e.g., {playActivity: {playType: 'PASS_AND_PLAY'}}
+  // e.g., {activityType: 'PASS_AND_PLAY'}
   SKIP_CHOOSE_ACTIVITY_AND_JUMP_TO: undefined,
 
   // To make it easy to debug the hints, set to true and then
   // we show the hint after 1 second
   // (instead of waiting for 10-30 seconds)
   SHOW_HINT_AFTER_ONE_SECOND: true,
+
+  IGNORE_ASYNC_STORAGE: true,
 };

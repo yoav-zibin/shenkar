@@ -1,12 +1,13 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
+import {commonStyles, IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
 import {createComputerMove} from './alphaBetaService';
-import {useStoreContext} from './store';
+import {navigateNextFrame, useStoreContext} from './store';
 import {localize, LocalizeId} from './localize';
 import {DEBUGGING_OPTIONS} from './debugging';
-import {TopBar} from './TopBar';
+import {TitleBar} from './TitleBar';
 import {findGameModule} from './gameModules';
+import {useNavigation} from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   bottomView: {
@@ -27,22 +28,19 @@ const styles = StyleSheet.create({
 });
 
 export function PlayAreaScreen() {
+  const navigation = useNavigation();
   const {appState, dispatch} = useStoreContext();
   const {activityState, selectedGameId, activity} = appState;
-  const gameModuleMaybeNull = findGameModule(selectedGameId);
-  if (!gameModuleMaybeNull) {
-    throw new Error('no selectedGameId in PlayAreaScreen');
-  }
-  const gameModule = gameModuleMaybeNull;
+  const gameModule = findGameModule(selectedGameId);
   if (!activity) {
     throw new Error('no activity in PlayAreaScreen');
   }
   if (!activityState) {
     throw new Error('no activityState in PlayAreaScreen');
   }
-  console.log('Render PlayArea activityState=', activityState, ' activity=', activity);
+  console.log('Render PlayArea activity=', activity);
 
-  const {riddleActivity, playActivity} = activity;
+  const {riddleActivity, activityType} = activity;
   const {yourPlayerIndex, initialMove, currentMove, currentMoveNum, maxMovesNum, showHint} = activityState;
   const opponentPlayerIndex = 1 - yourPlayerIndex;
   const {turnIndex, endMatchScores, state} = currentMove;
@@ -95,12 +93,11 @@ export function PlayAreaScreen() {
       const youWon = endMatchScores[yourPlayerIndex] > endMatchScores[opponentPlayerIndex];
       if (riddleActivity) {
         gameOverLocalizeId = youWon ? 'RIDDLE_SOLVED' : 'RIDDLE_FAILED';
-      }
-      if (playActivity) {
+      } else {
         if (endMatchScores[0] == endMatchScores[1]) {
           gameOverLocalizeId = 'NOBODY_WON';
         } else {
-          if (playActivity.playType == 'PASS_AND_PLAY') {
+          if (activityType == 'PASS_AND_PLAY') {
             gameOverLocalizeId = endMatchScores[0] > endMatchScores[1] ? 'FIRST_PLAYER_WON' : 'SECOND_PLAYER_WON';
           } else {
             gameOverLocalizeId = youWon ? 'YOU_WON' : 'YOU_LOST';
@@ -137,6 +134,7 @@ export function PlayAreaScreen() {
         // TODO: we should show something fun!
         // Clearing activity (to let the user choose what next).
         dispatch({clearActivity: true});
+        navigateNextFrame('ChooseActivity', navigation);
       }
     } else if (nextActionLocalizeId == 'PLAY_AGAIN') {
       // TODO: if AGAINST_COMPUTER,
@@ -152,8 +150,7 @@ export function PlayAreaScreen() {
 
   function setMove(chosenMove: IMove<unknown>) {
     const didTurnIndexChange = currentMove.turnIndex != chosenMove.turnIndex;
-    const nextYourPlayerIndex =
-      playActivity && playActivity.playType == 'PASS_AND_PLAY' ? 1 - yourPlayerIndex : yourPlayerIndex;
+    const nextYourPlayerIndex = activityType == 'PASS_AND_PLAY' ? 1 - yourPlayerIndex : yourPlayerIndex;
     dispatch({
       setActivityState: {
         yourPlayerIndex: nextYourPlayerIndex,
@@ -167,8 +164,8 @@ export function PlayAreaScreen() {
   }
 
   return (
-    <>
-      <TopBar />
+    <View style={commonStyles.screen}>
+      <TitleBar />
       {gameModule.component({
         move: currentMove,
         setMove: setHumanMove,
@@ -185,6 +182,6 @@ export function PlayAreaScreen() {
           </>
         )}
       </View>
-    </>
+    </View>
   );
 }

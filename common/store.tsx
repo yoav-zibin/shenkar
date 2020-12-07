@@ -2,8 +2,9 @@ import React, {useContext, createContext, ReactNode, useReducer} from 'react';
 import {createInitialMove, deepClone, deepEquals, IMove} from './common';
 import {DEBUGGING_OPTIONS} from './debugging';
 import {findGameModule} from './gameModules';
-import {LanguageId} from './localize';
+import {LanguageId, localize} from './localize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {NavigationProp} from '@react-navigation/native';
 
 // see https://blog.logrocket.com/use-hooks-and-context-not-react-and-redux/
 
@@ -27,9 +28,12 @@ export interface AppStateAction {
   setStateFromAsyncStorage?: AppState;
   setNoStateInAsyncStorage?: true;
 }
+export const ACTIVITY_TYPES = ['PASS_AND_PLAY', 'AGAINST_COMPUTER'];
+
+export type ActivityType = typeof ACTIVITY_TYPES[number];
 export interface Activity {
+  activityType?: ActivityType;
   riddleActivity?: RiddleActivity;
-  playActivity?: PlayActivity;
 }
 export interface ActivityState {
   yourPlayerIndex: number;
@@ -43,12 +47,6 @@ export interface ActivityState {
 export interface RiddleActivity {
   levelIndex: number;
   riddleIndex: number;
-}
-export const PLAY_TYPES = ['PASS_AND_PLAY', 'AGAINST_COMPUTER'];
-
-export type PlayType = typeof PLAY_TYPES[number];
-export interface PlayActivity {
-  playType: PlayType;
 }
 
 const initialAppState: AppState = {
@@ -65,10 +63,6 @@ const initialContext: AppContext = {
 };
 export const store = createContext(initialContext);
 const {Provider} = store;
-
-export function hasTopBar(appState: AppState) {
-  return appState.languageId && appState.selectedGameId ? true : false;
-}
 
 function addDebugOptionsToState(appState: AppState) {
   const nextGameId = DEBUGGING_OPTIONS.SKIP_CHOOSE_GAME_AND_JUMP_TO;
@@ -91,33 +85,9 @@ function addDebugOptionsToState(appState: AppState) {
 }
 
 function getInitialActivityState(appState: AppState, activity: Activity): ActivityState {
-  const {riddleActivity, playActivity} = activity;
+  const {riddleActivity, activityType} = activity;
   const gameModule = findGameModule(appState.selectedGameId);
-  if (!gameModule) throw new Error('Missing selectedGameId');
 
-  if (playActivity) {
-    const initialMove = createInitialMove(gameModule.initialState);
-    switch (playActivity.playType) {
-      case 'PASS_AND_PLAY':
-        return {
-          yourPlayerIndex: 0,
-          initialMove: initialMove,
-          currentMove: initialMove,
-          currentMoveNum: 0,
-          maxMovesNum: 0, // no limit
-          showHint: false,
-        };
-      case 'AGAINST_COMPUTER':
-        return {
-          yourPlayerIndex: 0,
-          initialMove: initialMove,
-          currentMove: initialMove,
-          currentMoveNum: 0,
-          maxMovesNum: 0, // no limit
-          showHint: false,
-        };
-    }
-  }
   if (riddleActivity) {
     const level = gameModule.riddleLevels[riddleActivity.levelIndex];
     const riddle = level.riddles[riddleActivity.riddleIndex];
@@ -130,8 +100,28 @@ function getInitialActivityState(appState: AppState, activity: Activity): Activi
       maxMovesNum: level.maxMovesNum,
       showHint: false,
     };
+  } else {
+    const initialMove = createInitialMove(gameModule.initialState);
+    if (activityType == 'PASS_AND_PLAY') {
+      return {
+        yourPlayerIndex: 0,
+        initialMove: initialMove,
+        currentMove: initialMove,
+        currentMoveNum: 0,
+        maxMovesNum: 0, // no limit
+        showHint: false,
+      };
+    } else {
+      return {
+        yourPlayerIndex: 0,
+        initialMove: initialMove,
+        currentMove: initialMove,
+        currentMoveNum: 0,
+        maxMovesNum: 0, // no limit
+        showHint: false,
+      };
+    }
   }
-  throw new Error('Set either play/riddle activity');
 }
 
 const STORAGE_KEY = 'APP_STATE';
@@ -156,6 +146,7 @@ function reducerAndStoreState(appState: AppState, action: AppStateAction) {
   } catch (e) {
     console.error('Error saving local state', e);
   }
+  console.log('Performing action:', action, ' and state changed to: ', nextState);
   return nextState;
 }
 
@@ -202,4 +193,39 @@ export const StateProvider = (props: {children: ReactNode}) => {
 
 export function useStoreContext() {
   return useContext(store);
+}
+
+export type RootStackParamList = {
+  Settings: undefined;
+  ChooseGame: undefined;
+  ChooseActivity: undefined;
+  PlayArea: undefined;
+};
+export type RouteName = keyof RootStackParamList; // "Settings" | "ChooseGame" | "ChooseActivity" | "PlayArea"
+
+export function getScreenTitle(routeName: RouteName, appState: AppState) {
+  switch (routeName) {
+    case 'Settings':
+      return localize('SETTINGS_SCREEN', appState);
+    case 'ChooseGame':
+      return localize('CHOOSE_GAME_SCREEN', appState);
+    case 'ChooseActivity':
+      return localize('CHOOSE_ACTIVITY_SCREEN', appState);
+  }
+  // PlayArea screen.
+  const {selectedGameId, activity} = appState;
+  if (!activity) throw new Error('no activity');
+  const {activityType, riddleActivity} = activity;
+  const currentGameModule = findGameModule(selectedGameId);
+  if (riddleActivity) {
+    return localize(currentGameModule.riddleLevels[riddleActivity.levelIndex].levelLocalizeId, appState);
+  }
+  return localize(activityType == 'PASS_AND_PLAY' ? 'PASS_AND_PLAY' : 'AGAINST_COMPUTER', appState);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function navigateNextFrame(routeName: RouteName, navigation: NavigationProp<any>) {
+  requestAnimationFrame(() => {
+    navigation.navigate(routeName);
+  });
 }

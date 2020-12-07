@@ -12,14 +12,14 @@
     "ios": "npx expo start --ios",
     "web": "npx expo start --web",
     "eject": "npx expo eject",
-    "fixAll": "yarn prettier && yarn eslint",
     "prettier": "node_modules/.bin/prettier --write .",
     "eslint": "node_modules/.bin/eslint --fix .",
-    "checkAll": "yarn checkPrettier && yarn checkEslint && yarn testFinal",
     "checkPrettier": "node_modules/.bin/prettier --check .",
     "checkEslint": "node_modules/.bin/eslint .",
+    "checkAll": "yarn checkPrettier && yarn checkEslint && yarn testFinal",
     "npmCheckAll": "npm run checkPrettier && npm run checkEslint && npm run testFinal",
-    "npmFixAll": "npm run prettier && npm run eslint"
+    "fixAll": "yarn prettier && yarn eslint && yarn checkAll",
+    "npmFixAll": "npm run prettier && npm run eslint && npm run npmCheckAll"
   },
   "husky": {
     "hooks": {

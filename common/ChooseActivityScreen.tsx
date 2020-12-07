@@ -1,38 +1,30 @@
 import {Choice, FlatListChooser} from './FlatListChooser';
 import React from 'react';
-import {PlayActivity, RiddleActivity, useStoreContext} from './store';
+import {Activity, navigateNextFrame, useStoreContext} from './store';
 import {localize, LocalizeId} from './localize';
-import {TopBar} from './TopBar';
+import {TitleBar} from './TitleBar';
 import {findGameModule} from './gameModules';
+import {useNavigation} from '@react-navigation/native';
+import {commonStyles} from './common';
+import {View} from 'react-native';
 
 export function ChooseActivityScreen() {
   const {appState, dispatch} = useStoreContext();
+  const navigation = useNavigation();
   const gameModule = findGameModule(appState.selectedGameId);
-  if (!gameModule) {
-    throw new Error('Internal error: missing selectedGameId in ChooseActivityScreen');
-  }
   // We either choose a riddle or play activity.
   const riddleLevels = gameModule.riddleLevels;
-  const riddleChoices: Choice<RiddleActivity>[] = [];
+  const choices: Choice<Activity>[] = [];
   for (let levelIndex = 0; levelIndex < riddleLevels.length; levelIndex++) {
     const level = riddleLevels[levelIndex];
-    riddleChoices.push({
-      id: 'levelIndex=' + levelIndex,
-      text: localize(level.levelLocalizeId, appState),
-      data: {levelIndex, riddleIndex: 0},
-    });
-    // In case we want to allow jumping to specific riddle in a level (with better UI):
-    // const riddles = level.riddles;
-    // for (let riddleIndex=0; riddleIndex < riddles.length; riddleIndex++) {
-    //   riddleChoices.push({
-    //     id: levelIndex + "," + riddleIndex,
-    //     text: localize(level.levelLocalizeId, appState) + " " + (riddleIndex + 1) + " / " + (riddles.length),
-    //     data: {levelIndex, riddleIndex}
-    //   });
-    // }
+    choices.push(
+      getActivityChoice(level.levelLocalizeId, {
+        riddleActivity: {levelIndex, riddleIndex: 0},
+      })
+    );
   }
 
-  function getPlayChoice(localizeId: LocalizeId, activity: PlayActivity): Choice<PlayActivity> {
+  function getActivityChoice(localizeId: LocalizeId, activity: Activity): Choice<Activity> {
     return {
       id: localizeId,
       text: localize(localizeId, appState),
@@ -40,25 +32,19 @@ export function ChooseActivityScreen() {
     };
   }
 
-  const playChoices: Choice<PlayActivity>[] = [];
-  playChoices.push(getPlayChoice('AGAINST_COMPUTER', {playType: 'AGAINST_COMPUTER'}));
-  playChoices.push(getPlayChoice('PASS_AND_PLAY', {playType: 'PASS_AND_PLAY'}));
+  choices.push(getActivityChoice('AGAINST_COMPUTER', {activityType: 'AGAINST_COMPUTER'}));
+  choices.push(getActivityChoice('PASS_AND_PLAY', {activityType: 'PASS_AND_PLAY'}));
 
   return (
-    <>
-      <TopBar />
+    <View style={commonStyles.screen}>
+      <TitleBar />
       <FlatListChooser
-        choices={riddleChoices}
+        choices={choices}
         setChoice={(choice) => {
-          dispatch({setActivity: {riddleActivity: choice.data}});
+          dispatch({setActivity: choice.data});
+          navigateNextFrame('PlayArea', navigation);
         }}
       />
-      <FlatListChooser
-        choices={playChoices}
-        setChoice={(choice) => {
-          dispatch({setActivity: {playActivity: choice.data}});
-        }}
-      />
-    </>
+    </View>
   );
 }
