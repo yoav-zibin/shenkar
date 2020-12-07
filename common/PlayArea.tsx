@@ -46,6 +46,7 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
     if (!isActivityOver && turnIndex != yourPlayerIndex) {
       // do AI move after 1 second (to finish any ongoing animations)
       // Give the AI 1 second to find the best move.
+      // TODO: have an API to specify the duration of the animations.
       const millisecondsLimit = 1000;
       return setTimeout(() => {
         console.log('Searching AI move...');

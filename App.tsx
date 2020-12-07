@@ -7,7 +7,6 @@ import Constants from 'expo-constants';
 
 const styles = StyleSheet.create({
   statusBar: {
-    backgroundColor: '#C2185B',
     height: Constants.statusBarHeight,
   },
   container: {
