@@ -15,7 +15,7 @@ export const cellColor = {
   PLAYER_2: '#DD6B4D',
 };
 
-interface Board {
+export interface Board {
   isGameOver: boolean;
   turn: player;
   horizontalLines: boolean[][];
@@ -39,7 +39,60 @@ interface BoardDelta {
 
 export interface IState {
   board: Board;
-  delta: BoardDelta | null;
+  delta?: BoardDelta | null;
+  riddleData?: RiddleData;
+}
+
+export type RiddleData =
+  | 'h11'
+  | 'h12'
+  | 'h13'
+  | 'h21'
+  | 'h22'
+  | 'h23'
+  | 'h31'
+  | 'h32'
+  | 'h33'
+  | 'h41'
+  | 'h42'
+  | 'h43'
+  | 'v11'
+  | 'v12'
+  | 'v13'
+  | 'v14'
+  | 'v21'
+  | 'v22'
+  | 'v23'
+  | 'v24'
+  | 'v31'
+  | 'v32'
+  | 'v33'
+  | 'v34';
+
+function isPosOnHintRow(direction: lineDirection, row: number, hint: RiddleData) {
+  switch (hint) {
+    case 'h11':
+      return direction === lineDirection.HORIZONTAL && row === 0;
+  }
+}
+
+function isPosOnHintCol(direction: lineDirection, col: number, hint: RiddleData) {
+  switch (hint) {
+    case 'v11':
+      return direction === lineDirection.HORIZONTAL && col === 0;
+  }
+}
+
+export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
+  const {riddleData} = state;
+  return !riddleData
+    ? false
+    : firstMoveSolutions.some(
+        (firstMove) =>
+          firstMove.state.delta &&
+          isPosOnHintRow(firstMove.state.delta.direction, firstMove.state.delta.row, riddleData) &&
+          isPosOnHintCol(firstMove.state.delta.direction, firstMove.state.delta.col, riddleData)
+      );
 }
 
 /** Returns the initial Dots_and_Boxes board */
@@ -55,9 +108,9 @@ function createMetrix<T>(rowsize: number, colsize: number, initialFill: T): T[][
   return arr;
 }
 
-export function getInitialBoard(): Board {
+export function getInitialBoard(boardSize = 3): Board {
   const board = <Board>{};
-  board.size = 3;
+  board.size = boardSize;
   board.isGameOver = false;
   board.turn = player.ONE;
   board.score = {
@@ -133,40 +186,37 @@ export function updateBoard(board: Board, direction: lineDirection, row: number,
   if (direction === lineDirection.HORIZONTAL) {
     updatedBoard.horizontalLines[row][col] = true;
     if (row > 0) {
-      handleLinePaint(board, row - 1, col);
+      handleLinePaint(updatedBoard, row - 1, col);
     }
-    if (row < board.size) {
-      handleLinePaint(board, row, col);
+    if (row < updatedBoard.size) {
+      handleLinePaint(updatedBoard, row, col);
     }
   } else {
     updatedBoard.verticalLines[row][col] = true;
     if (col > 0) {
-      handleLinePaint(board, row, col - 1);
+      handleLinePaint(updatedBoard, row, col - 1);
     }
-    if (col < board.size) {
-      handleLinePaint(board, row, col);
+    if (col < updatedBoard.size) {
+      handleLinePaint(updatedBoard, row, col);
     }
   }
-
   updatedBoard.paintedLinesAmount++;
   const linesToEnd = board.size ** 2 + 2 * board.size;
   if (updatedBoard.paintedLinesAmount === linesToEnd) {
     updatedBoard.isGameOver = true;
   }
 
-  return {...updatedBoard};
+  return updatedBoard;
 }
 
 export function handleLinePaint(updatedBoard: Board, row: number, col: number) {
-  if (updatedBoard.cellPaintedLines[row][col] !== 3) {
-    updatedBoard.cellPaintedLines[row][col] += 1; // check lower cell's sum
-  }
   if (updatedBoard.cellPaintedLines[row][col] === 3) {
     updatedBoard.color[row][col] = player.ONE ? cellColor.PLAYER_1 : cellColor.PLAYER_2;
     updatedBoard.turn === player.ONE ? updatedBoard.score.PLAYER_1++ : updatedBoard.score.PLAYER_2++;
   } else {
     updatedBoard.turn = updatedBoard.turn === player.ONE ? player.TWO : player.ONE;
   }
+  updatedBoard.cellPaintedLines[row][col] += 1;
 }
 
 export function positionIsntFree(board: Board, direction: lineDirection, row: number, col: number): boolean {
@@ -205,9 +255,9 @@ export function createMove(board: Board, direction: lineDirection, row: number, 
 
   return {
     endMatchScores,
-    turnIndex: board.turn === player.ONE ? 0 : 1,
+    turnIndex: updatedBoard.turn,
     state: {
-      board,
+      board: updatedBoard,
       delta,
     },
   };

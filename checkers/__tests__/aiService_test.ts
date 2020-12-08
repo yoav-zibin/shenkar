@@ -2,12 +2,17 @@ import {IMove, deepEquals} from '../../common/common';
 import {Board, IState, getInitialBoard} from '../gameLogic';
 import {aiService} from '../aiService';
 import {createComputerMove} from '../../common/alphaBetaService';
+import {checkAiService} from '../../common/utilsForTests';
 
 describe('aiService', function () {
   function createComMove(board: Board, turnIndex: number): IMove<IState> {
     const state: IState = {board: board ? board : getInitialBoard(), boardBeforeMove: getInitialBoard(), miniMoves: []};
     return createComputerMove(state, turnIndex, {maxDepth: 1}, aiService);
   }
+
+  it('checkAiService', () => {
+    checkAiService(aiService);
+  });
 
   it('returns a legal regular move', function () {
     const boardBeforeMove: Board = [

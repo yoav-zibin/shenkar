@@ -3,7 +3,7 @@ import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackgr
 
 import {GameModule, GameProps} from '../../common/common';
 
-import {createMove, IState, getInitialState, checkRiddleData, ROWS} from '../gameLogic';
+import {createMove, IState, getInitialState, checkRiddleData} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {riddleLevels} from '../riddles';
 
@@ -45,16 +45,16 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   boardCell: {
-    width: '33.3%',
+    width: '11.11%',
     height: '100%',
     padding: 0,
     margin: 0,
   },
   pieceImage: {
-    marginTop: '14%',
-    marginLeft: '12%',
-    width: '80%',
-    height: '80%',
+    marginTop: '0%',
+    marginLeft: '0%',
+    width: '100%',
+    height: '100%',
   },
   hintLineCol: {
     position: 'absolute',
@@ -86,12 +86,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function getTicTacToeGameModule(): GameModule<IState> {
+export default function getGoGameModule(): GameModule<IState> {
   return {
-    gameId: 'tictactoe',
-    gameLocalizeId: 'TICTACTOE_GAME_NAME',
+    gameId: 'go',
+    gameLocalizeId: 'GO_GAME_NAME',
     initialState: getInitialState(),
-    component: TicTacToeComponent,
+    component: GoComponent,
     riddleLevels,
     getPossibleMoves,
     getStateScoreForIndex0,
@@ -99,11 +99,11 @@ export default function getTicTacToeGameModule(): GameModule<IState> {
   };
 }
 
-const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProps<IState>) => {
+const GoComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProps<IState>) => {
   const {move, setMove, yourPlayerIndex, showHint} = props;
   const {turnIndex, state} = move;
-  const {riddleData, board, delta} = state;
-  console.log('Render TicTacToe delta=', delta);
+  const {riddleData, board, delta, riddleWin} = state;
+  console.log('Render Go delta=', delta);
 
   const animValue = new Animated.Value(0);
   React.useEffect(() => {
@@ -121,33 +121,23 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
       return;
     }
     try {
-      const move = createMove(state, row, col, turnIndex);
+      const move = createMove(state.board, 0, null, {row, col}, 0, null, riddleWin, riddleData);
       setMove(move);
     } catch (e) {
       console.info('Cell is already full in position:', row, col);
     }
   }
 
-  const rows = [0, 1, 2];
-  const cols = [0, 1, 2];
+  const rows = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  const cols = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
   let hintLine = null;
   if (showHint && riddleData) {
     let style: ViewStyle = {};
     if (riddleData.startsWith('r')) {
       style = {...styles.hintLineRow};
-      // riddleData is either "r1", "r2", r3.
-      // row is either 0, 1, 2
-      const row = Number(riddleData.charAt(1)) - 1;
-      style.top = 100 / (ROWS * 2) + row * (100 / ROWS) + '%';
-    } else if (riddleData.startsWith('c')) {
-      style = {...styles.hintLineCol};
-      const col = Number(riddleData.charAt(1)) - 1;
-      style.left = 100 / 6 + col * (100 / 3) + '%';
-    } else if (riddleData == 'd1') {
-      style = styles.hintLineDiagonal1;
-    } else if (riddleData == 'd2') {
-      style = styles.hintLineDiagonal2;
+      const row = Number(riddleData.charAt(1));
+      style.top = 100 / 6.1 + row * (100 / 9) + '%';
     } else throw new Error('Illegal riddleData=' + riddleData);
     hintLine = <View style={style} />;
   }
@@ -162,7 +152,7 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
         }}>
         <Image
           style={styles.pieceImage}
-          source={board[r][c] == 'X' ? require('../imgs/X.png') : require('../imgs/O.png')}
+          source={board[r][c] == 'B' ? require('../imgs/blackStone.png') : require('../imgs/whiteStone.png')}
         />
       </Animated.View>
     );
