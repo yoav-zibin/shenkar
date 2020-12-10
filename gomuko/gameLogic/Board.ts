@@ -108,6 +108,7 @@ export class Board {
 
     if (this.riddle) {
       this.CheckRiddleLogic(cell);
+      return;
     }
 
     let color = this.turn;

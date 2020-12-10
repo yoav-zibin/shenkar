@@ -25,7 +25,7 @@ describe('Gomuko Board tests', () => {
   });
 
   it('Get Correct GameState', () => {
-    const board = new Board(5, Opponent.AI, Difficulty.NOVICE, Player.WHITE, Player.BLACK);
+    const board = new Board(5, null, Opponent.AI, Difficulty.NOVICE, Player.WHITE, Player.BLACK);
     const state = board.GetGameState();
     expect(state).toHaveProperty('finished', false);
     expect(state).toHaveProperty('winner', Player.NONE);
@@ -34,7 +34,7 @@ describe('Gomuko Board tests', () => {
   });
 
   it('Move Cycle', () => {
-    const board = new Board(5, Opponent.HUMAN, Difficulty.NOVICE);
+    const board = new Board(5, null, Opponent.HUMAN, Difficulty.NOVICE);
     board.Play({row: 1, column: 1});
 
     const state = board.GetGameState();
