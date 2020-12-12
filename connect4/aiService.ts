@@ -9,7 +9,7 @@ export function getPossibleMoves(state: IState, turnIndex: number): IMove<IState
   }
   for (let i = 0; i < ROWS; i++) {
     for (let j = 0; j < COLS; j++) {
-      if ((state.board[i][j] === 'R' || state.board[i][j] === 'B') && i != 0 && listRowNum[j] === -1) {
+      if ((state.board[i][j] === 'Y' || state.board[i][j] === 'R') && i != 0 && listRowNum[j] === -1) {
         listRowNum[j] = 1;
         if (state.board[i - 1][j] === ' ') {
           possibleMoves.push(createMove(state, i - 1, j, turnIndex));

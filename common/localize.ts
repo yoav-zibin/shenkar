@@ -143,6 +143,26 @@ const LOCALIZE_ID_TO_NAME = {
   // Dots and Boxes ends.
   // Gomoku starts.
   // Gomoku ends.
+  CONNECT4_GAME_NAME: {
+    en: 'Connect4',
+    he: 'ארבע בשורה',
+  },
+  CONNECT4_LEVEL1: {
+    en: 'Y wins in 1 move',
+    he: 'Y מנצח במסע אחד',
+  },
+  CONNECT4_LEVEL2: {
+    en: 'Y wins in 1 move Without help',
+    he: 'ללא עזרה Y מנצח במסע אחד',
+  },
+  CONNECT4_LEVEL3: {
+    en: 'Victory up to 4 step',
+    he: 'ניצחון בטוח עד 4 צעדים',
+  },
+  CONNECT4_LEVEL4: {
+    en: 'Victory up to 4 step',
+    he: 'ניצחון בטוח עד 4 צעדים',
+  },
 };
 
 export type LocalizeId = keyof typeof LOCALIZE_ID_TO_NAME;
