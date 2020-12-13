@@ -182,41 +182,53 @@ export function printDelta(delta: BoardDelta) {
 
 export function updateBoard(board: Board, direction: lineDirection, row: number, col: number): Board {
   const updatedBoard: Board = deepClone(board);
+  let switchTurn = true;
 
   if (direction === lineDirection.HORIZONTAL) {
     updatedBoard.horizontalLines[row][col] = true;
     if (row > 0) {
-      handleLinePaint(updatedBoard, row - 1, col);
+      if (handleLinePaint(updatedBoard, row - 1, col) === false) {
+        switchTurn = false;
+      }
     }
     if (row < updatedBoard.size) {
-      handleLinePaint(updatedBoard, row, col);
+      if (handleLinePaint(updatedBoard, row, col) === false) {
+        switchTurn = false;
+      }
     }
   } else {
     updatedBoard.verticalLines[row][col] = true;
     if (col > 0) {
-      handleLinePaint(updatedBoard, row, col - 1);
+      if (handleLinePaint(updatedBoard, row, col - 1) === false) {
+        switchTurn = false;
+      }
     }
     if (col < updatedBoard.size) {
-      handleLinePaint(updatedBoard, row, col);
+      if (handleLinePaint(updatedBoard, row, col) === false) {
+        switchTurn = false;
+      }
     }
   }
+  updatedBoard.turn = switchTurn ? 1 - updatedBoard.turn : updatedBoard.turn;
   updatedBoard.paintedLinesAmount++;
-  const linesToEnd = board.size ** 2 + 2 * board.size;
+  const linesToEnd = (board.size + 1) ** 2 + 2 * (board.size + 1);
   if (updatedBoard.paintedLinesAmount === linesToEnd) {
     updatedBoard.isGameOver = true;
+    updatedBoard.turn = -1;
   }
 
   return updatedBoard;
 }
 
-export function handleLinePaint(updatedBoard: Board, row: number, col: number) {
+export function handleLinePaint(updatedBoard: Board, row: number, col: number): boolean {
+  let switchTurn = true;
   if (updatedBoard.cellPaintedLines[row][col] === 3) {
     updatedBoard.color[row][col] = player.ONE ? cellColor.PLAYER_1 : cellColor.PLAYER_2;
     updatedBoard.turn === player.ONE ? updatedBoard.score.PLAYER_1++ : updatedBoard.score.PLAYER_2++;
-  } else {
-    updatedBoard.turn = updatedBoard.turn === player.ONE ? player.TWO : player.ONE;
+    switchTurn = false;
   }
   updatedBoard.cellPaintedLines[row][col] += 1;
+  return switchTurn;
 }
 
 export function positionIsntFree(board: Board, direction: lineDirection, row: number, col: number): boolean {
@@ -249,10 +261,10 @@ export function createMove(board: Board, direction: lineDirection, row: number, 
 
   const updatedBoard: Board = updateBoard(board, direction, row, col);
 
-  const endMatchScores = updatedBoard.isGameOver ? [board.score.PLAYER_1, board.score.PLAYER_2] : null;
+  const endMatchScores = updatedBoard.isGameOver ? [updatedBoard.score.PLAYER_1, updatedBoard.score.PLAYER_2] : null;
 
   const delta: BoardDelta = {direction, row, col};
-
+  console.log('endMatchScores', endMatchScores);
   return {
     endMatchScores,
     turnIndex: updatedBoard.turn,

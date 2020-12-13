@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {ImageBackground, View} from 'react-native';
 import {GameModule, GameProps} from '../common/common';
 import {getPossibleMoves, getStateScoreForIndex0} from './aiService';
 import {BOARD_PHYSICAL_SIZE} from './components/consts';
@@ -23,14 +23,10 @@ export default function getDotsAndBoxesGameModule(): GameModule<IState> {
   };
 }
 
-const Game: React.FunctionComponent<GameProps<IState>> = ({
-  move: {
-    turnIndex,
-    state: {board},
-  },
-  setMove,
-  yourPlayerIndex,
-}: GameProps<IState>) => {
+const Game: React.FunctionComponent<GameProps<IState>> = ({move, setMove, yourPlayerIndex}: GameProps<IState>) => {
+  const {turnIndex, state} = move;
+  const {board} = state;
+
   const rows = [];
   for (let i = 0; i < BOARD_SIZE - 1; i++) {
     rows.push(i);
@@ -51,8 +47,18 @@ const Game: React.FunctionComponent<GameProps<IState>> = ({
   const verticalLineSelect = (row: number, col: number) => onLineSelect(row, col, lineDirection.VERTICAL);
 
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <View style={{height: BOARD_PHYSICAL_SIZE, width: BOARD_PHYSICAL_SIZE}}>
+    <ImageBackground
+      source={require('./components/bg.jpg')}
+      style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+      imageStyle={{opacity: 0.8}}>
+      <View
+        style={{
+          height: BOARD_PHYSICAL_SIZE + 16,
+          width: BOARD_PHYSICAL_SIZE + 16,
+          padding: 8,
+          backgroundColor: 'rgba(255,255,255,.8)',
+          borderRadius: 8,
+        }}>
         {rows.map((row, key) => {
           return (
             <View key={key}>
@@ -63,6 +69,6 @@ const Game: React.FunctionComponent<GameProps<IState>> = ({
         })}
         <HorizontalView row={BOARD_SIZE - 1} onLineSelect={horizontalLineSelect} board={board} />
       </View>
-    </View>
+    </ImageBackground>
   );
 };

@@ -7,7 +7,9 @@ interface DotProps {
 }
 
 const Dot = ({size, margin}: DotProps) => {
-  return <View style={{height: size, width: size, backgroundColor: 'black', borderRadius: size / 2, margin}} />;
+  return (
+    <View style={{height: size, width: size, backgroundColor: 'black', borderRadius: size / 2, margin, elevation: 5}} />
+  );
 };
 
 export default Dot;

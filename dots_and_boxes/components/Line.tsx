@@ -1,5 +1,5 @@
-import React from 'react';
-import {Pressable, View} from 'react-native';
+import React, {useEffect, useRef} from 'react';
+import {Animated, Pressable} from 'react-native';
 
 interface LineProps {
   width: number;
@@ -10,18 +10,27 @@ interface LineProps {
 }
 
 const Line = ({height, width, onPress, isMarked = false, vertical = false}: LineProps) => {
-  const backgroundColor = `rgba(0,0,0,${isMarked ? 1 : 0.1})`;
+  const opacity = useRef<Animated.Value>(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: isMarked ? 1 : 0.05,
+      duration: 700,
+      useNativeDriver: true,
+    }).start();
+  }, [isMarked]);
   return vertical ? (
     <Pressable
       onPress={onPress}
-      style={({pressed}) => [{height: width, width: height, paddingHorizontal: pressed ? height * 0.2 : height * 0.3}]}>
-      <View style={{flex: 1, backgroundColor}} />
+      style={({pressed}) => [
+        {height: width, width: height, paddingHorizontal: pressed ? height * 0.2 : height * 0.3, elevation: 3},
+      ]}>
+      <Animated.View style={{flex: 1, backgroundColor: 'black', opacity}} />
     </Pressable>
   ) : (
     <Pressable
       onPress={onPress}
-      style={({pressed}) => [{height, width, paddingVertical: pressed ? height * 0.2 : height * 0.3}]}>
-      <View style={{flex: 1, backgroundColor}} />
+      style={({pressed}) => [{height, width, paddingVertical: pressed ? height * 0.2 : height * 0.3, elevation: 3}]}>
+      <Animated.View style={{flex: 1, backgroundColor: 'black', opacity}} />
     </Pressable>
   );
 };
