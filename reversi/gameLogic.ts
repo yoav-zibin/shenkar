@@ -1,5 +1,10 @@
 import {IMove, EndMatchScores, deepClone, deepEquals} from '../common/common';
 
+export const ROWS = 8;
+export const COLS = 8;
+const maxRow = ROWS - 1;
+const maxCol = COLS - 1;
+
 export interface IState {
   board?: Board;
   delta?: BoardDelta;
@@ -80,9 +85,6 @@ export interface ISetTurn {
 export interface IEndMatch {
   endMatchScores: number[];
 }
-
-const maxRow = 7;
-const maxCol = 7;
 
 /**
  * check if a square is empty
@@ -472,16 +474,7 @@ export function createMove(
 ): IMove<IState> {
   // TODO check turnIndexBeforeMove: any
   if (board === undefined) {
-    board = [
-      ['', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', ''],
-      ['', '', '', 'W', 'B', '', '', ''],
-      ['', '', '', 'B', 'W', '', '', ''],
-      ['', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', ''],
-    ];
+    board = getInitialBoard();
   }
   if (!isEmptySquare({board: board, row: row, col: col})) {
     throw new Error('One can only make a move in an empty position!');
@@ -699,6 +692,25 @@ function exampleMoves(initTurnIndex: number, initState: IState, arrayOfRowColCom
   return store;
 }
 
+export function getInitialBoard() {
+  return [
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', 'W', 'B', '', '', ''],
+    ['', '', '', 'B', 'W', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+  ];
+}
+
+export function getInitialState(): IState {
+  return {
+    board: getInitialBoard(),
+  };
+}
+
 /**
  * example Game
  * @returns {Array}
@@ -779,34 +791,3 @@ export function riddles() {
     ),
   ];
 }
-
-/**
- * create Computer Move
- * @param board
- * @param turnIndexBeforeMove
- * @returns {*}
- */
-export function createComputerMove(board: Board, turnIndexBeforeMove: number): IMove<IState> {
-  const possibleMoves: IMove<IState>[] = [];
-  for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-      try {
-        possibleMoves.push(createMove(board, i, j, turnIndexBeforeMove));
-      } catch (e) {
-        // invalid move, don't add it to the array.
-      }
-    }
-  }
-  const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-  return randomMove;
-}
-
-// angular.module('myApp', [ 'ngTouch', 'ui.bootstrap','gameServices'])
-//   .factory('gameLogic', function() {
-//   return {
-//     createMove: gameLogic.createMove,
-//     isMoveOk: gameLogic.isMoveOk,
-//     exampleGame: gameLogic.exampleGame,
-//     riddles: gameLogic.riddles,
-//     createComputerMove: gameLogic.createComputerMove   };
-// });
