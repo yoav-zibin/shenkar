@@ -1,10 +1,8 @@
+import getGomokuGameModule from '../gomuko/components/Game';
 import getTicTacToeGameModule from '../tictactoe/components/Game';
 import {AnyGameModule} from './common';
 
-const allGameModules: AnyGameModule[] = [
-  getTicTacToeGameModule(),
-  // TODO: add your games.
-];
+const allGameModules: AnyGameModule[] = [getTicTacToeGameModule(), getGomokuGameModule()];
 
 export function getAllGameModules(): AnyGameModule[] {
   return allGameModules;

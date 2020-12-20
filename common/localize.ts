@@ -115,6 +115,26 @@ const LOCALIZE_ID_TO_NAME = {
   // Dots and Boxes starts.
   // Dots and Boxes ends.
   // Gomoku starts.
+  GOMOKU_GAME_NAME: {
+    en: 'Gomoku',
+    he: '5 בשורה',
+  },
+  GOMOKU_LEVEL1: {
+    en: 'Level 1',
+    he: 'רמה 1',
+  },
+  GOMOKU_LEVEL2: {
+    en: 'Level 2',
+    he: 'רמה 2',
+  },
+  GOMOKU_LEVEL3: {
+    en: 'Level 3',
+    he: 'רמה 3',
+  },
+  GOMOKU_LEVEL4: {
+    en: 'Level 4',
+    he: 'רמה 4',
+  },
   // Gomoku ends.
 };
 
