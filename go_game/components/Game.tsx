@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
 
-import {GameModule, GameProps, randomElement} from '../../common/common';
+import {GameModule, GameProps} from '../../common/common';
 
-import {createMove, IState, getInitialState, checkRiddleData, ROWS} from '../gameLogic';
+import {createMove, IState, getInitialState, checkRiddleData} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {riddleLevels} from '../riddles';
 
@@ -45,16 +45,16 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   boardCell: {
-    width: '33.3%',
+    width: '11.11%',
     height: '100%',
     padding: 0,
     margin: 0,
   },
   pieceImage: {
-    marginTop: '14%',
-    marginLeft: '12%',
-    width: '80%',
-    height: '80%',
+    marginTop: '0%',
+    marginLeft: '0%',
+    width: '100%',
+    height: '100%',
   },
   hintLineCol: {
     position: 'absolute',
@@ -86,12 +86,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export function getTicTacToeGameModule(): GameModule<IState> {
+export default function getGoGameModule(): GameModule<IState> {
   return {
-    gameId: 'tictactoe',
-    gameLocalizeId: 'TICTACTOE_GAME_NAME',
+    gameId: 'go',
+    gameLocalizeId: 'GO_GAME_NAME',
     initialState: getInitialState(),
-    component: TicTacToeComponent,
+    component: GoComponent,
     riddleLevels,
     getPossibleMoves,
     getStateScoreForIndex0,
@@ -99,90 +99,60 @@ export function getTicTacToeGameModule(): GameModule<IState> {
   };
 }
 
-const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProps<IState>) => {
+const GoComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProps<IState>) => {
   const {move, setMove, yourPlayerIndex, showHint} = props;
   const {turnIndex, state} = move;
-  const {riddleData, board, delta} = state;
-  const [boardHeight, setBoardHeight] = useState(300);
-  console.log('Render TicTacToe delta=', delta);
+  const {riddleData, board, delta, riddleWin} = state;
+  console.log('Render Go delta=', delta);
 
   const animValue = new Animated.Value(0);
-  Animated.timing(animValue, {
-    toValue: 1,
-    duration: 500,
-    useNativeDriver: true,
-  }).start();
+  React.useEffect(() => {
+    if (delta) {
+      Animated.timing(animValue, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [animValue]);
 
   function clickedOn(row: number, col: number) {
     if (turnIndex != yourPlayerIndex) {
       return;
     }
     try {
-      const move = createMove(state, row, col, turnIndex);
+      const move = createMove(state.board, 0, null, {row, col}, 0, null, riddleWin, riddleData);
       setMove(move);
     } catch (e) {
       console.info('Cell is already full in position:', row, col);
     }
   }
 
-  const rows = [0, 1, 2];
-  const cols = [0, 1, 2];
+  const rows = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  const cols = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
   let hintLine = null;
   if (showHint && riddleData) {
     let style: ViewStyle = {};
     if (riddleData.startsWith('r')) {
       style = {...styles.hintLineRow};
-      // riddleData is either "r1", "r2", r3.
-      // row is either 0, 1, 2
-      const row = Number(riddleData.charAt(1)) - 1;
-      style.top = 100 / (ROWS * 2) + row * (100 / ROWS) + '%';
-    } else if (riddleData.startsWith('c')) {
-      style = {...styles.hintLineCol};
-      const col = Number(riddleData.charAt(1)) - 1;
-      style.left = 100 / 6 + col * (100 / 3) + '%';
-    } else if (riddleData == 'd1') {
-      style = styles.hintLineDiagonal1;
-    } else if (riddleData == 'd2') {
-      style = styles.hintLineDiagonal2;
+      const row = Number(riddleData.charAt(1));
+      style.top = 100 / 6.1 + row * (100 / 9) + '%';
     } else throw new Error('Illegal riddleData=' + riddleData);
     hintLine = <View style={style} />;
   }
 
-  function getAnimationStyle(r: number) {
-    const whatToAnimate = randomElement(['opacity', 'translateY', 'scale']);
-    switch (whatToAnimate) {
-      case 'opacity':
-        return {opacity: animValue};
-      case 'scale':
-        return {transform: [{scale: animValue}]};
-      default: {
-        const rowHeight = boardHeight / ROWS;
-        const startYPosition = -rowHeight * (r + 1);
-        return {
-          transform: [
-            {
-              translateY: animValue.interpolate({
-                inputRange: [0, 1],
-                outputRange: [startYPosition, 0],
-              }),
-            },
-          ],
-        };
-      }
-    }
-  }
-
   function getPiece(r: number, c: number) {
     if (board[r][c] == '') return null;
-    const shouldAnimate = delta && delta.row == r && delta.col == c;
-    const animStyle = shouldAnimate ? getAnimationStyle(r) : {};
-
     return (
-      <Animated.View style={animStyle}>
+      <Animated.View
+        style={{
+          // opacity: animValue,
+          transform: [{scale: delta && delta.row == r && delta.col == c ? animValue : 1}],
+        }}>
         <Image
           style={styles.pieceImage}
-          source={board[r][c] == 'X' ? require('../imgs/X.png') : require('../imgs/O.png')}
+          source={board[r][c] == 'B' ? require('../imgs/blackStone.png') : require('../imgs/whiteStone.png')}
         />
       </Animated.View>
     );
@@ -190,7 +160,7 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
 
   return (
     <View style={styles.container}>
-      <View style={styles.fixedRatio} onLayout={(event) => setBoardHeight(event.nativeEvent.layout.height)}>
+      <View style={styles.fixedRatio}>
         <ImageBackground style={styles.boardImage} source={require('../imgs/Board.png')}>
           <View style={styles.boardRowsContainer}>
             {rows.map((r) => (

@@ -8,7 +8,10 @@ export function getPossibleMoves(state: IState, turnIndex: number): IMove<IState
       try {
         const delta = {row: i, col: j};
         // STILL WRONG! :
-        if (state.board[i][j] == '') possibleMoves.push(createMove(state.board, 0, null, delta, turnIndex, null));
+        if (state.board[i][j] == '')
+          possibleMoves.push(
+            createMove(state.board, 0, null, delta, turnIndex, null, state.riddleWin, state.riddleData)
+          );
       } catch (e) {
         // The cell in that position was full.
       }

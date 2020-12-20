@@ -1,8 +1,10 @@
 import React, {useContext, createContext, ReactNode, useReducer} from 'react';
-import {createInitialMove, IMove} from './common';
+import {createInitialMove, deepClone, deepEquals, IMove} from './common';
 import {DEBUGGING_OPTIONS} from './debugging';
 import {findGameModule} from './gameModules';
-import {LanguageId} from './localize';
+import {LanguageId, localize} from './localize';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {NavigationProp} from '@react-navigation/native';
 
 // see https://blog.logrocket.com/use-hooks-and-context-not-react-and-redux/
 
@@ -11,6 +13,7 @@ export interface AppContext {
   dispatch: (action: AppStateAction) => void;
 }
 export interface AppState {
+  isInitialState: boolean;
   languageId: LanguageId;
   selectedGameId?: string;
   activity?: Activity;
@@ -22,10 +25,15 @@ export interface AppStateAction {
   setActivity?: Activity;
   clearActivity?: true;
   setActivityState?: ActivityState;
+  setStateFromAsyncStorage?: AppState;
+  setNoStateInAsyncStorage?: true;
 }
+export const ACTIVITY_TYPES = ['PASS_AND_PLAY', 'AGAINST_COMPUTER'];
+
+export type ActivityType = typeof ACTIVITY_TYPES[number];
 export interface Activity {
+  activityType?: ActivityType;
   riddleActivity?: RiddleActivity;
-  playActivity?: PlayActivity;
 }
 export interface ActivityState {
   yourPlayerIndex: number;
@@ -40,37 +48,15 @@ export interface RiddleActivity {
   levelIndex: number;
   riddleIndex: number;
 }
-export const PLAY_TYPES = ['PASS_AND_PLAY', 'AGAINST_COMPUTER', 'MULTIPLAYER'];
-export const COMPUTER_LEVELS = ['EASY', 'MEDIUM', 'HARD'];
-
-export type ComputerLevel = typeof COMPUTER_LEVELS[number];
-export function computerLevelToAiMillis(level: ComputerLevel): number {
-  switch (level) {
-    case 'EASY':
-      return 100;
-    case 'MEDIUM':
-      return 1000;
-    case 'HARD':
-      return 5000;
-  }
-  throw new Error('illegal level=' + level);
-}
-
-export type PlayType = typeof PLAY_TYPES[number];
-export interface PlayActivity {
-  playType: PlayType;
-  computerLevel?: typeof COMPUTER_LEVELS[number];
-}
 
 const initialAppState: AppState = {
-  languageId: DEBUGGING_OPTIONS.SKIP_CHOOSE_LANGUAGE_AND_USE as LanguageId,
-  selectedGameId: DEBUGGING_OPTIONS.SKIP_CHOOSE_GAME_AND_JUMP_TO,
+  isInitialState: true,
+  languageId: '' as LanguageId,
+  selectedGameId: '',
 };
 
 const initialContext: AppContext = {
-  appState: DEBUGGING_OPTIONS.SKIP_CHOOSE_ACTIVITY_AND_JUMP_TO
-    ? ourReducer(initialAppState, {setActivity: DEBUGGING_OPTIONS.SKIP_CHOOSE_ACTIVITY_AND_JUMP_TO})
-    : initialAppState,
+  appState: addDebugOptionsToState(initialAppState),
   dispatch: () => {
     // do nothing. we get the real method from useReducer below.
   },
@@ -78,36 +64,30 @@ const initialContext: AppContext = {
 export const store = createContext(initialContext);
 const {Provider} = store;
 
-function getInitialActivityState(appState: AppState, activity: Activity): ActivityState {
-  const {riddleActivity, playActivity} = activity;
-  const gameModule = findGameModule(appState.selectedGameId);
-  if (!gameModule) throw new Error('Missing selectedGameId');
-
-  if (playActivity) {
-    const initialMove = createInitialMove(gameModule.initialState);
-    switch (playActivity.playType) {
-      case 'PASS_AND_PLAY':
-        return {
-          yourPlayerIndex: 0,
-          initialMove: initialMove,
-          currentMove: initialMove,
-          currentMoveNum: 0,
-          maxMovesNum: 0, // no limit
-          showHint: false,
-        };
-      case 'AGAINST_COMPUTER':
-      case 'MULTIPLAYER':
-        // TODO: handle MULTIPLAYER
-        return {
-          yourPlayerIndex: 0,
-          initialMove: initialMove,
-          currentMove: initialMove,
-          currentMoveNum: 0,
-          maxMovesNum: 0, // no limit
-          showHint: false,
-        };
-    }
+function addDebugOptionsToState(appState: AppState) {
+  const nextGameId = DEBUGGING_OPTIONS.SKIP_CHOOSE_GAME_AND_JUMP_TO;
+  const nextActivity = DEBUGGING_OPTIONS.SKIP_CHOOSE_ACTIVITY_AND_JUMP_TO;
+  const shouldUseInitialState =
+    (nextGameId && nextGameId != appState.selectedGameId) ||
+    (nextActivity && !deepEquals(nextActivity, appState.activity));
+  const res = deepClone(shouldUseInitialState ? initialAppState : appState);
+  // If debug game / activity is different, then reset to
+  if (DEBUGGING_OPTIONS.SKIP_CHOOSE_LANGUAGE_AND_USE) {
+    res.languageId = DEBUGGING_OPTIONS.SKIP_CHOOSE_LANGUAGE_AND_USE as LanguageId;
   }
+  if (nextGameId) {
+    res.selectedGameId = nextGameId;
+  }
+  if (nextActivity) {
+    res.activity = nextActivity;
+  }
+  return res;
+}
+
+function getInitialActivityState(appState: AppState, activity: Activity): ActivityState {
+  const {riddleActivity, activityType} = activity;
+  const gameModule = findGameModule(appState.selectedGameId);
+
   if (riddleActivity) {
     const level = gameModule.riddleLevels[riddleActivity.levelIndex];
     const riddle = level.riddles[riddleActivity.riddleIndex];
@@ -120,36 +100,132 @@ function getInitialActivityState(appState: AppState, activity: Activity): Activi
       maxMovesNum: level.maxMovesNum,
       showHint: false,
     };
+  } else {
+    const initialMove = createInitialMove(gameModule.initialState);
+    if (activityType == 'PASS_AND_PLAY') {
+      return {
+        yourPlayerIndex: 0,
+        initialMove: initialMove,
+        currentMove: initialMove,
+        currentMoveNum: 0,
+        maxMovesNum: 0, // no limit
+        showHint: false,
+      };
+    } else {
+      return {
+        yourPlayerIndex: 0,
+        initialMove: initialMove,
+        currentMove: initialMove,
+        currentMoveNum: 0,
+        maxMovesNum: 0, // no limit
+        showHint: false,
+      };
+    }
   }
-  throw new Error('Set either play/riddle activity');
+}
+
+const STORAGE_KEY = 'APP_STATE';
+
+export async function readAppState() {
+  try {
+    const value = await AsyncStorage.getItem(STORAGE_KEY);
+    if (value !== null) {
+      return JSON.parse(value);
+    }
+  } catch (e) {
+    console.error('Error reading local state', e);
+  }
+  return null;
+}
+
+function reducerAndStoreState(appState: AppState, action: AppStateAction) {
+  const nextState = ourReducer(appState, action);
+  try {
+    const jsonValue = JSON.stringify(nextState);
+    AsyncStorage.setItem(STORAGE_KEY, jsonValue);
+  } catch (e) {
+    console.error('Error saving local state', e);
+  }
+  console.log('Performing action:', action, ' and state changed to: ', nextState);
+  return nextState;
 }
 
 function ourReducer(appState: AppState, action: AppStateAction) {
-  if (action.setLanguageId) {
-    return {...appState, languageId: action.setLanguageId};
+  const {
+    setLanguageId,
+    setSelectedGameId,
+    setActivity,
+    clearActivity,
+    setActivityState,
+    setStateFromAsyncStorage,
+    setNoStateInAsyncStorage,
+  } = action;
+  if (setLanguageId) {
+    return {...appState, languageId: setLanguageId};
   }
-  if (action.setSelectedGameId) {
-    return {...appState, activity: undefined, activityState: undefined, selectedGameId: action.setSelectedGameId};
+  if (setSelectedGameId) {
+    return {...appState, activity: undefined, activityState: undefined, selectedGameId: setSelectedGameId};
   }
-  if (action.setActivity) {
-    const activity = action.setActivity;
+  if (setActivity) {
+    const activity = setActivity;
     // When activity changes, we need to initialize it's state.
     return {...appState, activity, activityState: getInitialActivityState(appState, activity)};
   }
-  if (action.clearActivity) {
+  if (clearActivity) {
     return {...appState, activity: undefined, activityState: undefined};
   }
-  if (action.setActivityState) {
-    return {...appState, activityState: action.setActivityState};
+  if (setActivityState) {
+    return {...appState, activityState: setActivityState};
+  }
+  if (setStateFromAsyncStorage) {
+    return {...addDebugOptionsToState(setStateFromAsyncStorage), isInitialState: false};
+  }
+  if (setNoStateInAsyncStorage) {
+    return {...appState, isInitialState: false};
   }
   throw new Error('Illegal action=' + JSON.stringify(action));
 }
 
 export const StateProvider = (props: {children: ReactNode}) => {
-  const [appState, dispatch] = useReducer(ourReducer, initialAppState);
+  const [appState, dispatch] = useReducer(reducerAndStoreState, initialAppState);
   return <Provider value={{appState, dispatch}}>{props.children}</Provider>;
 };
 
 export function useStoreContext() {
   return useContext(store);
+}
+
+export type RootStackParamList = {
+  Settings: undefined;
+  ChooseGame: undefined;
+  ChooseActivity: undefined;
+  PlayArea: undefined;
+};
+export type RouteName = keyof RootStackParamList; // "Settings" | "ChooseGame" | "ChooseActivity" | "PlayArea"
+
+export function getScreenTitle(routeName: RouteName, appState: AppState) {
+  switch (routeName) {
+    case 'Settings':
+      return localize('SETTINGS_SCREEN', appState);
+    case 'ChooseGame':
+      return localize('CHOOSE_GAME_SCREEN', appState);
+    case 'ChooseActivity':
+      return localize('CHOOSE_ACTIVITY_SCREEN', appState);
+  }
+  // PlayArea screen.
+  const {selectedGameId, activity} = appState;
+  if (!activity) throw new Error('no activity');
+  const {activityType, riddleActivity} = activity;
+  const currentGameModule = findGameModule(selectedGameId);
+  if (riddleActivity) {
+    return localize(currentGameModule.riddleLevels[riddleActivity.levelIndex].levelLocalizeId, appState);
+  }
+  return localize(activityType == 'PASS_AND_PLAY' ? 'PASS_AND_PLAY' : 'AGAINST_COMPUTER', appState);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function navigateNextFrame(routeName: RouteName, navigation: NavigationProp<any>) {
+  requestAnimationFrame(() => {
+    navigation.navigate(routeName);
+  });
 }
