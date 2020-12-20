@@ -183,12 +183,12 @@ export function createMove(
     // "Oh you tried to make sure shit goes well? well FUCK YOU im black now."
     // Kinda sick of this for now. just gonna go deal with riddles for a while
     if (boardAfterMove[row][col] !== '' && boardAfterMove[row][col] !== 'W') {
-      console.log('board position is:' + boardAfterMove[row][col]);
-      console.log('row: ' + row + ' col: ' + col);
+      // console.log('board position is:' + boardAfterMove[row][col]);
+      // console.log('row: ' + row + ' col: ' + col);
       const isWin = getWinningSequence(boardAfterMove, row, col, turnIndexBeforeMove === 0 ? 'B' : 'W');
       if (isWin !== null) {
-        console.log(isWin);
-        console.log('It finally found the fucker');
+        // console.log(isWin);
+        // console.log('It finally found the fucker');
       }
     }
     // boardAfterMove = evaluateBoard(boardAfterMove, turnIndexBeforeMove);
@@ -350,22 +350,22 @@ function getWinningSequence(board: any, row: any, col: any, color: any) {
   let winningSeuqnece: unknown[] = [];
   if (checkHorizontal(board, row, col, color).length === 5) {
     winningSeuqnece = [color, checkHorizontal(board, row, col, color)];
-    console.log('horizon');
+    // console.log('horizon');
     return winningSeuqnece;
   }
   if (checkVertical(board, row, col, color).length === 5) {
     winningSeuqnece = [color, checkHorizontal(board, row, col, color)];
-    console.log('vertical');
+    // console.log('vertical');
     return winningSeuqnece;
   }
   if (checkBackSlash(board, row, col, color).length === 5) {
     winningSeuqnece = [color, checkHorizontal(board, row, col, color)];
-    console.log('back slash');
+    // console.log('back slash');
     return winningSeuqnece;
   }
   if (checkForwardSlash(board, row, col, color).length === 5) {
     winningSeuqnece = [color, checkHorizontal(board, row, col, color)];
-    console.log('forward slash');
+    // console.log('forward slash');
     return winningSeuqnece;
   }
   return null;
