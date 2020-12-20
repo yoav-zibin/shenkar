@@ -120,16 +120,16 @@ const LOCALIZE_ID_TO_NAME = {
     he: '5 בשורה',
   },
   GOMOKU_LEVEL1: {
-    en: 'Level 1',
-    he: 'רמה 1',
+    en: 'WIN!',
+    he: 'ניצחון!',
   },
   GOMOKU_LEVEL2: {
-    en: 'Level 2',
-    he: 'רמה 2',
+    en: 'Block White!',
+    he: 'חסום את לבן!',
   },
   GOMOKU_LEVEL3: {
-    en: 'Level 3',
-    he: 'רמה 3',
+    en: 'WIN 2!',
+    he: 'ניצחון 2!',
   },
   GOMOKU_LEVEL4: {
     en: 'Level 4',

@@ -21,8 +21,6 @@ export interface IState {
   riddleWin?: number[];
   riddleWon?: boolean;
 }
-// type Points = number[][]; // A point (row,col) is represented as an array with 2 elements: [row,col].
-// type Sets = {white: Points[]; black: Points[]};
 
 function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
   switch (hint) {
@@ -68,107 +66,6 @@ export function createNewBoard(dim: number): Board {
 function copyObject<T>(object: T): T {
   return deepClone(object);
 }
-
-// Helper for getSets
-
-// function getWeb(color: string, row: number, col: number, board: Board, visited: Board): Points {
-//   const points: Points = [];
-//   const dim = board.length;
-
-//   function tryPoints(row: number, col: number) {
-//     points.push([row, col]);
-//     visited[row][col] = color;
-//     if (row - 1 >= 0 && visited[row - 1][col] === '' && board[row - 1][col] === color) {
-//       tryPoints(row - 1, col);
-//     }
-//     if (row + 1 < dim && visited[row + 1][col] === '' && board[row + 1][col] === color) {
-//       tryPoints(row + 1, col);
-//     }
-//     if (col + 1 < dim && visited[row][col + 1] === '' && board[row][col + 1] === color) {
-//       tryPoints(row, col + 1);
-//     }
-//     if (col - 1 >= 0 && visited[row][col - 1] === '' && board[row][col - 1] === color) {
-//       tryPoints(row, col - 1);
-//     }
-//   }
-
-//   tryPoints(row, col);
-//   return points;
-// }
-// needed by evaluateBoard
-// groups all contiguous stones as sets
-// export function getSets(board: Board): Sets {
-//   const dim = board.length;
-//   const visited = createNewBoard(dim);
-//   const setsX: Points[] = []; // black sets
-//   const setsO: Points[] = []; // white sets
-//   let row: number;
-//   let col: number;
-//   for (row = 0; row < dim; row++) {
-//     for (col = 0; col < dim; col++) {
-//       if (board[row][col] === 'B' && visited[row][col] === '') {
-//         setsX.push(getWeb('B', row, col, board, visited));
-//       } else if (board[row][col] === 'W' && visited[row][col] === '') {
-//         setsO.push(getWeb('W', row, col, board, visited));
-//       }
-//     }
-//   }
-//   return {black: setsX, white: setsO};
-// }
-
-// Changes all arr locations in board to '' (empty)
-// // // // // function cleanBoard(board: Board, arr: Points) {
-// // // // //   const newboard = copyObject(board);
-// // // // //   for (let i = 0; i < arr.length; i++) {
-// // // // //     const row = arr[i][0];
-// // // // //     const col = arr[i][1];
-// // // // //     newboard[row][col] = '';
-// // // // //   }
-// // // // //   return newboard;
-// // // // // }
-
-// For each set in forest, tries to find a liberty
-// If no liberties, then the set is captured
-// function getLiberties(board: Board, forest: Points[]) {
-//   const dim = board.length;
-//   let boardAfterEval = copyObject(board);
-
-//   for (let i = 0; i < forest.length; i++) {
-//     let liberties = 0; // liberties found
-//     const tempset: Points = forest[i];
-//     for (let i2 = 0; i2 < tempset.length; i2++) {
-//       const row = tempset[i2][0];
-//       const col = tempset[i2][1];
-//       if (
-//         (row - 1 >= 0 && board[row - 1][col] === '') ||
-//         (row + 1 < dim && board[row + 1][col] === '') ||
-//         (col - 1 >= 0 && board[row][col - 1] === '') ||
-//         (col + 1 < dim && board[row][col + 1] === '')
-//       ) {
-//         liberties++;
-//         break;
-//       }
-//     }
-//     if (liberties === 0) {
-//       boardAfterEval = cleanBoard(boardAfterEval, tempset);
-//     }
-//   }
-//   return boardAfterEval;
-// }
-
-// evaluates WEIQI board using union-find algorithm
-// function evaluateBoard(board: Board, turn: number) {
-// //   const forest = getSets(board);
-// //   const black = forest.black;
-// //   const white = forest.white;
-
-//   // Iterate through the sets to find ones without liberties
-//   // First analyze the liberties of the opponent
-//   let boardAfterEval = getLiberties(board, turn === 0 ? white : black);
-//   boardAfterEval = getLiberties(boardAfterEval, turn === 0 ? black : white);
-
-//   return boardAfterEval;
-// }
 
 function isBoardFull(board: Board) {
   const dim = board.length;
@@ -474,17 +371,17 @@ function getWinningSequence(board: any, row: any, col: any, color: any) {
   return null;
 }
 /** Returns true if the game ended in a tie because there are no empty cells. */
-// // // // function isTie(board: string[][]) {
-// // // // let i;
-// // // // let j;
-// // // // for (i = 0; i < 10; i++) {
-// // // // for (j = 0; j < 10; j++) {
-// // // // if (board[i][j] === '') {
-// // // // // If there is an empty cell then we do not have a tie.
-// // // // return false;
-// // // // }
-// // // // }
-// // // // }
-// // // // // No empty cells --> tie!
-// // // // return true;
-// // // // }
+// function isTie(board: string[][]) {
+// let i;
+// let j;
+// for (i = 0; i < 10; i++) {
+// for (j = 0; j < 10; j++) {
+// if (board[i][j] === '') {
+// // If there is an empty cell then we do not have a tie.
+// return false;
+// }
+// }
+// }
+// // No empty cells --> tie!
+// return true;
+// }
