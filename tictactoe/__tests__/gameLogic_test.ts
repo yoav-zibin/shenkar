@@ -1,5 +1,5 @@
 import {IMove, deepEquals, createInitialMove} from '../../common/common';
-import {Board, IState, createMove, getInitialState} from '../gameLogic';
+import {Board, IState, createMove, getInitialState, checkRiddleData} from '../gameLogic';
 
 const X_TURN = 0;
 const O_TURN = 1;
@@ -10,17 +10,9 @@ const O_WIN_SCORES = [0, 1];
 const TIE_SCORES = [0, 0];
 
 function expectException(turnIndexBeforeMove: number, boardBeforeMove: Board, row: number, col: number): void {
-  const stateBeforeMove: IState | null = boardBeforeMove ? {board: boardBeforeMove, delta: null} : null;
+  const stateBeforeMove: IState | null = boardBeforeMove ? {board: boardBeforeMove} : null;
   // We expect an exception to be thrown :)
-  let didThrowException = false;
-  try {
-    createMove(stateBeforeMove, row, col, turnIndexBeforeMove);
-  } catch (e) {
-    didThrowException = true;
-  }
-  if (!didThrowException) {
-    throw new Error("We expect an illegal move, but createMove didn't throw any exception!");
-  }
+  expect(() => createMove(stateBeforeMove, row, col, turnIndexBeforeMove)).toThrow(Error);
 }
 
 function expectMove(
@@ -37,7 +29,7 @@ function expectMove(
     endMatchScores: endMatchScores,
     state: {board: boardAfterMove, delta: {row: row, col: col}},
   };
-  const stateBeforeMove: IState | null = boardBeforeMove ? {board: boardBeforeMove, delta: null} : null;
+  const stateBeforeMove: IState | null = boardBeforeMove ? {board: boardBeforeMove} : null;
   const move: IMove<IState> = createMove(stateBeforeMove, row, col, turnIndexBeforeMove);
   expect(deepEquals(move, expectedMove)).toBe(true);
 }
@@ -53,7 +45,6 @@ test('Initial move', function () {
         ['', '', ''],
         ['', '', ''],
       ],
-      delta: null,
     },
   };
   expect(deepEquals(move, expectedMove)).toBe(true);
@@ -212,4 +203,22 @@ test('placing X outside the board (in 0x3) is illegal', function () {
     0,
     3
   );
+});
+
+test('checkRiddleData', () => {
+  const state: IState = {
+    board: [
+      ['X', 'X', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ],
+    riddleData: 'r1',
+  };
+  const turnIndex = 0;
+  expect(checkRiddleData(state, turnIndex, [createMove(state, 0, 2, turnIndex)])).toBe(true);
+  expect(checkRiddleData({...state, riddleData: undefined}, turnIndex, [createMove(state, 0, 2, turnIndex)])).toBe(
+    false
+  );
+  expect(checkRiddleData(state, turnIndex, [createMove(state, 1, 2, turnIndex)])).toBe(false);
+  expect(checkRiddleData(state, turnIndex, [createMove(state, 2, 2, turnIndex)])).toBe(false);
 });

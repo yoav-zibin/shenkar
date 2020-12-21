@@ -2,14 +2,16 @@
 
 ## Installation
 
+Install the latest `npm` and `node` [here](https://nodejs.org/en/download/).
+
+Run:
+`npm install -g yarn`
+
 Clone from github:
 `git clone https://<YOUR_GITHUB_USER_NAME>:<YOUR_GITHUB_PASSWORD>@github.com/yoav-zibin/shenkar.git`
 
 Go into the new directory:
 `cd shenkar`
-
-Let's all use `yarn` instead of `npm`
-(see how to install [yarn](https://classic.yarnpkg.com/en/docs/install/))
 
 And install all dependencies:
 `yarn install`
@@ -18,6 +20,9 @@ And install all dependencies:
 
 Runs [expo](http://expo.io/) that allows you to run the app in various ways:
 `yarn start`
+
+To share the app run
+`expo publish`
 
 ## Unit test commands
 

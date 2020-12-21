@@ -1,15 +1,15 @@
-import getTicTacToeGameModule from '../tictactoe/components/Game';
-import {GameModule} from './common';
+import {getTicTacToeGameModule} from '../tictactoe/components/Game';
+import getGoGameModule from '../go_game/components/Game';
+import {AnyGameModule} from './common';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyGameModule = GameModule<any>;
-
-const allGameModules: AnyGameModule[] = [getTicTacToeGameModule()];
+const allGameModules: AnyGameModule[] = [getTicTacToeGameModule(), getGoGameModule()];
 
 export function getAllGameModules(): AnyGameModule[] {
   return allGameModules;
 }
 
-export function findGameModule<T>(gameId: string) {
-  return allGameModules.find((module) => module.gameId == gameId) as GameModule<T>;
+export function findGameModule(gameId: string | undefined): AnyGameModule {
+  const currentGameModule = allGameModules.find((module) => module.gameId == gameId);
+  if (!currentGameModule) throw new Error('Illegal gameId=' + gameId);
+  return currentGameModule;
 }

@@ -5,7 +5,7 @@ import {createComputerMove} from '../../common/alphaBetaService';
 
 describe('aiService', function () {
   function createStateFromBoard(board: Board): IState {
-    return {board: board, delta: null};
+    return {board: board};
   }
 
   function createComMove(board: Board, turnIndex: number, maxDepth: number): IMove<IState> {
@@ -44,7 +44,6 @@ describe('aiService', function () {
           ['O', 'X', 'X'],
           ['O', 'X', 'O'],
         ],
-        delta: null,
       },
       0,
       // at most 1 second for the AI to choose a move (but might be much quicker)
@@ -179,6 +178,60 @@ describe('aiService', function () {
         ['', '', ''],
       ],
       0,
+      5
+    );
+    expect(deepEquals(move.state.delta, {row: 0, col: 0})).toBe(true);
+  });
+
+  it('O finds a non-losing move even though it will eventually lose 1', function () {
+    // to test that the AI puts up a "fight" in TicTacToe riddles, even though it'll lose,
+    // i.e., AI has another goal and also tries to survive as many moves as possible.
+    const move = createComMove(
+      [
+        ['X', '', ''],
+        ['O', 'X', ''],
+        ['', '', ''],
+      ],
+      1,
+      5
+    );
+    expect(deepEquals(move.state.delta, {row: 2, col: 2})).toBe(true);
+  });
+
+  it('X finds a non-losing move even though it will eventually lose 1', function () {
+    const move = createComMove(
+      [
+        ['O', '', ''],
+        ['X', 'O', ''],
+        ['', '', ''],
+      ],
+      0,
+      5
+    );
+    expect(deepEquals(move.state.delta, {row: 2, col: 2})).toBe(true);
+  });
+
+  it('O finds a non-losing move even though it will eventually lose 2', function () {
+    const move = createComMove(
+      [
+        ['', '', ''],
+        ['', 'X', ''],
+        ['', 'O', 'X'],
+      ],
+      1,
+      5
+    );
+    expect(deepEquals(move.state.delta, {row: 0, col: 0})).toBe(true);
+  });
+
+  it('O finds a non-losing move even though it will eventually lose 3', function () {
+    const move = createComMove(
+      [
+        ['', '', ''],
+        ['', 'X', 'O'],
+        ['', '', 'X'],
+      ],
+      1,
       5
     );
     expect(deepEquals(move.state.delta, {row: 0, col: 0})).toBe(true);
