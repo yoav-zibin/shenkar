@@ -57,7 +57,7 @@ export const initialAppState: AppState = {
   languageId: '' as LanguageId,
   selectedGameId: '',
   lastLogin: Date.now(),
-  dailyStreak: 0
+  dailyStreak: 0,
 };
 
 const initialContext: AppContext = {
@@ -164,11 +164,11 @@ function ourReducer(appState: AppState, action: AppStateAction) {
     setActivityState,
     setStateFromAsyncStorage,
     setNoStateInAsyncStorage,
-    setStreak
+    setStreak,
   } = action;
 
-  if(setStreak){
-    return {...appState}
+  if (setStreak) {
+    return {...appState};
   }
   if (setLanguageId) {
     return {...appState, languageId: setLanguageId};

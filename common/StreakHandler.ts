@@ -7,14 +7,14 @@ const diffHours = (dt2: Date, dt1: Date): number => {
 };
 
 export const checkStreak = (state: AppState) => {
-    const currDate = new Date(Date.now());
-    const lastDate = new Date(state.lastLogin);
+  const currDate = new Date(Date.now());
+  const lastDate = new Date(state.lastLogin);
 
-    if (diffHours(currDate, lastDate) >= 24) state.dailyStreak = 0;
-    else if (currDate.getDay() != lastDate.getDay()) state.dailyStreak++;
+  if (diffHours(currDate, lastDate) >= 24) state.dailyStreak = 0;
+  else if (currDate.getDay() != lastDate.getDay()) state.dailyStreak++;
 
-    return state;
-}
+  return state;
+};
 
 /**
  * Modiefied version of readAppState to allow checking for streak
@@ -28,11 +28,10 @@ export const readAppStateAndcheckStreak = async (): Promise<AppState | null> => 
     state = await readAppState(); // read the state from storage
     if (!state) return null;
     state = checkStreak(state);
-    await reducerAndStoreState(state, {setStreak: true}); //store the changes of dailystreak back to the storage
+    await reducerAndStoreState(state, {setStreak: true}); // store the changes of dailystreak back to the storage
     return state;
   } catch (e) {
     console.log(e);
-  } finally {
-    return state;
   }
+  return state;
 };
