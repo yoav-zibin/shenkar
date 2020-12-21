@@ -19,12 +19,4 @@ describe('Game Logic Test', () => {
 
     expect(deepEquals(board, expectedBoard)).toBe(true);
   });
-
-  // it('Initial move', function () {
-  //   console.log('NEED TO IMPLEMENT');
-  // });
-
-  // it('Black Win', () => {
-  //   console.log('NEED TO IMPLEMENT');
-  // });
 });

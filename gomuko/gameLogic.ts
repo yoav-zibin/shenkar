@@ -6,12 +6,19 @@ export interface BoardDelta {
   col: number;
 }
 export type RiddleData = 'r1' | 'r2' | 'r3' | 'r4' | 'r5';
+export enum Difficulty {
+  NOVICE = 3,
+  MEDIUM = 4,
+  EXPERT = 5,
+}
+
 export interface IState {
   board: Board;
   boardBeforeMove: Board;
   delta: BoardDelta | null; // [-1,-1] means a pass.
   passes: number;
   deadBoard: boolean[][] | null;
+  difficulty: Difficulty;
   // For the rule of KO:
   // One may not capture just one stone,
   // if that stone was played on the previous move,
@@ -116,6 +123,7 @@ function getboardNum(board: Board, turnIndex: number): number {
   for (let i = 0; i < dim; i++) for (let j = 0; j < dim; j++) if (board[i][j] === color) sum++;
   return sum;
 }
+
 function getPosJustCapturedForKo(boardBeforeMove: Board, boardAfterMove: Board, turnIndex: number): BoardDelta | null {
   const oppositeColor = turnIndex ? 'B' : 'W';
   let result: BoardDelta | null = null;
@@ -231,6 +239,7 @@ export function createMove(
       posJustCapturedForKo: posJustCapturedForKo,
       deadBoard: deadBoard,
       riddleWon: riddleWon,
+      difficulty: Difficulty.NOVICE,
     },
   };
 }
@@ -251,6 +260,7 @@ export function getInitialState(): IState {
     passes: 0,
     deadBoard: null,
     posJustCapturedForKo: null,
+    difficulty: Difficulty.NOVICE,
   };
 }
 
@@ -346,30 +356,23 @@ function checkVertical(board: {[x: string]: unknown}[], row: number, col: string
 // This method check the four directions to see if any has a connecting sequence that has a length
 // exactly equal to five, if yes, return the winning color and sequence
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getWinningSequence(board: any, row: any, col: any, color: any) {
-  let winningSeuqnece: unknown[] = [];
-  if (checkHorizontal(board, row, col, color).length === 5) {
-    winningSeuqnece = [color, checkHorizontal(board, row, col, color)];
-    // console.log('horizon');
+const getWinningSequence = (board: any, row: any, col: any, color: any) => {
+  // eslint-disable-next-line
+  let winningSeuqnece: any[] = [];
+  if ((winningSeuqnece = checkHorizontal(board, row, col, color)).length === 5) {
     return winningSeuqnece;
   }
-  if (checkVertical(board, row, col, color).length === 5) {
-    winningSeuqnece = [color, checkHorizontal(board, row, col, color)];
-    // console.log('vertical');
+  if ((winningSeuqnece = checkVertical(board, row, col, color)).length === 5) {
     return winningSeuqnece;
   }
-  if (checkBackSlash(board, row, col, color).length === 5) {
-    winningSeuqnece = [color, checkHorizontal(board, row, col, color)];
-    // console.log('back slash');
+  if ((winningSeuqnece = checkBackSlash(board, row, col, color)).length === 5) {
     return winningSeuqnece;
   }
-  if (checkForwardSlash(board, row, col, color).length === 5) {
-    winningSeuqnece = [color, checkHorizontal(board, row, col, color)];
-    // console.log('forward slash');
+  if ((winningSeuqnece = checkForwardSlash(board, row, col, color)).length === 5) {
     return winningSeuqnece;
   }
-  return null;
-}
+  return [];
+};
 /** Returns true if the game ended in a tie because there are no empty cells. */
 // function isTie(board: string[][]) {
 // let i;

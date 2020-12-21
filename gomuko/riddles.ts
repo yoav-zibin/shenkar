@@ -1,5 +1,5 @@
 import {RiddlesLevel} from '../common/common';
-import {Board, IState, RiddleData} from './gameLogic';
+import {Board, Difficulty, IState, RiddleData} from './gameLogic';
 
 function r(riddleData: RiddleData, board: Board, riddleWin: number[]): IState {
   return {
@@ -11,6 +11,7 @@ function r(riddleData: RiddleData, board: Board, riddleWin: number[]): IState {
     posJustCapturedForKo: null,
     delta: null,
     riddleWin: riddleWin,
+    difficulty: Difficulty.NOVICE,
   };
 }
 
