@@ -21,10 +21,10 @@ export interface IState {
   riddleWin?: number[];
   riddleWon?: boolean;
 }
-type Points = number[][]; // A point (row,col) is represented as an array with 2 elements: [row,col].
+export type Points = number[][]; // A point (row,col) is represented as an array with 2 elements: [row,col].
 type Sets = {white: Points[]; black: Points[]};
 
-function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
+export function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
   switch (hint) {
     case 'r1':
       return row == 0;
