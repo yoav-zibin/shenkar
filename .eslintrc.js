@@ -3,6 +3,7 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
+    'jest/globals': true,
     jest: true,
   },
   extends: [
@@ -76,8 +77,5 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'error',
     'jest/no-disabled-tests': 'error',
     'jest/no-commented-out-tests': 'error',
-    'new-cap': 'off',
-    'no-self-assign': 'off',
-    'react/jsx-no-undef': 'off',
   },
 };
