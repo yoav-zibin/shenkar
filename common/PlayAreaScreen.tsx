@@ -32,11 +32,8 @@ export function PlayAreaScreen() {
   const {appState, dispatch} = useStoreContext();
   const {activityState, selectedGameId, activity} = appState;
   const gameModule = findGameModule(selectedGameId);
-  if (!activity) {
-    throw new Error('no activity in PlayAreaScreen');
-  }
-  if (!activityState) {
-    throw new Error('no activityState in PlayAreaScreen');
+  if (!activity || !activityState) {
+    return null;
   }
   console.log('Render PlayArea activity=', activity);
 
