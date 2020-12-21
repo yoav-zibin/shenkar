@@ -138,11 +138,6 @@ const LOCALIZE_ID_TO_NAME = {
 
   // GO! ends.
   // Connect4 starts.
-  // Connect4 ends.
-  // Dots and Boxes starts.
-  // Dots and Boxes ends.
-  // Gomoku starts.
-  // Gomoku ends.
   CONNECT4_GAME_NAME: {
     en: 'Connect4',
     he: 'ארבע בשורה',
@@ -164,6 +159,11 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'ניצחון בטוח עד 4 צעדים',
   },
 };
+  // Connect4 ends.
+  // Dots and Boxes starts.
+  // Dots and Boxes ends.
+  // Gomoku starts.
+  // Gomoku ends.
 
 export type LocalizeId = keyof typeof LOCALIZE_ID_TO_NAME;
 export function localize(id: LocalizeId, appState: AppState): string {
