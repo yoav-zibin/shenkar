@@ -108,7 +108,7 @@ function getStateValue(board: Board): number {
 /**
  * Get the state score for player 0, a simple wrapper function
  */
-function getStateScoreForIndex0(state: IState): number {
+export function getStateScoreForIndex0(state: IState): number {
   // getStateValue return the score for player 1.
   return -getStateValue(state.board);
 }
@@ -169,7 +169,7 @@ function getAllMoves(board: Board, turnIndex: number): MiniMove[][] {
 /**
  * Get the next state which is extracted from the move operations.
  */
-function getPossibleMoves(state: IState, playerIndex: number): IMove<IState>[] {
+export function getPossibleMoves(state: IState, playerIndex: number): IMove<IState>[] {
   const board: Board = state.board;
   const allPossibleMoveDeltas: MiniMove[][] = getAllMoves(board, playerIndex);
   const allPossibleMoves: IMove<IState>[] = [];

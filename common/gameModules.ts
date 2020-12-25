@@ -1,8 +1,10 @@
 import getTicTacToeGameModule from '../tictactoe/components/Game';
+import getCheckersGameModule from '../checkers/components/Game';
 import {AnyGameModule} from './common';
 
 const allGameModules: AnyGameModule[] = [
   getTicTacToeGameModule(),
+  getCheckersGameModule(),
   // TODO: add your games.
 ];
 
