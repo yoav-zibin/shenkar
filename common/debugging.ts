@@ -1,7 +1,7 @@
 export const DEBUGGING_OPTIONS = {
   // To skip the <ChooseLanguage> component, set it to a language Id,
   // e.g., 'he'
-  SKIP_CHOOSE_LANGUAGE_AND_USE: '',
+  SKIP_CHOOSE_LANGUAGE_AND_USE: 'en',
 
   // To skip the <ChooseGame> component, set it to a game Id,
   // e.g., 'tictactoe'

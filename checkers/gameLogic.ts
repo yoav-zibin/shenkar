@@ -9,12 +9,17 @@ export interface MiniMove {
   fromDelta: BoardDelta;
   toDelta: BoardDelta;
 }
+
+// TODO edit the hint, change it from titactoe to checkers
+export type RiddleData = 's1' | 's2' | 's3';
+
 export interface IState {
   board: Board;
-  boardBeforeMove: Board;
+  boardBeforeMove?: Board;
   // The mini-moves (e.g., a move or a series of jumps) that led to the current board. For animation purposes.
   // All mini-moves are done by the same color (white/black).
   miniMoves: MiniMove[];
+  riddleData?: RiddleData;
 }
 
 export const ENUM = {
@@ -947,4 +952,19 @@ export function getInitialBoard(): Board {
     ['--', 'WM', '--', 'WM', '--', 'WM', '--', 'WM'],
     ['WM', '--', 'WM', '--', 'WM', '--', 'WM', '--'],
   ];
+}
+// function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
+//   switch (hint) {
+//     case 's1':
+//       return row == 0;
+//     case 's2':
+//       return row == 1;
+//     case 's3':
+//       return row == 2;
+//   }
+// }
+export function checkRiddleData(/* state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[] */): boolean {
+  // const {riddleData} = state;
+  // return !riddleData ? false : firstMoveSolutions.some((firstMove) => firstMove.state.miniMoves);
+  return true;
 }

@@ -105,6 +105,30 @@ const LOCALIZE_ID_TO_NAME = {
   },
   // TICTACTOE ends.
   // Checkers starts.
+  CHECKERS_GAME_NAME: {
+    en: 'Çheckers',
+    he: 'דמקה',
+  },
+  CHECKERS_LEVEL1: {
+    en: 'White wins in one move',
+    he: 'לבן מנצח במהלך אחד',
+  },
+  CHECKERS_LEVEL2: {
+    en: 'White prevent from Black to eat',
+    he: 'לבן מונע מהשחור לאכול',
+  },
+  CHECKERS_LEVEL3: {
+    en: 'White crowns',
+    he: 'לבן ממליך',
+  },
+  CHECKERS_LEVEL4: {
+    en: 'White crowns',
+    he: 'לבן ממליך',
+  },
+  CHECKERS_LEVEL5: {
+    en: 'White crowns',
+    he: 'לבן ממליך',
+  },
   // Checkers ends.
   // Reversi starts.
   // Reversi ends.
