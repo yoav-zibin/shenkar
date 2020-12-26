@@ -963,7 +963,8 @@ export function getInitialBoard(): Board {
 //       return row == 2;
 //   }
 // }
-export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
-  const {riddleData} = state;
-  return !riddleData ? false : firstMoveSolutions.some((firstMove) => firstMove.state.miniMoves);
+export function checkRiddleData(/* state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[] */): boolean {
+  // const {riddleData} = state;
+  // return !riddleData ? false : firstMoveSolutions.some((firstMove) => firstMove.state.miniMoves);
+  return true;
 }
