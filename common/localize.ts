@@ -121,6 +121,14 @@ const LOCALIZE_ID_TO_NAME = {
     en: 'White crowns',
     he: 'לבן ממליך',
   },
+  CHECKERS_LEVEL4: {
+    en: 'White crowns',
+    he: 'לבן ממליך',
+  },
+  CHECKERS_LEVEL5: {
+    en: 'White crowns',
+    he: 'לבן ממליך',
+  },
   // Checkers ends.
   // Reversi starts.
   // Reversi ends.

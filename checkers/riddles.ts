@@ -82,4 +82,52 @@ export const riddleLevels: RiddlesLevel<IState>[] = [
       ),
     ],
   },
+  {
+    levelLocalizeId: 'CHECKERS_LEVEL4',
+    maxMovesNum: 3,
+    difficulty: 'HARD',
+    turnIndex: 0,
+    riddles: [
+      r(
+        's3',
+        [
+          ['--', 'BM', '--', 'BM', '--', 'BM', '--', 'BM'],
+          ['BM', '--', 'BM', '--', 'BM', '--', 'BM', '--'],
+          ['--', 'BM', '--', 'BM', '--', 'BM', '--', 'BM'],
+          ['DS', '--', 'DS', '--', 'DS', '--', 'DS', '--'],
+          ['--', 'DS', '--', 'DS', '--', 'DS', '--', 'DS'],
+          ['WM', '--', 'WM', '--', 'WM', '--', 'WM', '--'],
+          ['--', 'WM', '--', 'WM', '--', 'WM', '--', 'WM'],
+          ['WM', '--', 'WM', '--', 'WM', '--', 'WM', '--'],
+        ],
+        [
+          /* minimoves */
+        ]
+      ),
+    ],
+  },
+  {
+    levelLocalizeId: 'CHECKERS_LEVEL5',
+    maxMovesNum: 3,
+    difficulty: 'HARD',
+    turnIndex: 0,
+    riddles: [
+      r(
+        's3',
+        [
+          ['--', 'BM', '--', 'BM', '--', 'BM', '--', 'BM'],
+          ['BM', '--', 'BM', '--', 'BM', '--', 'BM', '--'],
+          ['--', 'BM', '--', 'BM', '--', 'BM', '--', 'BM'],
+          ['DS', '--', 'DS', '--', 'DS', '--', 'DS', '--'],
+          ['--', 'DS', '--', 'DS', '--', 'DS', '--', 'DS'],
+          ['WM', '--', 'WM', '--', 'WM', '--', 'WM', '--'],
+          ['--', 'WM', '--', 'WM', '--', 'WM', '--', 'WM'],
+          ['WM', '--', 'WM', '--', 'WM', '--', 'WM', '--'],
+        ],
+        [
+          /* minimoves */
+        ]
+      ),
+    ],
+  },
 ];
