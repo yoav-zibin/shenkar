@@ -178,3 +178,4 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
     </View>
   );
 };
+
