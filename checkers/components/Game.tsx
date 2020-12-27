@@ -13,7 +13,8 @@ import {
   createMove,
   IState,
   getInitialState,
-  checkRiddleData /* createMiniMove, getAllPossibleMoves */,
+  checkRiddleData /* createMiniMove, */,
+  // getAllPossibleMoves,
 } from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {riddleLevels} from '../riddles';
@@ -114,9 +115,14 @@ export default function getCheckersGameModule(): GameModule<IState> {
 const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProps<IState>) => {
   const {move, setMove, yourPlayerIndex /* showHint */} = props;
   const {turnIndex, state} = move;
-  const {/* riddleData,*/ board, miniMoves} = state;
+  const {/* riddleData, */ board, miniMoves} = state;
   // console.log('Render Checkers miniMoves=', miniMoves);
+  // const isRiddle = false;
+  // const movesOptions = false;
 
+  // if(riddleData){
+
+  // }
   function clickedOn(row: number, col: number) {
     console.log(turnIndex);
     console.log(yourPlayerIndex);
@@ -128,8 +134,8 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
     // IT HAS TO BE EXIST IN THE SQURE
     // IT HAS TO MUCH THE PLAYER HOW IT IS HIS TURV
     // if (miniMoves.length > 0) {
-    //   const fromDelta: BoardDelta = { col: col, row: row };
-    //   const allPMoves : BoardDelta[] = getAllPossibleMoves(board,fromDelta,turnIndex);
+    //  const fromDelta: BoardDelta = { col: col, row: row };
+    //  const allPMoves : BoardDelta[] = getAllPossibleMoves(board,fromDelta,turnIndex);
 
     // }
 
@@ -178,4 +184,3 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
     </View>
   );
 };
-

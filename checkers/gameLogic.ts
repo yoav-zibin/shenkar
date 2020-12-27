@@ -11,14 +11,14 @@ export interface MiniMove {
 }
 
 // TODO edit the hint, change it from titactoe to checkers
-export type RiddleData = 's1' | 's2' | 's3';
+export type RiddleData = 's1' | 's2' | 's3' | 's4' | 's5' | 's6' | 's7' | 's8' | 's9' | 's10' | 's11' | 's12';
 
 export interface IState {
   board: Board;
   boardBeforeMove?: Board;
   // The mini-moves (e.g., a move or a series of jumps) that led to the current board. For animation purposes.
   // All mini-moves are done by the same color (white/black).
-  miniMoves: MiniMove[];
+  miniMoves?: MiniMove[];
   riddleData?: RiddleData;
 }
 
