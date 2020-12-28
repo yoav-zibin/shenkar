@@ -7,6 +7,8 @@ const diffHours = (dt2: Date, dt1: Date): number => {
 };
 
 export const checkStreak = (state: AppState) => {
+  if (state.lastLogin === undefined || state.dailyStreak === undefined) return state;
+
   const currDate = new Date(Date.now());
   const lastDate = new Date(state.lastLogin);
 
@@ -21,12 +23,13 @@ export const checkStreak = (state: AppState) => {
  * the function reads the state checks the streak saves changes if there are any and returns the new state
  * otherwise it returns the state it read as is.
  */
-
 export const readAppStateAndcheckStreak = async (): Promise<AppState | null> => {
   let state: AppState | null = null;
   try {
     state = await readAppState(); // read the state from storage
     if (!state) return null;
+    if (!state.dailyStreak) state.dailyStreak = 0;
+    if (!state.lastLogin) state.lastLogin = Date.now();
     state = checkStreak(state);
     await reducerAndStoreState(state, {setStreak: true}); // store the changes of dailystreak back to the storage
     return state;

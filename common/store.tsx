@@ -15,8 +15,8 @@ export interface AppContext {
 export interface AppState {
   isInitialState: boolean;
   languageId: LanguageId;
-  lastLogin: number;
-  dailyStreak: number;
+  lastLogin?: number; // The last epoch timestamp that the user logged in
+  dailyStreak?: number; // The daily streak count starting from 0 and counting up.
   selectedGameId?: string;
   activity?: Activity;
   activityState?: ActivityState;
