@@ -23,7 +23,7 @@ export const checkStreak = (state: AppState) => {
  * the function reads the state checks the streak saves changes if there are any and returns the new state
  * otherwise it returns the state it read as is.
  */
-export const readAppStateAndcheckStreak = async (): Promise<AppState | null> => {
+export const readAppStateAndCheckStreak = async (): Promise<AppState | null> => {
   let state: AppState | null = null;
   try {
     state = await readAppState(); // read the state from storage

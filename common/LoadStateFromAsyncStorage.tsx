@@ -2,15 +2,14 @@ import React, {useEffect} from 'react';
 import {useStoreContext} from './store';
 import {Main} from './Main';
 import {DEBUGGING_OPTIONS} from './debugging';
-import {readAppStateAndcheckStreak} from './StreakHandler';
+import {readAppStateAndCheckStreak} from './StreakHandler';
 
 export function LoadStateFromAsyncStorage() {
   const {appState, dispatch} = useStoreContext();
   useEffect(() => {
     console.log('One time reading from AsyncStorage. isInitialState=', appState.isInitialState);
     if (appState.isInitialState) {
-      readAppStateAndcheckStreak().then((appStateFromAsyncStorage) => {
-        console.log(appStateFromAsyncStorage);
+      readAppStateAndCheckStreak().then((appStateFromAsyncStorage) => {
         if (appStateFromAsyncStorage && !DEBUGGING_OPTIONS.IGNORE_ASYNC_STORAGE) {
           dispatch({setStateFromAsyncStorage: appStateFromAsyncStorage});
         } else {
