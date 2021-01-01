@@ -19,7 +19,7 @@ describe('Streak Handler Tests', () => {
     const lastDate = new Date(state.lastLogin);
     lastDate.setHours(lastDate.getHours() - 18);
     state.lastLogin = lastDate.getTime();
-    expect(checkStreak(state)).toHaveProperty('dailyStreak', 1);
+    expect(checkStreak(state)).toHaveProperty('dailyStreak', 0);
   });
 
   it('difference is less than 24 hours and same day state doesnt change state', () => {
