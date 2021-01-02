@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function App() {
+export default function Home() {
   return (
     <View style={{flex: 1, backgroundColor: 'rgb(250,250,250)'}}>
       <StateProvider>
