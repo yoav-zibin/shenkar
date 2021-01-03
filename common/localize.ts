@@ -21,7 +21,7 @@ const LOCALIZE_ID_TO_NAME = {
   },
   CHOOSE_GAME_SCREEN: {
     en: 'Change game',
-    he: 'החלף משחק',
+    he: 'בחר משחק',
   },
   CHOOSE_ACTIVITY_SCREEN: {
     en: 'Change activity',

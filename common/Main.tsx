@@ -1,65 +1,35 @@
 import React from 'react';
-import {ChooseGameScreen} from './ChooseGameScreen';
-import {SettingsScreen} from './SettingsScreen';
-import {getScreenTitle, RouteName, RootStackParamList, useStoreContext} from './store';
-import {PlayAreaScreen} from './PlayAreaScreen';
-import {ChooseActivityScreen} from './ChooseActivityScreen';
-// import { createStackNavigator } from '@react-navigation/stack';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-// import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {ChooseActivityScreen} from './ChooseActivityScreen';
+import {ChooseGameScreen} from './ChooseGameScreen';
+import {PlayAreaScreen} from './PlayAreaScreen';
+import {SettingsScreen} from './SettingsScreen';
+import {RootStackParamList, useStoreContext} from './store';
+import {localize} from './localize';
 
-const Navigator = createBottomTabNavigator<RootStackParamList>();
+const GameStack = createStackNavigator<RootStackParamList>();
 
 export function Main() {
   const {appState} = useStoreContext();
-  const {selectedGameId, languageId, activity} = appState;
-
-  const initialRouteName: RouteName = !languageId
-    ? 'Settings'
-    : !selectedGameId
-    ? 'ChooseGame'
-    : !activity
-    ? 'ChooseActivity'
-    : 'PlayArea';
 
   // After choosing Settings (language) and game, we show the usual UI.
   return (
     <NavigationContainer>
-      <Navigator.Navigator initialRouteName={initialRouteName}>
-        <Navigator.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{title: getScreenTitle('Settings', appState)}}
+      <GameStack.Navigator>
+        <GameStack.Screen name="Settings" component={SettingsScreen} options={{headerShown: false}} />
+        <GameStack.Screen
+          name="ChooseGame"
+          component={ChooseGameScreen}
+          options={{headerTitle: localize('CHOOSE_GAME_SCREEN', appState)}}
         />
-        {!languageId ? null : (
-          <>
-            <Navigator.Screen
-              name="ChooseGame"
-              component={ChooseGameScreen}
-              options={{title: getScreenTitle('ChooseGame', appState)}}
-            />
-            {!selectedGameId ? null : (
-              <>
-                <Navigator.Screen
-                  name="ChooseActivity"
-                  component={ChooseActivityScreen}
-                  options={{title: getScreenTitle('ChooseActivity', appState)}}
-                />
-                {!activity ? null : (
-                  <>
-                    <Navigator.Screen
-                      name="PlayArea"
-                      component={PlayAreaScreen}
-                      options={{title: getScreenTitle('PlayArea', appState)}}
-                    />
-                  </>
-                )}
-              </>
-            )}
-          </>
-        )}
-      </Navigator.Navigator>
+        <GameStack.Screen
+          name="ChooseActivity"
+          component={ChooseActivityScreen}
+          options={{headerTitle: localize('CHOOSE_ACTIVITY_SCREEN', appState)}}
+        />
+        <GameStack.Screen name="PlayArea" component={PlayAreaScreen} options={{headerTitle: 'שם המשחק'}} />
+      </GameStack.Navigator>
     </NavigationContainer>
   );
 }

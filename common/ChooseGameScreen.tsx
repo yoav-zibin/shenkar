@@ -1,11 +1,9 @@
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
+import Background from './Background';
 import {FlatListChooser} from './FlatListChooser';
 import {getAllGameModules} from './gameModules';
 import {navigateNextFrame, useStoreContext} from './store';
-import {TitleBar} from './TitleBar';
-import {useNavigation} from '@react-navigation/native';
-import {commonStyles} from './common';
-import {View} from 'react-native';
 
 export function ChooseGameScreen() {
   const {dispatch} = useStoreContext();
@@ -15,8 +13,7 @@ export function ChooseGameScreen() {
   });
   console.log('Render ChooseGameScreen.');
   return (
-    <View style={commonStyles.screen}>
-      <TitleBar />
+    <Background>
       <FlatListChooser
         choices={choices}
         setChoice={(choice) => {
@@ -24,6 +21,6 @@ export function ChooseGameScreen() {
           navigateNextFrame('ChooseActivity', navigation);
         }}
       />
-    </View>
+    </Background>
   );
 }
