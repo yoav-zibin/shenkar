@@ -327,6 +327,6 @@ function checkDiagonal(board: string[][], row: number, col: number, playerColor:
 }
 
 function gameFinished(playerColor: string): boolean {
-  alert(playerColor + ' won');
+  console.log(playerColor + ' won');
   return true;
 }
