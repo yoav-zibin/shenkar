@@ -3,6 +3,7 @@ import {
   /* Animated, */ StyleSheet,
   TouchableWithoutFeedback,
   View,
+  Text,
   Image,
   ImageBackground /* ViewStyle */,
 } from 'react-native';
@@ -10,15 +11,18 @@ import {
 import {GameModule, GameProps} from '../../common/common';
 
 import {
-  createMove,
+  // createMove,
   IState,
   getInitialState,
-  checkRiddleData /* createMiniMove, */,
-  // getAllPossibleMoves,
+  checkRiddleData,
+  getAllPossibleMoves,
+  isOwnColor,
+  createMiniMove,
+  getColor,
 } from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {riddleLevels} from '../riddles';
-// import { BoardDelta } from '../../tictactoe/gameLogic';
+import {BoardDelta} from '../../tictactoe/gameLogic';
 
 // const hintLineColor = 'green';
 
@@ -69,34 +73,15 @@ const styles = StyleSheet.create({
     width: '80%',
     height: '80%',
   },
-  //   hintLineCol: {
-  //     position: 'absolute',
-  //     width: 8,
-  //     height: '100%',
-  //     backgroundColor: hintLineColor,
-  //   },
-  //   hintLineRow: {
-  //     position: 'absolute',
-  //     width: '100%',
-  //     height: 8,
-  //     backgroundColor: hintLineColor,
-  //   },
-  //   hintLineDiagonal1: {
-  //     position: 'absolute',
-  //     width: 8,
-  //     height: '100%',
-  //     backgroundColor: hintLineColor,
-  //     transform: [{rotate: '135deg'}],
-  //     left: '50%',
-  //   },
-  //   hintLineDiagonal2: {
-  //     position: 'absolute',
-  //     width: 8,
-  //     height: '100%',
-  //     backgroundColor: hintLineColor,
-  //     transform: [{rotate: '45deg'}],
-  //     left: '50%',
-  //   },
+  bottomView: {
+    height: 100,
+  },
+  text: {
+    marginTop: 20,
+    fontSize: 19,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });
 
 export default function getCheckersGameModule(): GameModule<IState> {
@@ -113,38 +98,40 @@ export default function getCheckersGameModule(): GameModule<IState> {
 }
 
 const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProps<IState>) => {
-  const {move, setMove, yourPlayerIndex /* showHint */} = props;
+  const {move, setMove /* , yourPlayerIndex, showHint */} = props;
   const {turnIndex, state} = move;
-  const {/* riddleData, */ board, miniMoves} = state;
+  const {board /* riddleData, miniMoves */} = state;
   // console.log('Render Checkers miniMoves=', miniMoves);
-  // const isRiddle = false;
-  // const movesOptions = false;
+  // let fromDelta: BoardDelta;
+  let allPMoves: BoardDelta[] = [];
+  let selectedMovingPiece: BoardDelta;
 
-  // if(riddleData){
-
-  // }
   function clickedOn(row: number, col: number) {
-    console.log(turnIndex);
-    console.log(yourPlayerIndex);
-    if (turnIndex != yourPlayerIndex) {
-      return;
-    }
-
-    // check IF it is a piece choose
-    // IT HAS TO BE EXIST IN THE SQURE
-    // IT HAS TO MUCH THE PLAYER HOW IT IS HIS TURV
-    // if (miniMoves.length > 0) {
-    //  const fromDelta: BoardDelta = { col: col, row: row };
-    //  const allPMoves : BoardDelta[] = getAllPossibleMoves(board,fromDelta,turnIndex);
-
-    // }
-
     try {
-      const move = createMove(board, miniMoves, turnIndex);
-
-      setMove(move);
+      for (const eachM of allPMoves) {
+        if (eachM.row == row && eachM.col == col) {
+          const toDelta = {col: col, row: row};
+          const fromDelta = {col: selectedMovingPiece.col, row: selectedMovingPiece.row};
+          const nextMove = createMiniMove(board, fromDelta, toDelta, turnIndex);
+          setMove(nextMove);
+        }
+      }
+      if (isOwnColor(turnIndex, getColor(board[row][col]))) {
+        const fromDelta: BoardDelta = {col: col, row: row};
+        selectedMovingPiece = {col: col, row: row};
+        allPMoves = getAllPossibleMoves(board, fromDelta, turnIndex);
+        console.log(allPMoves);
+        if (allPMoves.length == 0) {
+          console.log('No valid moves');
+        }
+      } else {
+        allPMoves = [];
+      }
     } catch (e) {
-      console.info('Cell is already full in position:', row, col);
+      console.log('printing error:', e.message);
+      state.error = e.message;
+      const errorUpdate = {endMatchScores: move.endMatchScores, turnIndex: move.turnIndex, state: move.state};
+      setMove(errorUpdate);
     }
   }
 
@@ -156,13 +143,28 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
   function getPiece(r: number, c: number) {
     if (board[r][c] == '--') return null;
     if (board[r][c] == 'DS') return null;
-    return (
-      <Image
-        style={styles.pieceImage}
-        source={board[r][c] == 'BM' ? require('../imgs/white_man.png') : require('../imgs/black_man.png')}
-      />
-    );
+    let piece;
+
+    switch (board[r][c]) {
+      case 'BM': {
+        piece = require('../imgs/black_man.png');
+        break;
+      }
+      case 'WM': {
+        piece = require('../imgs/white_man.png');
+        break;
+      }
+      case 'BK': {
+        piece = require('../imgs/black_cro.png');
+        break;
+      }
+      case 'WK':
+        piece = require('../imgs/white_cro.png');
+    }
+
+    return <Image style={styles.pieceImage} source={piece} />;
   }
+
   return (
     <View style={styles.container}>
       <View style={styles.fixedRatio}>
@@ -179,7 +181,9 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
             ))}
           </View>
         </ImageBackground>
-        {/* {hintLine} */}
+        <View style={styles.bottomView}>
+          <Text style={styles.text}>{state.error}</Text>
+        </View>
       </View>
     </View>
   );

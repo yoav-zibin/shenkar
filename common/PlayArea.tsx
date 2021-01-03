@@ -30,7 +30,7 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
   const {appState, dispatch} = useStoreContext();
   const {activityState} = appState;
   if (!activityState) throw new Error('no activityState');
-  console.log('Render PlayArea activityState=', activityState, ' activity=', activity);
+  // console.log('Render PlayArea activityState=', activityState, ' activity=', activity);
 
   const {riddleActivity, playActivity} = activity;
   const {yourPlayerIndex, initialMove, currentMove, currentMoveNum, maxMovesNum, showHint} = activityState;

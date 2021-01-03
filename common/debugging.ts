@@ -5,7 +5,7 @@ export const DEBUGGING_OPTIONS = {
 
   // To skip the <ChooseGame> component, set it to a game Id,
   // e.g., 'tictactoe'
-  SKIP_CHOOSE_GAME_AND_JUMP_TO: '',
+  SKIP_CHOOSE_GAME_AND_JUMP_TO: 'checkers',
 
   // To skip the <ChooseGame> component, set it to an activity,
   // e.g., {playActivity: {playType: 'PASS_AND_PLAY'}}

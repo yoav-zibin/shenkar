@@ -20,6 +20,7 @@ export interface IState {
   // All mini-moves are done by the same color (white/black).
   miniMoves?: MiniMove[];
   riddleData?: RiddleData;
+  error?: string | null;
 }
 
 export const ENUM = {
@@ -132,7 +133,7 @@ function doesContainMove(moves: BoardDelta[], move: BoardDelta): boolean {
  * jumping piece. In another word, check whether the player is operating
  * his/her own piece.
  *
- * @param turnIndex 0 represents the black player and 1
+ * @param turnIndex 1 represents the black player and 0
  *        represents the white player.
  * @param color the color of the moving or jumping piece.
  * @returns true if the index matches the color, otherwise false.
