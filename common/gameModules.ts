@@ -1,6 +1,7 @@
 import {getTicTacToeGameModule} from '../tictactoe/components/Game';
 import getGoGameModule from '../go_game/components/Game';
 import {getConnect4Module} from '../connect4/components/Game';
+import getGomokuGameModule from '../gomuko/components/Game';
 import {AnyGameModule} from './common';
 
 const allGameModules: AnyGameModule[] = [

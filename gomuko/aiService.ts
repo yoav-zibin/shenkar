@@ -2,10 +2,8 @@ import {AiService, deepClone, IMove} from '../common/common';
 import {IState, createMove, getInitialState} from './gameLogic';
 
 export function getPossibleMoves(state: IState, turnIndex: number): IMove<IState>[] {
-  // eslint-disable-next-line
   const moveList: IMove<IState>[] = [];
   moveList.push(calcNextMove(state, turnIndex));
-  console.log(moveList);
   return moveList;
 }
 

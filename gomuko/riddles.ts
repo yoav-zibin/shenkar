@@ -8,7 +8,6 @@ function r(riddleData: RiddleData, board: Board, riddleWin: number[]): IState {
     boardBeforeMove: board,
     passes: 2,
     deadBoard: null,
-    posJustCapturedForKo: null,
     delta: null,
     riddleWin: riddleWin,
     difficulty: Difficulty.NOVICE,
