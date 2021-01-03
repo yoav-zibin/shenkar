@@ -69,6 +69,9 @@ function checkRiddle<S>(
   const firstMoveSolutions = aiService
     .getPossibleMoves(state, turnIndex)
     .filter((m) => isRiddleSolved(aiService, m, turnIndex, maxMovesNum - (turnIndex == m.turnIndex ? 0 : 1)));
+  if (firstMoveSolutions.length == 0) {
+    throw new Error('Did not find a solution for this riddle:' + toPrettyJson({state, turnIndex, maxMovesNum}));
+  }
   if (!checkRiddleData(state, turnIndex, firstMoveSolutions)) {
     throw new Error('checkRiddleData returned false for:' + toPrettyJson({state, turnIndex, firstMoveSolutions}));
   }

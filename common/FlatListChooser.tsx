@@ -19,7 +19,7 @@ interface Props<T> {
   choices: Choice<T>[];
   setChoice: (selection: Choice<T>) => void;
 }
-export default function FlatListChooser<T>(props: Props<T>) {
+export function FlatListChooser<T>(props: Props<T>) {
   const {appState} = useStoreContext();
   return (
     <FlatList

@@ -3,6 +3,7 @@
 
 import {useEffect} from 'react';
 import {LocalizeId} from './localize';
+import {StyleSheet} from 'react-native';
 
 // Always set the <state> to be the state after making the move.
 export type EndMatchScores = number[] | null;
@@ -111,6 +112,13 @@ export function useEffectToSetAndClearTimeout(callbackCallingTimeout: () => Node
     }
   });
 }
+
+export const commonStyles = StyleSheet.create({
+  screen: {
+    backgroundColor: 'rgb(250,250,250)',
+    flex: 1,
+  },
+});
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function deepEqualsAny(x: any, y: any) {

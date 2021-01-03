@@ -1,10 +1,13 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {AnyGameModule, IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
+import {commonStyles, IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
 import {createComputerMove} from './alphaBetaService';
-import {Activity, computerLevelToAiMillis, useStoreContext} from './store';
+import {navigateNextFrame, useStoreContext} from './store';
 import {localize, LocalizeId} from './localize';
 import {DEBUGGING_OPTIONS} from './debugging';
+import {TitleBar} from './TitleBar';
+import {findGameModule} from './gameModules';
+import {useNavigation} from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   bottomView: {
@@ -24,15 +27,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function PlayArea(props: {gameModule: AnyGameModule; activity: Activity}) {
-  const {gameModule, activity} = props;
-
+export function PlayAreaScreen() {
+  const navigation = useNavigation();
   const {appState, dispatch} = useStoreContext();
-  const {activityState} = appState;
-  if (!activityState) throw new Error('no activityState');
-  // console.log('Render PlayArea activityState=', activityState, ' activity=', activity);
+  const {activityState, selectedGameId, activity} = appState;
+  const gameModule = findGameModule(selectedGameId);
+  if (!activity || !activityState) {
+    return null;
+  }
+  console.log('Render PlayArea activity=', activity);
 
-  const {riddleActivity, playActivity} = activity;
+  const {riddleActivity, activityType} = activity;
   const {yourPlayerIndex, initialMove, currentMove, currentMoveNum, maxMovesNum, showHint} = activityState;
   const opponentPlayerIndex = 1 - yourPlayerIndex;
   const {turnIndex, endMatchScores, state} = currentMove;
@@ -44,22 +49,15 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
   useEffectToSetAndClearTimeout(() => {
     // Does the AI need to make a move?
     if (!isActivityOver && turnIndex != yourPlayerIndex) {
-      if (playActivity && playActivity.playType == 'MULTIPLAYER') {
-        // no AI in multiplayer
-      } else {
-        // do AI move after 1 second (to finish any ongoing animations)
-        // Give the AI 1 second to find the best move.
-        let millisecondsLimit = 1000; // for riddles
-        if (playActivity && playActivity.computerLevel) {
-          millisecondsLimit = computerLevelToAiMillis(playActivity.computerLevel);
-        }
-        console.log('millisecondsLimit=' + millisecondsLimit + ' playActivity=' + playActivity);
-        return setTimeout(() => {
-          console.log('Searching AI move...');
-          setMove(createComputerMove(state, turnIndex, {millisecondsLimit}, gameModule));
-          console.log('Found AI move.');
-        }, 1000);
-      }
+      // do AI move after 1 second (to finish any ongoing animations)
+      // Give the AI 1 second to find the best move.
+      // TODO: have an API to specify the duration of the animations.
+      const millisecondsLimit = 1000;
+      return setTimeout(() => {
+        console.log('Searching AI move...');
+        setMove(createComputerMove(state, turnIndex, {millisecondsLimit}, gameModule));
+        console.log('Found AI move.');
+      }, 1000);
     }
     return null;
   });
@@ -92,12 +90,11 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
       const youWon = endMatchScores[yourPlayerIndex] > endMatchScores[opponentPlayerIndex];
       if (riddleActivity) {
         gameOverLocalizeId = youWon ? 'RIDDLE_SOLVED' : 'RIDDLE_FAILED';
-      }
-      if (playActivity) {
+      } else {
         if (endMatchScores[0] == endMatchScores[1]) {
           gameOverLocalizeId = 'NOBODY_WON';
         } else {
-          if (playActivity.playType == 'PASS_AND_PLAY') {
+          if (activityType == 'PASS_AND_PLAY') {
             gameOverLocalizeId = endMatchScores[0] > endMatchScores[1] ? 'FIRST_PLAYER_WON' : 'SECOND_PLAYER_WON';
           } else {
             gameOverLocalizeId = youWon ? 'YOU_WON' : 'YOU_LOST';
@@ -134,9 +131,10 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
         // TODO: we should show something fun!
         // Clearing activity (to let the user choose what next).
         dispatch({clearActivity: true});
+        navigateNextFrame('ChooseActivity', navigation);
       }
     } else if (nextActionLocalizeId == 'PLAY_AGAIN') {
-      // TODO: if not PASS_AND_PLAY (against computer / multiplayer),
+      // TODO: if AGAINST_COMPUTER,
       // then we should switch colors (change yourPlayerIndex) by calling setActivityState.
       dispatch({setActivity: activity});
     }
@@ -149,8 +147,7 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
 
   function setMove(chosenMove: IMove<unknown>) {
     const didTurnIndexChange = currentMove.turnIndex != chosenMove.turnIndex;
-    const nextYourPlayerIndex =
-      playActivity && playActivity.playType == 'PASS_AND_PLAY' ? 1 - yourPlayerIndex : yourPlayerIndex;
+    const nextYourPlayerIndex = activityType == 'PASS_AND_PLAY' ? 1 - yourPlayerIndex : yourPlayerIndex;
     dispatch({
       setActivityState: {
         yourPlayerIndex: nextYourPlayerIndex,
@@ -164,7 +161,8 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
   }
 
   return (
-    <>
+    <View style={commonStyles.screen}>
+      <TitleBar />
       {gameModule.component({
         move: currentMove,
         setMove: setHumanMove,
@@ -181,6 +179,6 @@ export default function PlayArea(props: {gameModule: AnyGameModule; activity: Ac
           </>
         )}
       </View>
-    </>
+    </View>
   );
 }

@@ -216,6 +216,9 @@ test('checkRiddleData', () => {
   };
   const turnIndex = 0;
   expect(checkRiddleData(state, turnIndex, [createMove(state, 0, 2, turnIndex)])).toBe(true);
+  expect(checkRiddleData({...state, riddleData: undefined}, turnIndex, [createMove(state, 0, 2, turnIndex)])).toBe(
+    false
+  );
   expect(checkRiddleData(state, turnIndex, [createMove(state, 1, 2, turnIndex)])).toBe(false);
   expect(checkRiddleData(state, turnIndex, [createMove(state, 2, 2, turnIndex)])).toBe(false);
 });

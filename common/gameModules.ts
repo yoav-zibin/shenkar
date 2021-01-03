@@ -1,17 +1,22 @@
-import getTicTacToeGameModule from '../tictactoe/components/Game';
+import {getTicTacToeGameModule} from '../tictactoe/components/Game';
+import getGoGameModule from '../go_game/components/Game';
+import {getConnect4Module} from '../connect4/components/Game';
 import getCheckersGameModule from '../checkers/components/Game';
 import {AnyGameModule} from './common';
 
 const allGameModules: AnyGameModule[] = [
-  getTicTacToeGameModule(),
   getCheckersGameModule(),
-  // TODO: add your games.
+  getTicTacToeGameModule(),
+  getGoGameModule(),
+  getConnect4Module(),
 ];
 
 export function getAllGameModules(): AnyGameModule[] {
   return allGameModules;
 }
 
-export function findGameModule(gameId: string | undefined): AnyGameModule | undefined {
-  return allGameModules.find((module) => module.gameId == gameId);
+export function findGameModule(gameId: string | undefined): AnyGameModule {
+  const currentGameModule = allGameModules.find((module) => module.gameId == gameId);
+  if (!currentGameModule) throw new Error('Illegal gameId=' + gameId);
+  return currentGameModule;
 }

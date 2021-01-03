@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
 
-import {GameModule, GameProps} from '../../common/common';
+import {GameModule, GameProps, randomElement} from '../../common/common';
 
-import {createMove, IState, getInitialState, checkRiddleData} from '../gameLogic';
+import {createMove, IState, getInitialState, checkRiddleData, ROWS} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {riddleLevels} from '../riddles';
 
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function getTicTacToeGameModule(): GameModule<IState> {
+export function getTicTacToeGameModule(): GameModule<IState> {
   return {
     gameId: 'tictactoe',
     gameLocalizeId: 'TICTACTOE_GAME_NAME',
@@ -103,18 +103,15 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
   const {move, setMove, yourPlayerIndex, showHint} = props;
   const {turnIndex, state} = move;
   const {riddleData, board, delta} = state;
+  const [boardHeight, setBoardHeight] = useState(300);
   console.log('Render TicTacToe delta=', delta);
 
   const animValue = new Animated.Value(0);
-  React.useEffect(() => {
-    if (delta) {
-      Animated.timing(animValue, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [animValue]);
+  Animated.timing(animValue, {
+    toValue: 1,
+    duration: 500,
+    useNativeDriver: true,
+  }).start();
 
   function clickedOn(row: number, col: number) {
     if (turnIndex != yourPlayerIndex) {
@@ -136,8 +133,10 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
     let style: ViewStyle = {};
     if (riddleData.startsWith('r')) {
       style = {...styles.hintLineRow};
+      // riddleData is either "r1", "r2", r3.
+      // row is either 0, 1, 2
       const row = Number(riddleData.charAt(1)) - 1;
-      style.top = 100 / 6 + row * (100 / 3) + '%';
+      style.top = 100 / (ROWS * 2) + row * (100 / ROWS) + '%';
     } else if (riddleData.startsWith('c')) {
       style = {...styles.hintLineCol};
       const col = Number(riddleData.charAt(1)) - 1;
@@ -150,14 +149,37 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
     hintLine = <View style={style} />;
   }
 
+  function getAnimationStyle(r: number) {
+    const whatToAnimate = randomElement(['opacity', 'translateY', 'scale']);
+    switch (whatToAnimate) {
+      case 'opacity':
+        return {opacity: animValue};
+      case 'scale':
+        return {transform: [{scale: animValue}]};
+      default: {
+        const rowHeight = boardHeight / ROWS;
+        const startYPosition = -rowHeight * (r + 1);
+        return {
+          transform: [
+            {
+              translateY: animValue.interpolate({
+                inputRange: [0, 1],
+                outputRange: [startYPosition, 0],
+              }),
+            },
+          ],
+        };
+      }
+    }
+  }
+
   function getPiece(r: number, c: number) {
     if (board[r][c] == '') return null;
+    const shouldAnimate = delta && delta.row == r && delta.col == c;
+    const animStyle = shouldAnimate ? getAnimationStyle(r) : {};
+
     return (
-      <Animated.View
-        style={{
-          // opacity: animValue,
-          transform: [{scale: delta && delta.row == r && delta.col == c ? animValue : 1}],
-        }}>
+      <Animated.View style={animStyle}>
         <Image
           style={styles.pieceImage}
           source={board[r][c] == 'X' ? require('../imgs/X.png') : require('../imgs/O.png')}
@@ -168,7 +190,7 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
 
   return (
     <View style={styles.container}>
-      <View style={styles.fixedRatio}>
+      <View style={styles.fixedRatio} onLayout={(event) => setBoardHeight(event.nativeEvent.layout.height)}>
         <ImageBackground style={styles.boardImage} source={require('../imgs/Board.png')}>
           <View style={styles.boardRowsContainer}>
             {rows.map((r) => (
