@@ -19,11 +19,6 @@ export interface IState {
   passes: number;
   deadBoard: boolean[][] | null;
   difficulty: Difficulty;
-  // For the rule of KO:
-  // One may not capture just one stone,
-  // if that stone was played on the previous move,
-  // and that move also captured just one stone.
-  posJustCapturedForKo: BoardDelta | null;
   riddleData?: RiddleData;
   riddleWin?: number[];
   riddleWon?: boolean;
@@ -85,19 +80,14 @@ function isBoardFull(board: Board) {
 }
 
 // returns a random move that the computer plays
-export function createComputerMove(
-  board: Board,
-  passes: number,
-  turnIndexBeforeMove: number,
-  previousPosJustCapturedForKo: BoardDelta
-) {
+export function createComputerMove(board: Board, passes: number, turnIndexBeforeMove: number) {
   const possibleMoves: IMove<IState>[] = [];
   const dim = board.length;
   for (let i = 0; i < dim; i++) {
     for (let j = 0; j < dim; j++) {
       const delta = {row: i, col: j};
       try {
-        const testmove = createMove(board, passes, null, delta, turnIndexBeforeMove, previousPosJustCapturedForKo);
+        const testmove = createMove(board, passes, null, delta, turnIndexBeforeMove);
         possibleMoves.push(testmove);
       } catch (e) {
         // cell in that position was full
@@ -106,7 +96,7 @@ export function createComputerMove(
   }
   try {
     const delta = {row: -1, col: -1};
-    const testmove = createMove(board, passes, null, delta, turnIndexBeforeMove, previousPosJustCapturedForKo);
+    const testmove = createMove(board, passes, null, delta, turnIndexBeforeMove);
     possibleMoves.push(testmove);
   } catch (e) {
     // Couldn't add pass as a move?
@@ -124,32 +114,12 @@ function getboardNum(board: Board, turnIndex: number): number {
   return sum;
 }
 
-function getPosJustCapturedForKo(boardBeforeMove: Board, boardAfterMove: Board, turnIndex: number): BoardDelta | null {
-  const oppositeColor = turnIndex ? 'B' : 'W';
-  let result: BoardDelta | null = null;
-  const dim = boardBeforeMove.length;
-  for (let i = 0; i < dim; i++) {
-    for (let j = 0; j < dim; j++) {
-      if (boardBeforeMove[i][j] === oppositeColor && boardAfterMove[i][j] === '') {
-        // We ate an opponent piece
-        if (result === null) {
-          result = {row: i, col: j};
-        } else {
-          return null; // we ate more than one piece
-        }
-      }
-    }
-  }
-  return result;
-}
-
 export function createMove(
   board: Board,
   passes: number,
   deadBoard: boolean[][] | null,
   delta: BoardDelta,
   turnIndexBeforeMove: number,
-  previousPosJustCapturedForKo: BoardDelta | null,
   riddleWin?: number[],
   riddleData?: RiddleData
 ): IMove<IState> {
@@ -172,34 +142,16 @@ export function createMove(
     // if space isn't '' then bad move
     throw Error('Space is not empty!');
   } else {
-    // else make the move/change the board
+    // //////////////////////////
+    // //////////////////////////
+    // //////////////////////////
+    // //////////////////////////
+    // //////////////////////////
+    // //////////////////////////
 
-    if (
-      previousPosJustCapturedForKo &&
-      previousPosJustCapturedForKo.row === row &&
-      previousPosJustCapturedForKo.col === col
-    ) {
-      throw Error('KO!');
-    }
-    // bad delta should automatically throw error
     boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'B' : 'W';
+    checkWinCondition(boardAfterMove, row, col, turnIndexBeforeMove === 0 ? 'B' : 'W');
     passesAfterMove = 0; // if a move is made, passes is reset
-    // evaluate board
-    // Check for win -- NEED FIX, why the hell it goes through all positions on board and says it's W?
-    // WTF is this bull? need fix before passNplay is active. for rest just play as black or whatever
-    // Apparently this piece of shit just DOESNT want to work so it's like
-    // "Oh you tried to make sure shit goes well? well FUCK YOU im black now."
-    // Kinda sick of this for now. just gonna go deal with riddles for a while
-    if (boardAfterMove[row][col] !== '' && boardAfterMove[row][col] !== 'W') {
-      // console.log('board position is:' + boardAfterMove[row][col]);
-      // console.log('row: ' + row + ' col: ' + col);
-      const isWin = getWinningSequence(boardAfterMove, row, col, turnIndexBeforeMove === 0 ? 'B' : 'W');
-      if (isWin !== null) {
-        // console.log(isWin);
-        // console.log('It finally found the fucker');
-      }
-    }
-    // boardAfterMove = evaluateBoard(boardAfterMove, turnIndexBeforeMove);
   }
 
   const setnumAfter = getboardNum(boardAfterMove, turnIndexBeforeMove);
@@ -208,8 +160,6 @@ export function createMove(
 
   if (deepEquals(board, boardAfterMove) && passes === passesAfterMove)
     throw Error('don’t allow a move that brings the game back to stateBeforeMove.');
-
-  const posJustCapturedForKo = getPosJustCapturedForKo(board, boardAfterMove, turnIndexBeforeMove);
 
   let endMatchScores: number[] | null = null;
   let turnIndexAfterMove = 1 - turnIndexBeforeMove;
@@ -236,7 +186,6 @@ export function createMove(
       boardBeforeMove: board,
       delta: delta,
       passes: passesAfterMove,
-      posJustCapturedForKo: posJustCapturedForKo,
       deadBoard: deadBoard,
       riddleWon: riddleWon,
       difficulty: Difficulty.NOVICE,
@@ -259,132 +208,249 @@ export function getInitialState(): IState {
     delta: {row: 0, col: 0},
     passes: 0,
     deadBoard: null,
-    posJustCapturedForKo: null,
     difficulty: Difficulty.NOVICE,
   };
 }
 
-// The following four method take the board, row, col and a coloy(X or O) as input
-// Check all four possible directions from a position with a specific color and
-// return the longest connecting sequence passing thru the given position for the given color
-function checkHorizontal(board: {[x: string]: unknown[]}, row: string | number, col: number, color: unknown) {
-  const sameColors = [[row, col]];
-  let i;
-  for (i = 1; i < 9; i++) {
-    if (col + i < 9 && board[row][col + i] === color) {
-      sameColors[sameColors.length] = [row, col + i];
-    } else {
-      break;
-    }
+// #region  Win Check
+function checkWinCondition(board: string[][], row: number, col: number, playerColor: string): boolean {
+  if (
+    checkRow(board, row, col, playerColor) ||
+    checkColumn(board, row, col, playerColor) ||
+    checkDiagonal(board, row, col, playerColor)
+  ) {
+    gameFinished(playerColor);
+    return true;
   }
-  for (i = 1; i < 9; i++) {
-    if (col - i >= 0 && board[row][col - i] === color) {
-      sameColors[sameColors.length] = [row, col - i];
-    } else {
-      break;
-    }
-  }
-  return sameColors;
-}
-function checkBackSlash(board: unknown[][], row: number, col: number, color: unknown) {
-  const sameColors = [[row, col]];
-  let i;
-  for (i = 1; i < 9; i++) {
-    if (col + i < 9 && row + i < 9 && board[row + i][col + i] === color) {
-      sameColors[sameColors.length] = [row + i, col + i];
-    } else {
-      break;
-    }
-  }
-  for (i = 1; i < 9; i++) {
-    if (col - i >= 0 && row - i >= 0 && board[row - i][col - i] === color) {
-      sameColors[sameColors.length] = [row - i, col - i];
-    } else {
-      break;
-    }
-  }
-  return sameColors;
-}
-function checkForwardSlash(board: {[x: string]: unknown}[], row: number, col: number, color: unknown) {
-  const sameColors = [[row, col]];
-  let i;
-  for (i = 1; i < 9; i++) {
-    if (col - i >= 0 && row + i < 9 && board[row + i][col - i] === color) {
-      sameColors[sameColors.length] = [row + i, col - i];
-    } else {
-      break;
-    }
-  }
-  for (i = 1; i < 9; i++) {
-    if (col + i < 9 && row - i >= 0 && board[row - i][col + i] === color) {
-      sameColors[sameColors.length] = [row - i, col + i];
-    } else {
-      break;
-    }
-  }
-  return sameColors;
-}
-function checkVertical(board: {[x: string]: unknown}[], row: number, col: string | number, color: unknown) {
-  const sameColors = [[row, col]];
-  let i;
-  for (i = 1; i < 9; i++) {
-    if (row + i < 9 && board[row + i][col] === color) {
-      sameColors[sameColors.length] = [row + i, col];
-    } else {
-      break;
-    }
-  }
-  for (i = 1; i < 9; i++) {
-    if (row - i >= 0 && board[row - i][col] === color) {
-      sameColors[sameColors.length] = [row - i, col];
-    } else {
-      break;
-    }
-  }
-  return sameColors;
+  // gameFinished("no one");
+  return false;
+  // if (checkDraw()) gameFinished("no one");
 }
 
-/** Return the winner (either 'X' or 'O') or '' if there is no winner. */
-// function getWinner(winningSequence: string | any[]){
-// 	if(winningSequence.length > 0){
-// 		return winningSequence[0];
-// 	}
-// 	else{
-// 		return '';
-// 	}
-// }
-// This method check the four directions to see if any has a connecting sequence that has a length
-// exactly equal to five, if yes, return the winning color and sequence
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getWinningSequence = (board: any, row: any, col: any, color: any) => {
-  // eslint-disable-next-line
-  let winningSeuqnece: any[] = [];
-  if ((winningSeuqnece = checkHorizontal(board, row, col, color)).length === 5) {
-    return winningSeuqnece;
+function checkRow(board: string[][], row: number, col: number, playerColor: string): boolean {
+  const winnerCells = [];
+  for (let i = col + 1; i < 9; i++) {
+    if (board[row][i] === playerColor) {
+      winnerCells.push({row: row, column: i});
+    } else break;
   }
-  if ((winningSeuqnece = checkVertical(board, row, col, color)).length === 5) {
-    return winningSeuqnece;
+  if (winnerCells.length == 5) {
+    return true;
   }
-  if ((winningSeuqnece = checkBackSlash(board, row, col, color)).length === 5) {
-    return winningSeuqnece;
+
+  for (let i = col - 1; i >= 0; i--) {
+    if (board[row][i] === playerColor) {
+      winnerCells.push({row: row, column: i});
+    } else break;
   }
-  if ((winningSeuqnece = checkForwardSlash(board, row, col, color)).length === 5) {
-    return winningSeuqnece;
+  if (winnerCells.length == 5) {
+    return true;
   }
-  return [];
-};
-/** Returns true if the game ended in a tie because there are no empty cells. */
-// function isTie(board: string[][]) {
-// let i;
-// let j;
-// for (i = 0; i < 10; i++) {
-// for (j = 0; j < 10; j++) {
-// if (board[i][j] === '') {
-// // If there is an empty cell then we do not have a tie.
-// return false;
+
+  return false;
+}
+
+function checkColumn(board: string[][], row: number, col: number, playerColor: string): boolean {
+  const winnerCells = [];
+  for (let i = row + 1; i < 9; i++) {
+    if (board[i][col] === playerColor) {
+      winnerCells.push({row: i, column: col});
+    } else break;
+  }
+  if (winnerCells.length == 5) return true;
+
+  for (let i = row - 1; i >= 0; i--) {
+    if (board[i][col] === playerColor) {
+      winnerCells.push({row: i, column: col});
+    } else break;
+  }
+  if (winnerCells.length == 5) return true;
+
+  return false;
+}
+
+function checkDiagonal(board: string[][], row: number, col: number, playerColor: string): boolean {
+  // DIAG \
+  let winnerCells = [];
+  for (let i = 1; i < 9; i++) {
+    if (row + i >= 9 || col + i >= 9) {
+      break;
+    }
+    if (board[row + i][col + i] === playerColor) {
+      winnerCells.push({row: row + i, column: col + i});
+    } else break;
+  }
+  if (winnerCells.length == 5) return true;
+
+  for (let i = 1; i < 9; i++) {
+    if (row - i < 0 || col - i < 0) {
+      break;
+    }
+
+    if (board[row - i][col - i] === playerColor) {
+      winnerCells.push({row: row - i, column: col - i});
+    } else break;
+  }
+  if (winnerCells.length == 5) return true;
+
+  //  OTHER DIAG /
+  winnerCells = [];
+  for (let i = 1; i < 9; i++) {
+    if (row - i < 0 || col + i > 9) {
+      break;
+    }
+
+    if (board[row - i][col + i] === playerColor) {
+      winnerCells.push({row: row - i, column: col + i});
+    } else break;
+  }
+
+  if (winnerCells.length == 5) {
+    return true;
+  }
+
+  for (let i = 1; i < 9; i++) {
+    if (row + i >= 9 || col - i < 0) {
+      break;
+    }
+
+    if (board[row + i][col - i] === playerColor) {
+      winnerCells.push({row: row + i, column: col - i});
+    } else break;
+  }
+
+  if (winnerCells.length == 5) {
+    return true;
+  }
+
+  return false;
+}
+
+function gameFinished(playerColor: string): boolean {
+  alert(playerColor + ' won');
+  return true;
+}
+
+// Check the board for a win
+
+// function checkHorizontal(board: {[x: string]: unknown[]}, row: string | number, col: number, color: unknown) {
+//   const sameColors = [[row, col]];
+//   let i;
+//   for (i = 1; i < 9; i++) {
+//     if (col + i < 9 && board[row][col + i] === color) {
+//       sameColors[sameColors.length] = [row, col + i];
+//     } else {
+//       break;
+//     }
+//   }
+//   for (i = 1; i < 9; i++) {
+//     if (col - i >= 0 && board[row][col - i] === color) {
+//       sameColors[sameColors.length] = [row, col - i];
+//     } else {
+//       break;
+//     }
+//   }
+//   return sameColors;
 // }
+// function checkBackSlash(board: unknown[][], row: number, col: number, color: unknown) {
+//   const sameColors = [[row, col]];
+//   let i;
+//   for (i = 1; i < 9; i++) {
+//     if (col + i < 9 && row + i < 9 && board[row + i][col + i] === color) {
+//       sameColors[sameColors.length] = [row + i, col + i];
+//     } else {
+//       break;
+//     }
+//   }
+//   for (i = 1; i < 9; i++) {
+//     if (col - i >= 0 && row - i >= 0 && board[row - i][col - i] === color) {
+//       sameColors[sameColors.length] = [row - i, col - i];
+//     } else {
+//       break;
+//     }
+//   }
+//   return sameColors;
 // }
+// function checkForwardSlash(board: {[x: string]: unknown}[], row: number, col: number, color: unknown) {
+//   const sameColors = [[row, col]];
+//   let i;
+//   for (i = 1; i < 9; i++) {
+//     if (col - i >= 0 && row + i < 9 && board[row + i][col - i] === color) {
+//       sameColors[sameColors.length] = [row + i, col - i];
+//     } else {
+//       break;
+//     }
+//   }
+//   for (i = 1; i < 9; i++) {
+//     if (col + i < 9 && row - i >= 0 && board[row - i][col + i] === color) {
+//       sameColors[sameColors.length] = [row - i, col + i];
+//     } else {
+//       break;
+//     }
+//   }
+//   return sameColors;
 // }
-// // No empty cells --> tie!
-// return true;
+// function checkVertical(board: {[x: string]: unknown}[], row: number, col: string | number, color: unknown) {
+//   const sameColors = [[row, col]];
+//   let i;
+//   for (i = 1; i < 9; i++) {
+//     if (row + i < 9 && board[row + i][col] === color) {
+//       sameColors[sameColors.length] = [row + i, col];
+//     } else {
+//       break;
+//     }
+//   }
+//   for (i = 1; i < 9; i++) {
+//     if (row - i >= 0 && board[row - i][col] === color) {
+//       sameColors[sameColors.length] = [row - i, col];
+//     } else {
+//       break;
+//     }
+//   }
+//   return sameColors;
 // }
+
+// /** Return the winner (either 'X' or 'O') or '' if there is no winner. */
+// // function getWinner(winningSequence: string | any[]){
+// // 	if(winningSequence.length > 0){
+// // 		return winningSequence[0];
+// // 	}
+// // 	else{
+// // 		return '';
+// // 	}
+// // }
+// // This method check the four directions to see if any has a connecting sequence that has a length
+// // exactly equal to five, if yes, return the winning color and sequence
+// // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// const getWinningSequence = (board: any, row: any, col: any, color: any) => {
+//   // eslint-disable-next-line
+//   // let winningSeuqnece: any[] = [];
+//   if ((checkHorizontal(board, row, col, color)).length === 5) {
+//     return true;
+//   }
+//   if ((checkVertical(board, row, col, color)).length === 5) {
+//     return true;
+//   }
+//   if ((checkBackSlash(board, row, col, color)).length === 5) {
+//     return true;
+//   }
+//   if ((checkForwardSlash(board, row, col, color)).length === 5) {
+//     return true;
+//   }
+//   return false;
+// };
+// // /** Returns true if the game ended in a tie because there are no empty cells. */
+// // // function isTie(board: string[][]) {
+// // // let i;
+// // // let j;
+// // // for (i = 0; i < 10; i++) {
+// // // for (j = 0; j < 10; j++) {
+// // // if (board[i][j] === '') {
+// // // // If there is an empty cell then we do not have a tie.
+// // // return false;
+// // // }
+// // // }
+// // // }
+// // // // No empty cells --> tie!
+// // // return true;
+// // // }

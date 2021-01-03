@@ -5,6 +5,7 @@ export function getPossibleMoves(state: IState, turnIndex: number): IMove<IState
   // eslint-disable-next-line
   const moveList: IMove<IState>[] = [];
   moveList.push(calcNextMove(state, turnIndex));
+  console.log(moveList);
   return moveList;
 }
 
@@ -35,7 +36,7 @@ export const calcNextMove = (state: IState, turnIndex: number): IMove<IState> =>
       move[1] = bestMove[2];
     }
   }
-  return createMove(state.board, 0, null, {col: move[0] ? move[0] : -1, row: move[1] ? move[1] : -1}, turnIndex, null);
+  return createMove(state.board, 0, null, {col: move[0] ? move[0] : -1, row: move[1] ? move[1] : -1}, turnIndex);
 };
 
 export function genMoveList(state: IState, turnIndex: number): IMove<IState>[] {
@@ -53,20 +54,20 @@ export function genMoveList(state: IState, turnIndex: number): IMove<IState>[] {
         if (j > 0) {
           if (cells[i - 1][j - 1] != '' || cells[i][j - 1] != '') {
             const delta = {row: i, col: j};
-            moveList.push(createMove(state.board, 0, null, delta, turnIndex, null));
+            moveList.push(createMove(state.board, 0, null, delta, turnIndex));
             continue;
           }
         }
         if (j < boardSize - 1) {
           if (cells[i - 1][j + 1] != '' || cells[i][j + 1] != '') {
             const delta = {row: i, col: j};
-            moveList.push(createMove(state.board, 0, null, delta, turnIndex, null, state.riddleWin, state.riddleData));
+            moveList.push(createMove(state.board, 0, null, delta, turnIndex, state.riddleWin, state.riddleData));
             continue;
           }
         }
         if (cells[i - 1][j] != '') {
           const delta = {row: i, col: j};
-          moveList.push(createMove(state.board, 0, null, delta, turnIndex, null, state.riddleWin, state.riddleData));
+          moveList.push(createMove(state.board, 0, null, delta, turnIndex, state.riddleWin, state.riddleData));
           continue;
         }
       }
@@ -74,20 +75,20 @@ export function genMoveList(state: IState, turnIndex: number): IMove<IState>[] {
         if (j > 0) {
           if (cells[i + 1][j - 1] != '' || cells[i][j - 1] != '') {
             const delta = {row: i, col: j};
-            moveList.push(createMove(state.board, 0, null, delta, turnIndex, null, state.riddleWin, state.riddleData));
+            moveList.push(createMove(state.board, 0, null, delta, turnIndex, state.riddleWin, state.riddleData));
             continue;
           }
         }
         if (j < boardSize - 1) {
           if (cells[i + 1][j + 1] != '' || cells[i][j + 1] != '') {
             const delta = {row: i, col: j};
-            moveList.push(createMove(state.board, 0, null, delta, turnIndex, null, state.riddleWin, state.riddleData));
+            moveList.push(createMove(state.board, 0, null, delta, turnIndex, state.riddleWin, state.riddleData));
             continue;
           }
         }
         if (cells[i + 1][j] != '') {
           const delta = {row: i, col: j};
-          moveList.push(createMove(state.board, 0, null, delta, turnIndex, null, state.riddleWin, state.riddleData));
+          moveList.push(createMove(state.board, 0, null, delta, turnIndex, state.riddleWin, state.riddleData));
           continue;
         }
       }
