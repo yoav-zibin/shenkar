@@ -15,6 +15,8 @@ export interface AppContext {
 export interface AppState {
   isInitialState: boolean;
   languageId: LanguageId;
+  lastLogin?: number; // The last epoch timestamp that the user logged in
+  dailyStreak?: number; // The daily streak count starting from 0 and counting up.
   selectedGameId?: string;
   activity?: Activity;
   activityState?: ActivityState;
@@ -27,6 +29,7 @@ export interface AppStateAction {
   setActivityState?: ActivityState;
   setStateFromAsyncStorage?: AppState;
   setNoStateInAsyncStorage?: true;
+  setStreak?: true;
 }
 export const ACTIVITY_TYPES = ['PASS_AND_PLAY', 'AGAINST_COMPUTER'];
 
@@ -49,10 +52,12 @@ export interface RiddleActivity {
   riddleIndex: number;
 }
 
-const initialAppState: AppState = {
+export const initialAppState: AppState = {
   isInitialState: true,
   languageId: '' as LanguageId,
   selectedGameId: '',
+  lastLogin: Date.now(),
+  dailyStreak: 0,
 };
 
 const initialContext: AppContext = {
@@ -138,7 +143,7 @@ export async function readAppState() {
   return null;
 }
 
-function reducerAndStoreState(appState: AppState, action: AppStateAction) {
+export function reducerAndStoreState(appState: AppState, action: AppStateAction) {
   const nextState = ourReducer(appState, action);
   try {
     const jsonValue = JSON.stringify(nextState);
@@ -159,7 +164,12 @@ function ourReducer(appState: AppState, action: AppStateAction) {
     setActivityState,
     setStateFromAsyncStorage,
     setNoStateInAsyncStorage,
+    setStreak,
   } = action;
+
+  if (setStreak) {
+    return {...appState};
+  }
   if (setLanguageId) {
     return {...appState, languageId: setLanguageId};
   }
