@@ -105,7 +105,7 @@ function isGameOver(board: Board): boolean {
 }
 function p(y: number, x: number, boardString: Board): string {
   if (boardString[5][0] == 'Y' && boardString[5][1] == 'Y' && boardString[5][2] == 'Y' && boardString[5][3] == 'Y') {
-    // console.log(y < 0 || x < 0 || y >= ROWS || x >= COLS ? '0' : boardString[y][x]);
+    // //console.log(y < 0 || x < 0 || y >= ROWS || x >= COLS ? '0' : boardString[y][x]);
   }
   return y < 0 || x < 0 || y >= ROWS || x >= COLS ? '0' : boardString[y][x];
 }
@@ -193,7 +193,7 @@ export function createMove(
     throw new Error('One can only make a move in an empty position!');
   }
   if (getWinner(board) !== ' ' || isGameOver(board)) {
-    console.log(board);
+    // console.log(board);
     throw new Error('Can only make a move if the game is not over!');
   }
   const boardAfterMove = deepClone(board);

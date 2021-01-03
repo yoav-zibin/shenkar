@@ -126,13 +126,20 @@ export function createMove(
   if (!passes) passes = 0;
 
   const setnumBefore = getboardNum(board, turnIndexBeforeMove);
-
+  let endMatchScores: number[] | null = null;
+  let turnIndexAfterMove = 1 - turnIndexBeforeMove;
   const boardAfterMove = copyObject(board);
   let passesAfterMove = passes;
 
   const row = delta.row;
   const col = delta.col;
-  if (row === -1 && col === -1) {
+
+  if (isBoardFull(boardAfterMove)) {
+    endMatchScores = [-1, -1];
+    turnIndexAfterMove = -1;
+  }
+
+  if (endMatchScores === null && row === -1 && col === -1) {
     // delta of {-1, -1} indicates a pass (no move made)
     passesAfterMove++;
     if (passesAfterMove > 2) {
@@ -150,26 +157,22 @@ export function createMove(
     // //////////////////////////
 
     boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'B' : 'W';
-    checkWinCondition(boardAfterMove, row, col, turnIndexBeforeMove === 0 ? 'B' : 'W');
+    if(checkWinCondition(boardAfterMove, row, col, turnIndexBeforeMove === 0 ? 'B' : 'W')){
+      console.log('someone won')
+      const winner = turnIndexBeforeMove === 0 ? 'B' : 'W';
+      winner === 'B' ? endMatchScores = [1, 0] : endMatchScores = [0, 1] ;
+      turnIndexAfterMove = -1;
+    }
     passesAfterMove = 0; // if a move is made, passes is reset
   }
 
   const setnumAfter = getboardNum(boardAfterMove, turnIndexBeforeMove);
-
   if (setnumAfter <= setnumBefore && passes === passesAfterMove) throw Error('you can not suicide.');
-
   if (deepEquals(board, boardAfterMove) && passes === passesAfterMove)
     throw Error('don’t allow a move that brings the game back to stateBeforeMove.');
 
-  let endMatchScores: number[] | null = null;
-  let turnIndexAfterMove = 1 - turnIndexBeforeMove;
-  if (isBoardFull(boardAfterMove)) {
-    endMatchScores = [-1, -1];
-    turnIndexAfterMove = -1;
-  }
-
   let riddleWon = false;
-  if (riddleData) {
+  if (endMatchScores === null && riddleData) {
     if (riddleWin)
       if (riddleWin[0] == delta.row && riddleWin[1] == delta.col) {
         riddleWon = true;
@@ -178,7 +181,7 @@ export function createMove(
       }
   }
 
-  return {
+  const obj = {
     endMatchScores: endMatchScores,
     turnIndex: turnIndexAfterMove,
     state: {
@@ -191,6 +194,10 @@ export function createMove(
       difficulty: Difficulty.NOVICE,
     },
   };
+
+  console.log(obj)
+  
+  return obj;
 }
 
 export function createEndMove(state: IState, endMatchScores: number[]): IMove<IState> {
@@ -222,9 +229,8 @@ function checkWinCondition(board: string[][], row: number, col: number, playerCo
     gameFinished(playerColor);
     return true;
   }
-  // gameFinished("no one");
+  
   return false;
-  // if (checkDraw()) gameFinished("no one");
 }
 
 function checkRow(board: string[][], row: number, col: number, playerColor: string): boolean {
@@ -326,7 +332,6 @@ function checkDiagonal(board: string[][], row: number, col: number, playerColor:
   return false;
 }
 
-function gameFinished(playerColor: string): boolean {
+function gameFinished(playerColor: string) {
   console.log(playerColor + ' won');
-  return true;
 }

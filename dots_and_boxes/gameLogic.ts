@@ -132,7 +132,7 @@ export function getInitialState(): IState {
 //  helper function for debugging
 export function printBoard(board: Board): void {
   if (!board) {
-    console.log('board is undefined');
+    //console.log('board is undefined');
   } else {
     const {
       isGameOver,
@@ -146,11 +146,11 @@ export function printBoard(board: Board): void {
       color,
     } = board;
     const linesToEnd = (size ** 2 + size) * 2;
-    console.log(`isGameOver=${isGameOver}`);
-    console.log(`turn=${turn}`);
-    console.log(`score1=${score.PLAYER_1}`);
-    console.log(`score2=${score.PLAYER_2}`);
-    console.log(`paintedLines: ${paintedLinesAmount}/${linesToEnd}`);
+    //console.log(`isGameOver=${isGameOver}`);
+    //console.log(`turn=${turn}`);
+    //console.log(`score1=${score.PLAYER_1}`);
+    //console.log(`score2=${score.PLAYER_2}`);
+    //console.log(`paintedLines: ${paintedLinesAmount}/${linesToEnd}`);
     printBoardItem(horizontalLines, size + 1, size);
     printBoardItem(verticalLines, size, size + 1);
     printBoardItem(cellPaintedLines, size, size);
@@ -170,14 +170,14 @@ export function printBoardItem<T>(item: T[][], rowSize: number, colSize: number)
       output += ']';
     }
     output += ']';
-    console.log(output);
+    //console.log(output);
   }
 }
 
 export function printDelta(delta: BoardDelta) {
   let deltaOutput = '';
   deltaOutput = delta.direction + ':' + delta.row + 'x' + delta.col;
-  console.log(deltaOutput);
+  //console.log(deltaOutput);
 }
 
 export function updateBoard(board: Board, direction: lineDirection, row: number, col: number): Board {
@@ -264,7 +264,7 @@ export function createMove(board: Board, direction: lineDirection, row: number, 
   const endMatchScores = updatedBoard.isGameOver ? [updatedBoard.score.PLAYER_1, updatedBoard.score.PLAYER_2] : null;
 
   const delta: BoardDelta = {direction, row, col};
-  console.log('endMatchScores', endMatchScores);
+  //console.log('endMatchScores', endMatchScores);
   return {
     endMatchScores,
     turnIndex: updatedBoard.turn,

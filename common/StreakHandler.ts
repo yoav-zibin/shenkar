@@ -34,7 +34,7 @@ export const readAppStateAndCheckStreak = async (): Promise<AppState | null> => 
     await reducerAndStoreState(state, {setStreak: true}); // store the changes of dailystreak back to the storage
     return state;
   } catch (e) {
-    console.log(e);
+    //console.log(e);
   }
   return state;
 };

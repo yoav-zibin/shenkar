@@ -103,7 +103,7 @@ const GoComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProp
   const {move, setMove, yourPlayerIndex, showHint} = props;
   const {turnIndex, state} = move;
   const {riddleData, board, delta, riddleWin} = state;
-  console.log('Render Go delta=', delta);
+  //console.log('Render Go delta=', delta);
 
   const animValue = new Animated.Value(0);
   React.useEffect(() => {

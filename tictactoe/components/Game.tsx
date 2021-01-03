@@ -104,7 +104,7 @@ const TicTacToeComponent: React.FunctionComponent<GameProps<IState>> = (props: G
   const {turnIndex, state} = move;
   const {riddleData, board, delta} = state;
   const [boardHeight, setBoardHeight] = useState(300);
-  console.log('Render TicTacToe delta=', delta);
+  //console.log('Render TicTacToe delta=', delta);
 
   const animValue = new Animated.Value(0);
   Animated.timing(animValue, {

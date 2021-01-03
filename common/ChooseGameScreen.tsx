@@ -13,7 +13,7 @@ export function ChooseGameScreen() {
   const choices = getAllGameModules().map((i) => {
     return {id: i.gameId, localizeId: i.gameLocalizeId};
   });
-  console.log('Render ChooseGameScreen.');
+  //console.log('Render ChooseGameScreen.');
   return (
     <View style={commonStyles.screen}>
       <TitleBar />

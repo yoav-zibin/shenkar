@@ -116,6 +116,15 @@ const GomokuComponent: React.FunctionComponent<GameProps<IState>> = (props: Game
   const {turnIndex, state} = move;
   const {riddleData, board, delta, riddleWin} = state;
 
+  React.useEffect(() => {
+    const s = getInitialState();
+    state.board = s.board;
+    state.boardBeforeMove = s.boardBeforeMove;
+    state.deadBoard = s.deadBoard;
+    state.delta = s.delta;
+    state.difficulty = s.difficulty;
+    state.passes = s.passes;
+  }, []);
   const animValue = new Animated.Value(0);
   React.useEffect(() => {
     if (delta) {

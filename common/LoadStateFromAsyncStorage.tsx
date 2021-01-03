@@ -7,7 +7,7 @@ import {readAppStateAndCheckStreak} from './StreakHandler';
 export function LoadStateFromAsyncStorage() {
   const {appState, dispatch} = useStoreContext();
   useEffect(() => {
-    console.log('One time reading from AsyncStorage. isInitialState=', appState.isInitialState);
+    //console.log('One time reading from AsyncStorage. isInitialState=', appState.isInitialState);
     if (appState.isInitialState) {
       readAppStateAndCheckStreak().then((appStateFromAsyncStorage) => {
         if (appStateFromAsyncStorage && !DEBUGGING_OPTIONS.IGNORE_ASYNC_STORAGE) {

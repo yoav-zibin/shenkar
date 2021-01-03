@@ -91,14 +91,14 @@ function alphaBetaDecisionMayReturnNull<T>(
   const millisecondsLimit = alphaBetaLimits.millisecondsLimit;
   // For time limits (without maxDepth), we do iterative deepening (A* search).
   if (debugAlphaBetaService) {
-    console.log('Doing iterative-deepeninh (A*) until we run out of time or find a certain win/lose move.');
+    // console.log('Doing iterative-deepeninh (A*) until we run out of time or find a certain win/lose move.');
   }
   let maxDepth = 1;
   let bestState: IMove<T> | null = null;
   // eslint-disable-next-line no-constant-condition
   while (true) {
     if (debugAlphaBetaService) {
-      console.log('Alpha-beta search until maxDepth=' + maxDepth);
+      // console.log('Alpha-beta search until maxDepth=' + maxDepth);
     }
     const nextBestStateAndScore = getScoreForIndex0(
       startingState,
@@ -115,8 +115,8 @@ function alphaBetaDecisionMayReturnNull<T>(
     if (nextBestScore === MAX_SCORE || nextBestScore === MIN_SCORE) {
       if (debugAlphaBetaService) {
         const isWin = nextBestScore === (playerIndex === 0 ? MAX_SCORE : MIN_SCORE);
-        console.log('Discovered that AI is going to ' + (isWin ? 'win' : 'lose') + ' with maxDepth=' + maxDepth);
-        console.log('Best state is ', nextBestState);
+        // console.log('Discovered that AI is going to ' + (isWin ? 'win' : 'lose') + ' with maxDepth=' + maxDepth);
+        // console.log('Best state is ', nextBestState);
       }
       return nextBestState;
     }
@@ -131,22 +131,22 @@ function alphaBetaDecisionMayReturnNull<T>(
       const result = !isAllTimePassed || maxDepth === 1 || !bestState ? nextBestState : bestState;
       if (isAllTimePassed) {
         if (debugAlphaBetaService) {
-          console.log(
-            'Run out of time when maxDepth=' +
-              maxDepth +
-              ', so returning the best state for maxDepth=' +
-              (maxDepth === 1 ? 1 : maxDepth - 1)
-          );
+          // console.log(
+          //   'Run out of time when maxDepth=' +
+          //     maxDepth +
+          //     ', so returning the best state for maxDepth=' +
+          //     (maxDepth === 1 ? 1 : maxDepth - 1)
+          // );
         }
       } else {
         if (debugAlphaBetaService) {
-          console.log(
-            'Run out of half the time when maxDepth=' + maxDepth + ', so no point of exploring the next depth.'
-          );
+          // console.log(
+          //   'Run out of half the time when maxDepth=' + maxDepth + ', so no point of exploring the next depth.'
+          // );
         }
       }
       if (debugAlphaBetaService) {
-        console.log('Best state is ', result);
+        // console.log('Best state is ', result);
       }
       return result;
     }
@@ -200,7 +200,7 @@ function getScoreForIndex0<T>(
   let bestState: IMove<T> | null = null;
   if (isTimeout(alphaBetaLimits, startTime)) {
     if (debugAlphaBetaService) {
-      console.log('Run out of time, just quitting from this traversal.');
+      // console.log('Run out of time, just quitting from this traversal.');
     }
     return {bestScore: 0, bestState: null}; // This traversal is "ruined" anyway because we ran out of time.
   }
@@ -208,19 +208,19 @@ function getScoreForIndex0<T>(
     bestScore = aiService.getStateScoreForIndex0(startingState, playerIndex);
     assertLegalScore(bestScore);
     if (debugAlphaBetaService) {
-      console.log('Max depth reached, score is ' + bestScore);
+      // console.log('Max depth reached, score is ' + bestScore);
     }
     return {bestScore: bestScore, bestState: null};
   }
   const moves = aiService.getPossibleMoves(startingState, playerIndex);
   if (debugAlphaBetaService) {
-    console.log('startingState=', startingState, ' has ' + moves.length + ' next states');
+    // console.log('startingState=', startingState, ' has ' + moves.length + ' next states');
   }
   if (moves.length === 0) {
     bestScore = aiService.getStateScoreForIndex0(startingState, playerIndex);
     assertLegalScore(bestScore);
     if (debugAlphaBetaService) {
-      console.log('Terminal state, score is ' + bestScore);
+      // console.log('Terminal state, score is ' + bestScore);
     }
     return {bestScore: bestScore, bestState: null};
   }
@@ -263,7 +263,7 @@ function getScoreForIndex0<T>(
     }
 
     if (debugAlphaBetaService) {
-      console.log('Score of ', move, ' is ', scoreForIndex0);
+      // console.log('Score of ', move, ' is ', scoreForIndex0);
     }
     if (
       bestScore === null ||
@@ -286,7 +286,7 @@ function getScoreForIndex0<T>(
     }
   }
   if (debugAlphaBetaService) {
-    console.log('Best next state for playerIndex ' + playerIndex + ' is ', bestState, ' with score of ' + bestScore);
+    // console.log('Best next state for playerIndex ' + playerIndex + ' is ', bestState, ' with score of ' + bestScore);
   }
   return {bestScore: bestScore ? bestScore : 0, bestState: bestState};
 }

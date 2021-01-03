@@ -35,7 +35,7 @@ export function PlayAreaScreen() {
   if (!activity || !activityState) {
     return null;
   }
-  console.log('Render PlayArea activity=', activity);
+  //console.log('Render PlayArea activity=', activity);
 
   const {riddleActivity, activityType} = activity;
   const {yourPlayerIndex, initialMove, currentMove, currentMoveNum, maxMovesNum, showHint} = activityState;
@@ -54,9 +54,9 @@ export function PlayAreaScreen() {
       // TODO: have an API to specify the duration of the animations.
       const millisecondsLimit = 1000;
       return setTimeout(() => {
-        console.log('Searching AI move...');
+        //console.log('Searching AI move...');
         setMove(createComputerMove(state, turnIndex, {millisecondsLimit}, gameModule));
-        console.log('Found AI move.');
+        //console.log('Found AI move.');
       }, 1000);
     }
     return null;
@@ -70,9 +70,9 @@ export function PlayAreaScreen() {
       const millisUntilShowHint = DEBUGGING_OPTIONS.SHOW_HINT_AFTER_ONE_SECOND
         ? 1000
         : secondsToShowHint(level.difficulty);
-      console.log('We will show hint in ' + millisUntilShowHint + ' millis');
+      //console.log('We will show hint in ' + millisUntilShowHint + ' millis');
       return setTimeout(() => {
-        console.log('Showing hint');
+        //console.log('Showing hint');
         dispatch({
           setActivityState: {
             ...activityState,
