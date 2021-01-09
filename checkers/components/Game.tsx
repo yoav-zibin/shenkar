@@ -8,11 +8,9 @@ import {useStoreContext} from '../../common/store';
 import {
   IState,
   getInitialState,
-  checkRiddleData /* createMiniMove, */,
+  checkRiddleData,
   isOwnColor,
   getColor,
-  // CONSTANTS,
-  // getSimpleMoves,
   BoardDelta,
   // getAllPossibleMoves,
   createMiniMove,
