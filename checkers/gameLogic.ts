@@ -10,8 +10,47 @@ export interface MiniMove {
   toDelta: BoardDelta;
 }
 
-// TODO edit the hint, change it from titactoe to checkers
-export type RiddleData = 's1' | 's2' | 's3' | 's4' | 's5' | 's6' | 's7' | 's8' | 's9' | 's10' | 's11' | 's12';
+export type RiddleData =
+  | '0'
+  | '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '01'
+  | '03'
+  | '05'
+  | '07'
+  | '10'
+  | '12'
+  | '14'
+  | '16'
+  | '21'
+  | '23'
+  | '25'
+  | '27'
+  | '30'
+  | '32'
+  | '34'
+  | '36'
+  | '41'
+  | '43'
+  | '45'
+  | '47'
+  | '50'
+  | '52'
+  | '54'
+  | '56'
+  | '61'
+  | '63'
+  | '65'
+  | '67'
+  | '70'
+  | '72'
+  | '74'
+  | '76';
 
 export interface IState {
   board: Board;

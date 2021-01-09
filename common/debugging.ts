@@ -14,7 +14,7 @@ export const DEBUGGING_OPTIONS = {
   // To make it easy to debug the hints, set to true and then
   // we show the hint after 1 second
   // (instead of waiting for 10-30 seconds)
-  SHOW_HINT_AFTER_ONE_SECOND: true,
+  SHOW_HINT_AFTER_ONE_SECOND: false,
 
   IGNORE_ASYNC_STORAGE: false,
 };

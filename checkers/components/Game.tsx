@@ -1,31 +1,27 @@
 import React from 'react';
-import {
-  /* Animated, */ StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-  Text,
-  Image,
-  ImageBackground /* ViewStyle */,
-} from 'react-native';
 
+import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, Text} from 'react-native';
 import {GameModule, GameProps} from '../../common/common';
+import {localize} from '../../common/localize';
+import {useStoreContext} from '../../common/store';
 
 import {
-  // createMove,
   IState,
   getInitialState,
-  checkRiddleData,
-  getAllPossibleMoves,
+  checkRiddleData /* createMiniMove, */,
   isOwnColor,
-  createMiniMove,
   getColor,
+  // CONSTANTS,
+  // getSimpleMoves,
+  BoardDelta,
+  // getAllPossibleMoves,
+  createMiniMove,
 } from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {riddleLevels} from '../riddles';
-import {BoardDelta} from '../../tictactoe/gameLogic';
 
-// const hintLineColor = 'green';
-
+// const allPMoves: BoardDelta[] = [];
+let selectedMovingPiece: BoardDelta;
 const styles = StyleSheet.create({
   // See how to have a square component using aspectRatio=1
   // https://reactnative.fun/2017/06/21/ratio/
@@ -98,39 +94,59 @@ export default function getCheckersGameModule(): GameModule<IState> {
 }
 
 const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProps<IState>) => {
-  const {move, setMove /* , yourPlayerIndex, showHint */} = props;
+  const {appState} = useStoreContext();
+  const {move, setMove, showHint} = props;
   const {turnIndex, state} = move;
-  const {board /* riddleData, miniMoves */} = state;
-  // console.log('Render Checkers miniMoves=', miniMoves);
-  // let fromDelta: BoardDelta;
-  let allPMoves: BoardDelta[] = [];
-  let selectedMovingPiece: BoardDelta;
+  const {riddleData, board /* miniMoves */} = state;
+
+  let hint: boolean | null = false;
+  let rowHint: boolean | null = false;
+  let ridRow: number;
+  let ridCol: number;
+
+  if (showHint && riddleData) {
+    if (riddleData.length == 1) {
+      ridRow = parseInt(riddleData[0], 10);
+      rowHint = true;
+    } else {
+      ridRow = parseInt(riddleData[0], 10);
+      ridCol = parseInt(riddleData[1], 10);
+      hint = true;
+    }
+  } else {
+    rowHint = false;
+    hint = false;
+  }
+
+  let pieceIsSelected = false;
 
   function clickedOn(row: number, col: number) {
-    try {
-      for (const eachM of allPMoves) {
-        if (eachM.row == row && eachM.col == col) {
-          const toDelta = {col: col, row: row};
-          const fromDelta = {col: selectedMovingPiece.col, row: selectedMovingPiece.row};
-          const nextMove = createMiniMove(board, fromDelta, toDelta, turnIndex);
-          setMove(nextMove);
-        }
+    if (riddleData && hint) {
+      board[ridRow][ridCol] = 'WM';
+    }
+    if (riddleData && rowHint) {
+      for (let i = 0; i < 7; i += 2) {
+        board[ridRow][i] = 'WM';
       }
+    }
+    state.error = null;
+    try {
+      if (pieceIsSelected) {
+        pieceIsSelected = false;
+        const toDelta = {col: col, row: row};
+        const fromDelta = {col: selectedMovingPiece.col, row: selectedMovingPiece.row};
+        const move = createMiniMove(board, fromDelta, toDelta, turnIndex);
+        setMove(move);
+      }
+
       if (isOwnColor(turnIndex, getColor(board[row][col]))) {
-        const fromDelta: BoardDelta = {col: col, row: row};
+        pieceIsSelected = true;
         selectedMovingPiece = {col: col, row: row};
-        allPMoves = getAllPossibleMoves(board, fromDelta, turnIndex);
-        console.log(allPMoves);
-        if (allPMoves.length == 0) {
-          console.log('No valid moves');
-        }
-      } else {
-        allPMoves = [];
       }
     } catch (e) {
-      console.log('printing error:', e.message);
       state.error = e.message;
       const errorUpdate = {endMatchScores: move.endMatchScores, turnIndex: move.turnIndex, state: move.state};
+      state.error = localize(e.message, appState);
       setMove(errorUpdate);
     }
   }
@@ -138,13 +154,18 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
   const rows = [0, 1, 2, 3, 4, 5, 6, 7];
   const cols = [0, 1, 2, 3, 4, 5, 6, 7];
 
-  // let hintLine = null;
-
   function getPiece(r: number, c: number) {
     if (board[r][c] == '--') return null;
     if (board[r][c] == 'DS') return null;
     let piece;
-
+    if (hint) {
+      board[ridRow][ridCol] = 'WMH';
+    }
+    if (rowHint) {
+      for (let i = 0; i < 7; i += 2) {
+        board[ridRow][i] = 'WMH';
+      }
+    }
     switch (board[r][c]) {
       case 'BM': {
         piece = require('../imgs/black_man.png');
@@ -158,13 +179,18 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
         piece = require('../imgs/black_cro.png');
         break;
       }
-      case 'WK':
+      case 'WK': {
         piece = require('../imgs/white_cro.png');
+        break;
+      }
+      case 'WMH': {
+        piece = require('../imgs/white_man_hint.png');
+        break;
+      }
     }
 
     return <Image style={styles.pieceImage} source={piece} />;
   }
-
   return (
     <View style={styles.container}>
       <View style={styles.fixedRatio}>
@@ -181,9 +207,7 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
             ))}
           </View>
         </ImageBackground>
-        <View style={styles.bottomView}>
-          <Text style={styles.text}>{state.error}</Text>
-        </View>
+        <View style={styles.bottomView}>{<Text style={styles.text}>{state.error}</Text>}</View>
       </View>
     </View>
   );
