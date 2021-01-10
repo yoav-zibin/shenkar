@@ -11,6 +11,7 @@ import {View} from 'react-native';
 export function ChooseActivityScreen() {
   const {appState, dispatch} = useStoreContext();
   const navigation = useNavigation();
+  if (!appState.selectedGameId) return null;
   const gameModule = findGameModule(appState.selectedGameId);
   // We either choose a riddle or play activity.
   const riddleLevels = gameModule.riddleLevels;

@@ -138,8 +138,48 @@ const LOCALIZE_ID_TO_NAME = {
 
   // GO! ends.
   // Connect4 starts.
+  CONNECT4_GAME_NAME: {
+    en: 'Connect4',
+    he: 'ארבע בשורה',
+  },
+  CONNECT4_LEVEL1: {
+    en: 'Y wins in 1 move',
+    he: 'Y מנצח במסע אחד',
+  },
+  CONNECT4_LEVEL2: {
+    en: 'Y wins in 1 move Without help',
+    he: 'ללא עזרה Y מנצח במסע אחד',
+  },
+  CONNECT4_LEVEL3: {
+    en: 'Victory up to 4 step',
+    he: 'ניצחון בטוח עד 4 צעדים',
+  },
+  CONNECT4_LEVEL4: {
+    en: 'Victory up to 4 step',
+    he: 'ניצחון בטוח עד 4 צעדים',
+  },
   // Connect4 ends.
   // Dots and Boxes starts.
+  DOTS_AND_BOXES_GAME_NAME: {
+    en: 'Dots and Boxes',
+    he: 'קווים וקופסאות',
+  },
+  DOTS_AND_BOXES_LEVEL1: {
+    en: 'You wins in 1 move',
+    he: 'אתה מנצח במסע אחד',
+  },
+  DOTS_AND_BOXES_LEVEL2: {
+    en: 'You wins in 2 move',
+    he: 'אתה מנצח ב-2 מסעים',
+  },
+  DOTS_AND_BOXES_LEVEL3: {
+    en: 'You wins in 3 move',
+    he: 'אתה מנצח ב-3 מסעים',
+  },
+  DOTS_AND_BOXES_LEVEL4: {
+    en: 'You wins in 5 move',
+    he: 'אתה מנצח ב-5 מסעים',
+  },
   // Dots and Boxes ends.
   // Gomoku starts.
   // Gomoku ends.
