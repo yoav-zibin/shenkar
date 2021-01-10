@@ -102,7 +102,7 @@ function getInitialActivityState(appState: AppState, activity: Activity): Activi
       initialMove: initialMove,
       currentMove: initialMove,
       currentMoveNum: 0,
-      maxMovesNum: level.maxMovesNum,
+      maxMovesNum: level.useStoreContextmaxMovesNum,
       showHint: false,
     };
   } else {
