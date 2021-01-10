@@ -56,7 +56,7 @@ export const initialAppState: AppState = {
   isInitialState: true,
   languageId: '' as LanguageId,
   selectedGameId: '',
-  lastLogin: Date.now(),
+  lastLogin: new Date().getTime(), // UTC timestamp
   dailyStreak: 0,
 };
 

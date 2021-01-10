@@ -29,7 +29,7 @@ export const readAppStateAndCheckStreak = async (): Promise<AppState | null> => 
     state = await readAppState(); // read the state from storage
     if (!state) return null;
     if (!state.dailyStreak) state.dailyStreak = 0;
-    if (!state.lastLogin) state.lastLogin = Date.now();
+    if (!state.lastLogin) state.lastLogin = new Date().getTime(); // Current UTC time
     state = checkStreak(state);
     await reducerAndStoreState(state, {setStreak: true}); // store the changes of dailystreak back to the storage
     return state;
