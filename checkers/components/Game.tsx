@@ -12,14 +12,16 @@ import {
   isOwnColor,
   getColor,
   BoardDelta,
-  // getAllPossibleMoves,
+  getAllPossibleMoves,
   createMiniMove,
 } from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {riddleLevels} from '../riddles';
 
-// const allPMoves: BoardDelta[] = [];
+let allPossibleMoves: BoardDelta[] = [];
 let selectedMovingPiece: BoardDelta;
+let pieceIsSelected = false;
+
 const styles = StyleSheet.create({
   // See how to have a square component using aspectRatio=1
   // https://reactnative.fun/2017/06/21/ratio/
@@ -116,7 +118,17 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
     hint = false;
   }
 
-  let pieceIsSelected = false;
+  function showPossibleMoves() {
+    allPossibleMoves.forEach((element) => {
+      board[element.row][element.col] = 'SH';
+    });
+    setMove(move);
+  }
+  function removeSHFromBoard() {
+    allPossibleMoves.forEach((element) => {
+      board[element.row][element.col] = 'DS';
+    });
+  }
 
   function clickedOn(row: number, col: number) {
     if (riddleData && hint) {
@@ -131,20 +143,23 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
     try {
       if (pieceIsSelected) {
         pieceIsSelected = false;
+        removeSHFromBoard();
         const toDelta = {col: col, row: row};
         const fromDelta = {col: selectedMovingPiece.col, row: selectedMovingPiece.row};
-        const move = createMiniMove(board, fromDelta, toDelta, turnIndex);
-        setMove(move);
+        const Nmove = createMiniMove(board, fromDelta, toDelta, turnIndex);
+        setMove(Nmove);
       }
-
       if (isOwnColor(turnIndex, getColor(board[row][col]))) {
         pieceIsSelected = true;
         selectedMovingPiece = {col: col, row: row};
+        allPossibleMoves = getAllPossibleMoves(board, selectedMovingPiece, turnIndex);
+        showPossibleMoves();
       }
     } catch (e) {
       state.error = e.message;
       const errorUpdate = {endMatchScores: move.endMatchScores, turnIndex: move.turnIndex, state: move.state};
       state.error = localize(e.message, appState);
+      console.log('error:', state.error, 'appstate:', appState);
       setMove(errorUpdate);
     }
   }
@@ -185,28 +200,37 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
         piece = require('../imgs/white_man_hint.png');
         break;
       }
+      case 'SH': {
+        piece = require('../imgs/green_square.jpeg');
+        break;
+      }
     }
 
     return <Image style={styles.pieceImage} source={piece} />;
   }
   return (
-    <View style={styles.container}>
-      <View style={styles.fixedRatio}>
-        <ImageBackground style={styles.boardImage} source={require('../imgs/board.jpg')}>
-          <View style={styles.boardRowsContainer}>
-            {rows.map((r) => (
-              <View key={r} style={styles.boardCellsContainer}>
-                {cols.map((c) => (
-                  <TouchableWithoutFeedback key={c} onPress={() => clickedOn(r, c)}>
-                    <View style={styles.boardCell}>{getPiece(r, c)}</View>
-                  </TouchableWithoutFeedback>
-                ))}
-              </View>
-            ))}
-          </View>
-        </ImageBackground>
-        <View style={styles.bottomView}>{<Text style={styles.text}>{state.error}</Text>}</View>
+    <ImageBackground
+      source={require('../imgs/back.jpg')}
+      style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+      imageStyle={{opacity: 0.8}}>
+      <View style={styles.container}>
+        <View style={styles.fixedRatio}>
+          <ImageBackground style={styles.boardImage} source={require('../imgs/board.jpg')}>
+            <View style={styles.boardRowsContainer}>
+              {rows.map((r) => (
+                <View key={r} style={styles.boardCellsContainer}>
+                  {cols.map((c) => (
+                    <TouchableWithoutFeedback key={c} onPress={() => clickedOn(r, c)}>
+                      <View style={styles.boardCell}>{getPiece(r, c)}</View>
+                    </TouchableWithoutFeedback>
+                  ))}
+                </View>
+              ))}
+            </View>
+          </ImageBackground>
+          <View style={styles.bottomView}>{<Text style={styles.text}>{state.error}</Text>}</View>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
