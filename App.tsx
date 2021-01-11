@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any
+ */
+
 import React, {Fragment} from 'react';
 import {StyleSheet, Text} from 'react-native';
 import * as firebase from 'firebase';
@@ -12,12 +15,14 @@ const firebaseConfig = {
   projectId: 'shenkar-games',
   storageBucket: 'shenkar-games.appspot.com',
 };
-!firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
+const f: any = firebase;
+const facebook: any = Facebook;
+!f.apps.length ? f.initializeApp(firebaseConfig) : f.app();
 
 import {Container, Form, Input, Item, Button, Label} from 'native-base';
 
-export default class App extends React.Component {
-  constructor(props) {
+export default class App extends React.Component<any, any> {
+  constructor(props: any) {
     super(props);
     this.signUpUser = this.signUpUser.bind(this);
     this.loginUser = this.loginUser.bind(this);
@@ -30,56 +35,63 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    firebase.auth().onAuthStateChanged((user) => {
+    f.auth().onAuthStateChanged((user: any) => {
       if (user != null) {
         console.log(user);
       }
     });
   }
 
-  signUpUser(email, password) {
+  signUpUser(email: string, password: string) {
     try {
       if (this.state.password.length < 6) {
         alert('Please enter atleast 6 characters');
         return;
       }
 
-      firebase
-        .auth()
+      f.auth()
         .createUserWithEmailAndPassword(email, password)
-        .then(this.setState({isLogged: true}));
+        .then(() => {
+          this.setState({isLogged: true});
+        })
+        .catch((error: string) => {
+          alert(error);
+        });
     } catch (error) {
       console.log(error.toString());
     }
   }
-  loginUser(email, password) {
+  loginUser(email: string, password: string) {
     try {
-      firebase
-        .auth()
+      f.auth()
         .signInWithEmailAndPassword(email, password)
-        .then(this.setState({isLogged: true}))
-        .catch((error) => {
-          console.log(error);
+        .then((firebaseUser: any) => {
+          if (firebaseUser) {
+            this.setState({isLogged: true});
+          }
+        })
+
+        .catch((error: string) => {
+          alert(error);
         });
     } catch (error) {
       console.log(error.toString());
     }
   }
   async loginWithFacebook() {
-    await Facebook.initializeAsync({
+    await facebook.initializeAsync({
       appId: '878071626358300',
     });
 
-    const {type, token} = await Facebook.logInWithReadPermissionsAsync({permissions: ['public_profile']});
+    const {type, token} = await facebook.logInWithReadPermissionsAsync({permissions: ['public_profile']});
 
     if (type == 'success') {
-      const credential = firebase.auth.FacebookAuthProvider.credential(token);
+      const credential = f.auth.FacebookAuthProvider.credential(token);
 
-      firebase
-        .auth()
+      f.auth()
         .signInWithCredential(credential)
         .then(() => this.setState({isLogged: true}))
-        .catch((error) => {
+        .catch((error: string) => {
           console.log(error);
           alert(error.toString());
         });
@@ -127,6 +139,9 @@ export default class App extends React.Component {
 
               <Button style={{marginTop: 10}} full rounded primary onPress={() => this.loginWithFacebook()}>
                 <Text style={{color: 'white'}}> Login With Facebook</Text>
+              </Button>
+              <Button style={{marginTop: 10}} full rounded primary onPress={() => this.setState({isLogged: true})}>
+                <Text style={{color: 'white'}}> Anonymous user</Text>
               </Button>
             </Form>
           </Container>

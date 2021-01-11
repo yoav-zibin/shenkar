@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
     justifyContent: 'flex-end',
-    top: '10%',
+    top: '5%',
   },
 });
 
@@ -273,7 +273,7 @@ const connect4Component: React.FunctionComponent<GameProps<IState>> = (props: Ga
                       </View>
                     </TouchableWithoutFeedback>
                   ) : (
-                    <View style={styles.boardCell}>
+                    <View style={styles.boardCell} key={c}>
                       {state.board[r][c] != ' ' ? (
                         <Image
                           style={styles.pieceImage}
