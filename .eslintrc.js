@@ -77,5 +77,7 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'error',
     'jest/no-disabled-tests': 'error',
     'jest/no-commented-out-tests': 'error',
+    // added this rull to avoid sound require error
+    '@typescript-eslint/no-var-requires': 'off',
   },
 };

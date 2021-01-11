@@ -8,6 +8,8 @@ import {DEBUGGING_OPTIONS} from './debugging';
 import {TitleBar} from './TitleBar';
 import {findGameModule} from './gameModules';
 import {useNavigation} from '@react-navigation/native';
+import {Audio} from 'expo-av';
+import {Sound} from 'expo-av/build/Audio';
 
 const styles = StyleSheet.create({
   bottomView: {
@@ -27,7 +29,14 @@ const styles = StyleSheet.create({
   },
 });
 
+// flag for sound in checkers every move include two clicks
+let checkersFlag = true;
+// backround suond flag
+let backGroundMusic = false;
+
 export function PlayAreaScreen() {
+  const [sound, setSound] = React.useState<Sound | undefined>(undefined);
+  const [backroundSound, setBackgroundSound] = React.useState<Sound | undefined>(undefined);
   const navigation = useNavigation();
   const {appState, dispatch} = useStoreContext();
   const {activityState, selectedGameId, activity} = appState;
@@ -35,7 +44,7 @@ export function PlayAreaScreen() {
   if (!activity || !activityState) {
     return null;
   }
-  console.log('Render PlayArea activity=', activity);
+  // console.log('Render PlayArea activity=', activity);
 
   const {riddleActivity, activityType} = activity;
   const {yourPlayerIndex, initialMove, currentMove, currentMoveNum, maxMovesNum, showHint} = activityState;
@@ -83,6 +92,34 @@ export function PlayAreaScreen() {
     }
     return null;
   });
+
+  React.useEffect(() => {
+    if (!backGroundMusic) {
+      playBackround();
+      backGroundMusic = true;
+    }
+  }, [backroundSound]);
+
+  React.useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
+  async function playSound() {
+    const {sound} = await Audio.Sound.createAsync(require('./playbacks/move.mp3'));
+    setSound(sound);
+    await sound.playAsync();
+  }
+
+  async function playBackround() {
+    const {sound} = await Audio.Sound.createAsync(require('./playbacks/smallWorld.mp3'));
+    setBackgroundSound(sound);
+    await sound.playAsync();
+    await sound.setIsLoopingAsync(true);
+  }
 
   let gameOverLocalizeId: LocalizeId | null = null;
   if (isActivityOver) {
@@ -158,6 +195,13 @@ export function PlayAreaScreen() {
         showHint: false,
       },
     });
+    if (gameModule.gameId == 'checkers' && checkersFlag) {
+      checkersFlag = false;
+      return;
+    } else {
+      playSound();
+      checkersFlag = true;
+    }
   }
 
   return (
