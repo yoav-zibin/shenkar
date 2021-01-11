@@ -69,7 +69,7 @@ export function PlayAreaScreen() {
       const level = gameModule.riddleLevels[levelIndex];
       const millisUntilShowHint = DEBUGGING_OPTIONS.SHOW_HINT_AFTER_ONE_SECOND
         ? 1000
-        : secondsToShowHint(level.difficulty);
+        : 1000 * secondsToShowHint(level.difficulty);
       console.log('We will show hint in ' + millisUntilShowHint + ' millis');
       return setTimeout(() => {
         console.log('Showing hint');
