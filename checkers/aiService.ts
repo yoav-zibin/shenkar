@@ -108,7 +108,7 @@ function getStateValue(board: Board): number {
 /**
  * Get the state score for player 0, a simple wrapper function
  */
-function getStateScoreForIndex0(state: IState): number {
+export function getStateScoreForIndex0(state: IState): number {
   // getStateValue return the score for player 1.
   return -getStateValue(state.board);
 }
