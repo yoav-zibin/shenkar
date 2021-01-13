@@ -1,11 +1,11 @@
 export const DEBUGGING_OPTIONS = {
   // To skip the <ChooseLanguage> component, set it to a language Id,
   // e.g., 'he'
-  SKIP_CHOOSE_LANGUAGE_AND_USE: 'en',
+  SKIP_CHOOSE_LANGUAGE_AND_USE: '',
 
   // To skip the <ChooseGame> component, set it to a game Id,
   // e.g., 'tictactoe'
-  SKIP_CHOOSE_GAME_AND_JUMP_TO: 'checkers',
+  SKIP_CHOOSE_GAME_AND_JUMP_TO: '',
 
   // To skip the <ChooseGame> component, set it to an activity,
   // e.g., {activityType: 'PASS_AND_PLAY'}

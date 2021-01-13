@@ -61,7 +61,7 @@ export interface RiddlesLevel<S> {
   riddles: S[];
   // How many moves can you make until the riddle is solved?
   // Let's do riddles with at most 5 moves (i.e., 3 moves by you and 2 by the AI opponent)
-  useStoreContextmaxMovesNum: 1 | 2 | 3 | 4 | 5;
+  maxMovesNum: 1 | 2 | 3 | 4 | 5;
   turnIndex: number;
 }
 
