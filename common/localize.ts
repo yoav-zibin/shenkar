@@ -143,20 +143,20 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'ארבע בשורה',
   },
   CONNECT4_LEVEL1: {
-    en: 'Y wins in 1 move',
-    he: 'Y מנצח במסע אחד',
+    en: 'level1 - Y wins in 1 move',
+    he: 'Y שלב 1 - מנצח במסע אחד',
   },
   CONNECT4_LEVEL2: {
-    en: 'Y wins in 1 move Without help',
-    he: 'ללא עזרה Y מנצח במסע אחד',
+    en: 'level2 - Y wins in 1 move',
+    he: 'Y שלב 2 - מנצח במסע אחד',
   },
   CONNECT4_LEVEL3: {
-    en: 'Victory up to 4 step',
-    he: 'ניצחון בטוח עד 4 צעדים',
+    en: 'level3 - Advanced',
+    he: 'שלב 3 - למתקדמים',
   },
   CONNECT4_LEVEL4: {
-    en: 'Victory up to 4 step',
-    he: 'ניצחון בטוח עד 4 צעדים',
+    en: 'level3-Advanced Tricks',
+    he: 'שלב 4 - טריקים למתקדמים',
   },
   // Connect4 ends.
   // Dots and Boxes starts.
