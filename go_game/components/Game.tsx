@@ -1,3 +1,4 @@
+import React from 'react';
 import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
 
 import {GameModule, GameProps} from '../../common/common';
@@ -114,12 +115,12 @@ const GoComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProp
     let style: ViewStyle = {};
     if (riddleData.startsWith('r')) {
       style = {...styles.hintLineDot};
-      const {row, col} : { row: number; col: number } = riddleHints(riddleData);
-      style.top = 100 / 7.9 + (row-1) * (100 / 9) + '%';
-      style.left = 100 / 7.9 + (col-1) * (100 / 9) + '%';
+      const {row, col}: {row: number; col: number} = riddleHints(riddleData);
+      style.top = 100 / 7.9 + (row - 1) * (100 / 9) + '%';
+      style.left = 100 / 7.9 + (col - 1) * (100 / 9) + '%';
     } else throw new Error('Illegal riddleData=' + riddleData);
     // hintDot = <View style={style}/>
-    hintDot = <View style={style} pointerEvents="none"/>
+    hintDot = <View style={style} pointerEvents="none" />;
   }
 
   function getPiece(r: number, c: number) {

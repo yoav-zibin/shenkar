@@ -27,15 +27,15 @@ type Sets = {white: Points[]; black: Points[]};
 export function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
   switch (hint) {
     case 'r1':
-      return (row == 0 && col == 4);
+      return row == 0 && col == 4;
     case 'r2':
-      return (row == 1 && col == 5);
+      return row == 1 && col == 5;
     case 'r3':
-      return (row == 2 && col == 5);
+      return row == 2 && col == 5;
     case 'r4':
-      return (row == 3 && col == 5);
+      return row == 3 && col == 5;
     case 'r5':
-      return (row == 4 && col == 4);
+      return row == 4 && col == 4;
   }
 }
 
