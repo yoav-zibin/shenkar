@@ -1,11 +1,10 @@
-import React from 'react';
 import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
 
 import {GameModule, GameProps} from '../../common/common';
 
 import {createMove, IState, getInitialState, checkRiddleData} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
-import {riddleLevels} from '../riddles';
+import {riddleLevels, riddleHints} from '../riddles';
 
 const hintLineColor = 'green';
 
@@ -56,33 +55,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  hintLineCol: {
+  hintLineDot: {
     position: 'absolute',
-    width: 8,
-    height: '100%',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: hintLineColor,
-  },
-  hintLineRow: {
-    position: 'absolute',
-    width: '100%',
-    height: 8,
-    backgroundColor: hintLineColor,
-  },
-  hintLineDiagonal1: {
-    position: 'absolute',
-    width: 8,
-    height: '100%',
-    backgroundColor: hintLineColor,
-    transform: [{rotate: '135deg'}],
-    left: '50%',
-  },
-  hintLineDiagonal2: {
-    position: 'absolute',
-    width: 8,
-    height: '100%',
-    backgroundColor: hintLineColor,
-    transform: [{rotate: '45deg'}],
-    left: '50%',
   },
 });
 
@@ -131,15 +109,17 @@ const GoComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProp
   const rows = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   const cols = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
-  let hintLine = null;
+  let hintDot = null;
   if (showHint && riddleData) {
     let style: ViewStyle = {};
     if (riddleData.startsWith('r')) {
-      style = {...styles.hintLineRow};
-      const row = Number(riddleData.charAt(1));
-      style.top = 100 / 6.1 + row * (100 / 9) + '%';
+      style = {...styles.hintLineDot};
+      const {row, col} : { row: number; col: number } = riddleHints(riddleData);
+      style.top = 100 / 7.9 + (row-1) * (100 / 9) + '%';
+      style.left = 100 / 7.9 + (col-1) * (100 / 9) + '%';
     } else throw new Error('Illegal riddleData=' + riddleData);
-    hintLine = <View style={style} />;
+    // hintDot = <View style={style}/>
+    hintDot = <View style={style} pointerEvents="none"/>
   }
 
   function getPiece(r: number, c: number) {
@@ -174,7 +154,7 @@ const GoComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProp
             ))}
           </View>
         </ImageBackground>
-        {hintLine}
+        {hintDot}
       </View>
     </View>
   );

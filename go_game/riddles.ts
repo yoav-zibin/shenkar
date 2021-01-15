@@ -16,6 +16,25 @@ function r(riddleData: RiddleData, board: Board, riddleWin: number[]): IState {
   };
 }
 
+export function riddleHints(riddle: RiddleData): {row: number, col: number} {
+  switch (riddle) {
+    case 'r1':
+      return  {row: 0, col: 4}
+    case 'r2':
+      return  {row: 1, col: 5}
+    case 'r3':
+      return  {row: 2, col: 5}
+    case 'r4':
+      return  {row: 3, col: 5}
+    case 'r5':
+      return  {row: 4, col: 4}
+    default:
+      return {row: -1, col: -1}
+  }
+  
+}
+
+
 export const riddleLevels: RiddlesLevel<IState>[] = [
   {
     levelLocalizeId: 'GO_LEVEL1',
