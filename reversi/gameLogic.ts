@@ -5,9 +5,15 @@ export const COLS = 8;
 const maxRow = ROWS - 1;
 const maxCol = COLS - 1;
 
+export interface RiddleData {
+  solutionRow: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  solutionCol: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+}
+
 export interface IState {
   board?: Board;
   delta?: BoardDelta;
+  riddleData?: RiddleData;
 }
 
 // declare type IMove = IOperation[];
@@ -790,4 +796,18 @@ export function riddles() {
       ]
     ),
   ];
+}
+
+function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
+  return hint.solutionRow === row && hint.solutionCol === col;
+}
+
+export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
+  const {riddleData} = state;
+  return !riddleData
+    ? false
+    : firstMoveSolutions.some(
+        (firstMove) =>
+          firstMove.state.delta && isPosOnHintLine(firstMove.state.delta.row, firstMove.state.delta.col, riddleData)
+      );
 }
