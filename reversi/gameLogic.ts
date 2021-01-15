@@ -516,15 +516,6 @@ export function createMove(
     } else {
       turnIndex = turnIndexBeforeMove;
     }
-    // var nextToBeOpponent: string = turnIndexBeforeMove == 0 ? 0 : 1; // 0
-    // var nextCurrentPlayer: string = turnIndexBeforeMove == 0 ? 1 : 0; // 1
-    // var turn = hasValidMoves(nextCurrentPlayer, nextToBeOpponent, result.tempBoard);
-    // if (turn) {
-    //     turnIndex = 1 - turnIndexBeforeMove; // 1
-    // }
-    // else {
-    //     turnIndex = turnIndexBeforeMove; // 0
-    // }
   }
 
   return {
