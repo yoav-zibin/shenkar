@@ -1,7 +1,7 @@
 import React from 'react';
 import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
 
-import {GameModule, GameProps} from '../../common/common';
+import {GameModule, GameProps, randomElement} from '../../common/common';
 
 import {createMove, IState, getInitialState, checkRiddleData} from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
@@ -10,8 +10,6 @@ import {riddleLevels, riddleHints} from '../riddles';
 const hintLineColor = 'green';
 
 const styles = StyleSheet.create({
-  // See how to have a square component using aspectRatio=1
-  // https://reactnative.fun/2017/06/21/ratio/
   fixedRatio: {
     flex: 1,
     aspectRatio: 1,
@@ -116,21 +114,32 @@ const GoComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProp
     if (riddleData.startsWith('r')) {
       style = {...styles.hintLineDot};
       const {row, col}: {row: number; col: number} = riddleHints(riddleData);
-      style.top = 100 / 7.9 + (row - 1) * (100 / 9) + '%';
-      style.left = 100 / 7.9 + (col - 1) * (100 / 9) + '%';
+      style.top = 100 / 6.9 + (row - 1) * (100 / 9) + '%';
+      style.left = 100 / 6.9 + (col - 1) * (100 / 9) + '%';
     } else throw new Error('Illegal riddleData=' + riddleData);
-    // hintDot = <View style={style}/>
     hintDot = <View style={style} pointerEvents="none" />;
+  }
+
+  /*
+   * Right now the only animation used is Scale, but by adding animations to
+   * the randomElement call list, and then adding a case to the Switch case,
+   * a new animation will be implemented
+   */
+  function getAnimationStyle() {
+    const whatToAnimate = randomElement(['scale']);
+    switch (whatToAnimate) {
+      case 'scale':
+        return {transform: [{scale: animValue}]};
+    }
   }
 
   function getPiece(r: number, c: number) {
     if (board[r][c] == '') return null;
+    const shouldAnimate = delta && delta.row == r && delta.col == c;
+    const animStyle = shouldAnimate ? getAnimationStyle() : {};
+
     return (
-      <Animated.View
-        style={{
-          // opacity: animValue,
-          transform: [{scale: delta && delta.row == r && delta.col == c ? animValue : 1}],
-        }}>
+      <Animated.View style={animStyle}>
         <Image
           style={styles.pieceImage}
           source={board[r][c] == 'B' ? require('../imgs/blackStone.png') : require('../imgs/whiteStone.png')}
