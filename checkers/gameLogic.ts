@@ -9,12 +9,57 @@ export interface MiniMove {
   fromDelta: BoardDelta;
   toDelta: BoardDelta;
 }
+
+export type RiddleData =
+  | '0'
+  | '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '01'
+  | '03'
+  | '05'
+  | '07'
+  | '10'
+  | '12'
+  | '14'
+  | '16'
+  | '21'
+  | '23'
+  | '25'
+  | '27'
+  | '30'
+  | '32'
+  | '34'
+  | '36'
+  | '41'
+  | '43'
+  | '45'
+  | '47'
+  | '50'
+  | '52'
+  | '54'
+  | '56'
+  | '61'
+  | '63'
+  | '65'
+  | '67'
+  | '70'
+  | '72'
+  | '74'
+  | '76';
+
 export interface IState {
   board: Board;
-  boardBeforeMove: Board;
+  boardBeforeMove?: Board;
   // The mini-moves (e.g., a move or a series of jumps) that led to the current board. For animation purposes.
   // All mini-moves are done by the same color (white/black).
-  miniMoves: MiniMove[];
+  miniMoves?: MiniMove[];
+  riddleData?: RiddleData;
+  error?: string | null;
 }
 
 export const ENUM = {
@@ -127,7 +172,7 @@ function doesContainMove(moves: BoardDelta[], move: BoardDelta): boolean {
  * jumping piece. In another word, check whether the player is operating
  * his/her own piece.
  *
- * @param turnIndex 0 represents the black player and 1
+ * @param turnIndex 1 represents the black player and 0
  *        represents the white player.
  * @param color the color of the moving or jumping piece.
  * @returns true if the index matches the color, otherwise false.
@@ -947,4 +992,19 @@ export function getInitialBoard(): Board {
     ['--', 'WM', '--', 'WM', '--', 'WM', '--', 'WM'],
     ['WM', '--', 'WM', '--', 'WM', '--', 'WM', '--'],
   ];
+}
+// function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
+//   switch (hint) {
+//     case 's1':
+//       return row == 0;
+//     case 's2':
+//       return row == 1;
+//     case 's3':
+//       return row == 2;
+//   }
+// }
+export function checkRiddleData(/* state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[] */): boolean {
+  // const {riddleData} = state;
+  // return !riddleData ? false : firstMoveSolutions.some((firstMove) => firstMove.state.miniMoves);
+  return true;
 }

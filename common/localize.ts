@@ -111,6 +111,75 @@ const LOCALIZE_ID_TO_NAME = {
   },
   // TICTACTOE ends.
   // Checkers starts.
+  CHECKERS_GAME_NAME: {
+    en: 'Çheckers',
+    he: 'דמקה',
+  },
+  CHECKERS_LEVEL1: {
+    en: 'Posibble Moves',
+    he: 'מהלכים אפשריים',
+  },
+  CHECKERS_LEVEL2: {
+    en: 'Offence',
+    he: 'התקפה',
+  },
+  CHECKERS_LEVEL3: {
+    en: 'Defence',
+    he: 'הגנה',
+  },
+  CHECKERS_LEVEL4: {
+    en: 'Crown A King',
+    he: 'להפוך למלך',
+  },
+  CHECKERS_LEVEL5: {
+    en: 'King Moves',
+    he: 'מהלכי מלך',
+  },
+  // Illegal selection
+  ILLEGAL_IGNORE_MANDATORY_JUMP: {
+    en: 'Ignored Mandatory Jump',
+    he: 'התעלמת מאכילת כלי יריב ',
+  },
+  ILLEGAL_SIMPLE_MOVE: {
+    en: 'Illegal Simple Move',
+    he: 'מהלך פשוט לא חוקי',
+  },
+  ILLEGAL_MOVE: {
+    en: 'Illegal Simple Move',
+    he: 'מהלך פשוט לא חוקי',
+  },
+  ILLEGAL_JUMP_MOVE: {
+    en: 'Illegal Jump Move',
+    he: 'מהלך קפיצה לא חוקי',
+  },
+  ILLEGAL_DELTA: {
+    en: 'Illegal Delta',
+    he: 'מרחק לא חוקי',
+  },
+  ILLEGAL_COLOR_CHANGED: {
+    en: 'Illegal Color',
+    he: 'צבע לא נכון',
+  },
+  ILLEGAL_CROWNED: {
+    en: 'Illegal Crown',
+    he: 'המלכה לא נכונה',
+  },
+  ILLEGAL_UNCROWNED: {
+    en: 'Illegal Crown',
+    he: 'המלכה לא נכונה',
+  },
+  ILLEGAL_SET_TURN: {
+    en: 'It is not your turn',
+    he: 'זה לא התור שלך',
+  },
+  ILLEGAL_END_MATCH_SCORE: {
+    en: 'Illegal End Match Score',
+    he: 'תוצאת סיום לא תקינה',
+  },
+  ILLEGAL_CODE: {
+    en: 'Illegal Code',
+    he: 'טעות כללית במשחק',
+  },
   // Checkers ends.
   // Reversi starts.
   // Reversi ends.

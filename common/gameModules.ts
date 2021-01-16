@@ -1,9 +1,15 @@
 import {getTicTacToeGameModule} from '../tictactoe/components/Game';
 import getGoGameModule from '../go_game/components/Game';
 import {getConnect4Module} from '../connect4/components/Game';
+import {getCheckersGameModule} from '../checkers/components/Game';
 import {AnyGameModule} from './common';
 
-const allGameModules: AnyGameModule[] = [getTicTacToeGameModule(), getGoGameModule(), getConnect4Module()];
+const allGameModules: AnyGameModule[] = [
+  getCheckersGameModule(),
+  getTicTacToeGameModule(),
+  getGoGameModule(),
+  getConnect4Module(),
+];
 
 export function getAllGameModules(): AnyGameModule[] {
   return allGameModules;
