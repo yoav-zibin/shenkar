@@ -291,7 +291,7 @@ export const riddleLevels: RiddlesLevel<IState>[] = [
   },
   {
     levelLocalizeId: 'CHECKERS_LEVEL3',
-    maxMovesNum: 3,
+    maxMovesNum: 1,
     difficulty: 'HARD',
     turnIndex: 0,
     riddles: [
@@ -334,7 +334,7 @@ export const riddleLevels: RiddlesLevel<IState>[] = [
   },
   {
     levelLocalizeId: 'CHECKERS_LEVEL4',
-    maxMovesNum: 3,
+    maxMovesNum: 1,
     difficulty: 'HARD',
     turnIndex: 0,
     riddles: [
@@ -377,7 +377,7 @@ export const riddleLevels: RiddlesLevel<IState>[] = [
   },
   {
     levelLocalizeId: 'CHECKERS_LEVEL5',
-    maxMovesNum: 3,
+    maxMovesNum: 1,
     difficulty: 'HARD',
     turnIndex: 0,
     riddles: [
