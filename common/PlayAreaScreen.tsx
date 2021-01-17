@@ -173,7 +173,7 @@ export function PlayAreaScreen() {
 
   function setMove(chosenMove: IMove<unknown>) {
     const didTurnIndexChange = currentMove.turnIndex != chosenMove.turnIndex;
-    const nextYourPlayerIndex = activityType == 'PASS_AND_PLAY' ? 1 - yourPlayerIndex : yourPlayerIndex;
+    const nextYourPlayerIndex = activityType == 'PASS_AND_PLAY' ? chosenMove.turnIndex : yourPlayerIndex;
     dispatch({
       setActivityState: {
         yourPlayerIndex: nextYourPlayerIndex,
