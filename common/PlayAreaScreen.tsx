@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-var-requires: "off" */
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {commonStyles, IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
@@ -8,6 +9,8 @@ import {DEBUGGING_OPTIONS} from './debugging';
 import {TitleBar} from './TitleBar';
 import {findGameModule} from './gameModules';
 import {useNavigation} from '@react-navigation/native';
+import {Audio} from 'expo-av';
+import {Sound} from 'expo-av/build/Audio';
 
 const styles = StyleSheet.create({
   bottomView: {
@@ -27,7 +30,11 @@ const styles = StyleSheet.create({
   },
 });
 
+// checkers move sound flag, every move include two clicks
+let checkersFlag = true;
+
 export function PlayAreaScreen() {
+  const [sound, setSound] = React.useState<Sound | undefined>(undefined);
   const navigation = useNavigation();
   const {appState, dispatch} = useStoreContext();
   const {activityState, selectedGameId, activity} = appState;
@@ -83,6 +90,25 @@ export function PlayAreaScreen() {
     }
     return null;
   });
+
+  React.useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
+  async function playSound() {
+    if (gameModule.gameId == 'checkers' && checkersFlag) {
+      checkersFlag = false;
+      return;
+    }
+    const {sound} = await Audio.Sound.createAsync(require('./playbacks/move.mp3'));
+    setSound(sound);
+    await sound.playAsync();
+    checkersFlag = true;
+  }
 
   let gameOverLocalizeId: LocalizeId | null = null;
   if (isActivityOver) {
@@ -158,6 +184,7 @@ export function PlayAreaScreen() {
         showHint: false,
       },
     });
+    playSound();
   }
 
   return (
