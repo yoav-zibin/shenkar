@@ -5,7 +5,27 @@ export interface BoardDelta {
   row: number;
   col: number;
 }
-export type RiddleData = 'r1' | 'r2' | 'r3' | 'r4' | 'r5';
+export type RiddleData =
+  | 'r1'
+  | 'r2'
+  | 'r3'
+  | 'r4'
+  | 'r5'
+  | 'r6'
+  | 'r7'
+  | 'r8'
+  | 'r9'
+  | 'r10'
+  | 'r11'
+  | 'r12'
+  | 'r13'
+  | 'r14'
+  | 'r15'
+  | 'r16'
+  | 'r17'
+  | 'r18'
+  | 'r19'
+  | 'r20';
 export interface IState {
   board: Board;
   boardBeforeMove: Board;
@@ -27,15 +47,45 @@ type Sets = {white: Points[]; black: Points[]};
 export function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
   switch (hint) {
     case 'r1':
-      return row == 0;
+      return row == 0 && col == 4;
     case 'r2':
-      return row == 1;
+      return row == 1 && col == 5;
     case 'r3':
-      return row == 2;
+      return row == 2 && col == 5;
     case 'r4':
-      return row == 3;
+      return row == 3 && col == 5;
     case 'r5':
-      return row == 4;
+      return row == 4 && col == 4;
+    case 'r6':
+      return row == 2 && col == 4;
+    case 'r7':
+      return row == 2 && col == 5;
+    case 'r8':
+      return row == 2 && col == 4;
+    case 'r9':
+      return row == 8 && col == 8;
+    case 'r10':
+      return row == 8 && col == 6;
+    case 'r11':
+      return row == 3 && col == 3;
+    case 'r12':
+      return row == 0 && col == 3;
+    case 'r13':
+      return row == 3 && col == 3;
+    case 'r14':
+      return row == 3 && col == 4;
+    case 'r15':
+      return row == 7 && col == 4;
+    case 'r16':
+      return row == 6 && col == 6;
+    case 'r17':
+      return row == 6 && col == 1;
+    case 'r18':
+      return row == 6 && col == 2;
+    case 'r19':
+      return row == 3 && col == 4;
+    case 'r20':
+      return row == 2 && col == 7;
   }
 }
 

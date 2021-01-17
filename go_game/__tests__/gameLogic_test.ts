@@ -72,29 +72,36 @@ test('Initial move', function () {
   expect(deepEquals(move, expectedMove)).toBe(true);
 });
 
-test('Hint line 1', function () {
-  const isOnline: boolean = isPosOnHintLine(0, 0, 'r1');
+test('Hint Dot 1', function () {
+  const isOnline: boolean = isPosOnHintLine(0, 4, 'r1');
   const expectedBool = true;
 
   expect(deepEquals(isOnline, expectedBool)).toBe(true);
 });
 
-test('Hint line 2', function () {
-  const isOnline: boolean = isPosOnHintLine(1, 0, 'r1');
-  const expectedBool = false;
+test('Hint Dot 2', function () {
+  const isOnline: boolean = isPosOnHintLine(1, 5, 'r2');
+  const expectedBool = true;
 
   expect(deepEquals(isOnline, expectedBool)).toBe(true);
 });
 
-test('Hint line 3', function () {
-  const isOnline: boolean = isPosOnHintLine(0, 0, 'r2');
-  const expectedBool = false;
+test('Hint Dot 3', function () {
+  const isOnline: boolean = isPosOnHintLine(2, 5, 'r3');
+  const expectedBool = true;
 
   expect(deepEquals(isOnline, expectedBool)).toBe(true);
 });
 
-test('Hint line 4', function () {
-  const isOnline: boolean = isPosOnHintLine(1, 0, 'r2');
+test('Hint Dot 4', function () {
+  const isOnline: boolean = isPosOnHintLine(3, 5, 'r4');
+  const expectedBool = true;
+
+  expect(deepEquals(isOnline, expectedBool)).toBe(true);
+});
+
+test('Hint Dot 5', function () {
+  const isOnline: boolean = isPosOnHintLine(4, 4, 'r5');
   const expectedBool = true;
 
   expect(deepEquals(isOnline, expectedBool)).toBe(true);
