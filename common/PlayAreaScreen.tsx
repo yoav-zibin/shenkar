@@ -5,16 +5,16 @@ import {createComputerMove} from './alphaBetaService';
 import {navigateNextFrame, useStoreContext} from './store';
 import {localize, LocalizeId} from './localize';
 import {DEBUGGING_OPTIONS} from './debugging';
-import {TitleBar} from './TitleBar';
+import {ProgressBar} from './ProgressBar';
 import {findGameModule} from './gameModules';
 import {useNavigation} from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   bottomView: {
-    height: 100,
+    marginBottom: 100,
   },
   text: {
-    marginTop: 20,
+    marginTop: 10,
     fontSize: 19,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -125,6 +125,7 @@ export function PlayAreaScreen() {
       if (riddleIndex < level.riddles.length - 1) {
         dispatch({setActivity: {riddleActivity: {levelIndex, riddleIndex: riddleIndex + 1}}});
       } else if (levelIndex < gameModule.riddleLevels.length - 1) {
+        console.log('here');
         dispatch({setActivity: {riddleActivity: {levelIndex: levelIndex + 1, riddleIndex: 0}}});
       } else {
         // Finished all activities!
@@ -162,13 +163,13 @@ export function PlayAreaScreen() {
 
   return (
     <View style={commonStyles.screen}>
-      <TitleBar />
       {gameModule.component({
         move: currentMove,
         setMove: setHumanMove,
         yourPlayerIndex,
         showHint,
       })}
+      {nextActionLocalizeId ? null : <ProgressBar></ProgressBar>}
       <View style={styles.bottomView}>
         {gameOverLocalizeId && nextActionLocalizeId && (
           <>
