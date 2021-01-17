@@ -1,23 +1,24 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {AuthContext} from '../App';
 import Background from './Background';
 import {LanguageId, LANGUAGES} from './localize';
 import {useStoreContext} from './store';
 
 const LanguageSelect = () => {
   const {dispatch} = useStoreContext();
-  const navigation = useNavigation();
+  const selectLanguage = React.useContext(AuthContext)?.selectLanguage;
   return (
     <Background>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        {/* <Text style={styles.title}>השם של המשחק</Text> */}
         <View style={styles.container}>
           {Object.entries(LANGUAGES).map((i, key) => {
             const onSelect = async () => {
               dispatch({setLanguageId: i[0] as LanguageId});
               await AsyncStorage.setItem('language', i[0]);
-              navigation.goBack();
+              if (selectLanguage) selectLanguage(i[0]);
             };
             return (
               <Pressable style={styles.optionContainer} onPress={onSelect} key={key}>
