@@ -3,7 +3,7 @@ import {getAllGameModules} from './gameModules';
 import {navigateNextFrame, useStoreContext} from './store';
 import {TitleBar} from './TitleBar';
 import {useNavigation} from '@react-navigation/native';
-import {localize, LocalizeId} from './localize';
+import {localize} from './localize';
 import {View, FlatList, StyleSheet, Text, Image} from 'react-native';
 import {PageTitle} from './PageTitle';
 import {IMAGES} from './imgs/imagesRequires';
