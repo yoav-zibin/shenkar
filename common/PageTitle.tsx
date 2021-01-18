@@ -1,6 +1,5 @@
 import React from 'react';
 import {getScreenTitle, RouteName, useStoreContext} from './store';
-import {useNavigation} from '@react-navigation/native';
 import {useRoute} from '@react-navigation/native';
 import {View, Text, StyleSheet} from 'react-native';
 
@@ -21,7 +20,6 @@ const styles = StyleSheet.create({
 
 export function PageTitle() {
   const route = useRoute();
-  const navigation = useNavigation();
   const {appState} = useStoreContext();
   return (
     <View style={styles.pageTitleContainer}>
