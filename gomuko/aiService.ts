@@ -20,18 +20,7 @@ export function getPossibleMoves(state: IState, turnIndex: number): IMove<IState
 }
 
 export function getStateScoreForIndex0(state: IState, turnIndex: number): number {
-  let score = 0;
-
-  for (let i = 0; i < state.board.length; i++) {
-    for (let j = 0; j < state.board.length; j++) {
-      if (state.board[i][j] == 'B') score += 100 + i + j;
-      else if (state.board[i][j] == 'W') score -= 100 - i - j;
-    }
-  }
-
-  if (turnIndex == 1) return score;
-  else if (turnIndex == 0) return score * -1;
-  else return 0;
+return 0
 }
 
 export const aiService: AiService<IState> = {

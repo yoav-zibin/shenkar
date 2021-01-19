@@ -15,36 +15,16 @@ export enum Difficulty {
 export interface IState {
   board: Board;
   boardBeforeMove: Board;
-  delta: BoardDelta | null; // [-1,-1] means a pass.
+  delta: BoardDelta | null;
   difficulty: Difficulty;
   riddleData?: RiddleData;
   riddleWin?: number[];
   riddleWon?: boolean;
 }
 
-function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
-  switch (hint) {
-    case 'r1':
-      return row == 0;
-    case 'r2':
-      return row == 1;
-    case 'r3':
-      return row == 2;
-    case 'r4':
-      return row == 3;
-    case 'r5':
-      return row == 4;
-  }
-}
 
 export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
-  const {riddleData} = state;
-  return !riddleData
-    ? false
-    : firstMoveSolutions.some(
-        (firstMove) =>
-          firstMove.state.delta && isPosOnHintLine(firstMove.state.delta.row, firstMove.state.delta.col, riddleData)
-      );
+return true;
 }
 
 // returns a new [empty] weiqi board
@@ -67,16 +47,6 @@ function copyObject<T>(object: T): T {
   return deepClone(object);
 }
 
-function isBoardFull(board: Board) {
-  const dim = board.length;
-  for (let i = 0; i < dim; i++) {
-    for (let j = 0; j < dim; j++) {
-      if (!board[i][j]) return false;
-    }
-  }
-  return true;
-}
-
 // returns a random move that the computer plays
 export function createComputerMove(board: Board, turnIndexBeforeMove: number) {
   const possibleMoves: IMove<IState>[] = [];
@@ -91,13 +61,6 @@ export function createComputerMove(board: Board, turnIndexBeforeMove: number) {
         // cell in that position was full
       }
     }
-  }
-  try {
-    const delta = {row: -1, col: -1};
-    const testmove = createMove(board, delta, turnIndexBeforeMove);
-    possibleMoves.push(testmove);
-  } catch (e) {
-    // Couldn't add pass as a move?
   }
   const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
   return randomMove;
