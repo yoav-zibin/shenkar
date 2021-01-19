@@ -199,8 +199,8 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'ניצחון 2!',
   },
   GOMOKU_LEVEL4: {
-    en: 'Level 4',
-    he: 'רמה 4',
+    en: 'Block and Win',
+    he: 'חסום ונצח',
   },
   // Gomoku ends.
 };

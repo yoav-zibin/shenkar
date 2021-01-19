@@ -189,7 +189,6 @@ const GomokuComponent: React.FunctionComponent<GameProps<IState>> = (props: Game
           <Image style={styles.kuroKun} source={require('../imgs/Kuro_Kun.png')} />
         </ImageBackground>
 
-        {hintLine}
       </View>
     </View>
   );

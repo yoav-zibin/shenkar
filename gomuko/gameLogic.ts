@@ -215,7 +215,7 @@ function checkRow(board: string[][], row: number, col: number, playerColor: stri
       winnerCells.push({row: row, column: i});
     } else break;
   }
-  if (winnerCells.length == 4) {
+  if (winnerCells.length === 4) {
     return true;
   }
 
@@ -224,7 +224,7 @@ function checkRow(board: string[][], row: number, col: number, playerColor: stri
       winnerCells.push({row: row, column: i});
     } else break;
   }
-  if (winnerCells.length == 4) {
+  if (winnerCells.length === 4) {
     return true;
   }
 
@@ -238,14 +238,14 @@ function checkColumn(board: string[][], row: number, col: number, playerColor: s
       winnerCells.push({row: i, column: col});
     } else break;
   }
-  if (winnerCells.length == 4) return true;
+  if (winnerCells.length === 4) return true;
 
   for (let i = row - 1; i >= 0; i--) {
     if (board[i][col] === playerColor) {
       winnerCells.push({row: i, column: col});
     } else break;
   }
-  if (winnerCells.length == 4) return true;
+  if (winnerCells.length === 4) return true;
 
   return false;
 }
@@ -261,7 +261,7 @@ function checkDiagonal(board: string[][], row: number, col: number, playerColor:
       winnerCells.push({row: row + i, column: col + i});
     } else break;
   }
-  if (winnerCells.length == 4) return true;
+  if (winnerCells.length === 4) return true;
 
   for (let i = 1; i < 9; i++) {
     if (row - i < 0 || col - i < 0) {
@@ -272,7 +272,7 @@ function checkDiagonal(board: string[][], row: number, col: number, playerColor:
       winnerCells.push({row: row - i, column: col - i});
     } else break;
   }
-  if (winnerCells.length == 4) return true;
+  if (winnerCells.length === 4) return true;
 
   //  OTHER DIAG /
   winnerCells = [];
@@ -286,7 +286,7 @@ function checkDiagonal(board: string[][], row: number, col: number, playerColor:
     } else break;
   }
 
-  if (winnerCells.length == 4) {
+  if (winnerCells.length === 4) {
     return true;
   }
 
@@ -300,7 +300,7 @@ function checkDiagonal(board: string[][], row: number, col: number, playerColor:
     } else break;
   }
 
-  if (winnerCells.length == 4) {
+  if (winnerCells.length === 4) {
     return true;
   }
 
