@@ -10,7 +10,7 @@ const allGameModules: AnyGameModule[] = [
   getTicTacToeGameModule(),
   getGoGameModule(),
   getConnect4Module(),
-  getGomokuGameModule()
+  getGomokuGameModule(),
 ];
 
 export function getAllGameModules(): AnyGameModule[] {
