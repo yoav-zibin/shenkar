@@ -1,4 +1,4 @@
-import {IMove, deepClone, deepEquals} from '../common/common';
+import {IMove, deepClone} from '../common/common';
 
 export type Board = string[][]; // 'B' is black, 'W' is white, '' is empty
 export interface BoardDelta {
@@ -22,7 +22,7 @@ export interface IState {
   riddleWon?: boolean;
 }
 
-export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
+export function checkRiddleData(): boolean {
   return true;
 }
 
@@ -96,14 +96,13 @@ export function createMove(
   let turnIndexAfterMove = 1 - turnIndexBeforeMove;
   boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'B' : 'W';
   const winner = checkWinCondition(boardAfterMove, row, col, turnIndexBeforeMove === 0 ? 'B' : 'W');
-  let turnIndex: number;
+
   if (winner !== '' || isGameOver(boardAfterMove)) {
     // Game over.
     turnIndexAfterMove = -1;
     if (turnIndexAfterMove === -1) endMatchScores = winner === 'B' ? [1, 0] : winner === 'W' ? [0, 1] : [0, 0];
   } else {
     // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
-    turnIndex = 1 - turnIndexBeforeMove;
     endMatchScores = null;
   }
 

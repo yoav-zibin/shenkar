@@ -17,7 +17,7 @@ export function getPossibleMoves(state: IState, turnIndex: number): IMove<IState
   return possibleMoves;
 }
 
-export function getStateScoreForIndex0(state: IState, turnIndex: number): number {
+export function getStateScoreForIndex0(): number {
   return 0;
 }
 
