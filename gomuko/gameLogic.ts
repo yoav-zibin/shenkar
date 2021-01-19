@@ -16,8 +16,6 @@ export interface IState {
   board: Board;
   boardBeforeMove: Board;
   delta: BoardDelta | null; // [-1,-1] means a pass.
-  passes: number;
-  deadBoard: boolean[][] | null;
   difficulty: Difficulty;
   riddleData?: RiddleData;
   riddleWin?: number[];
@@ -80,14 +78,14 @@ function isBoardFull(board: Board) {
 }
 
 // returns a random move that the computer plays
-export function createComputerMove(board: Board, passes: number, turnIndexBeforeMove: number) {
+export function createComputerMove(board: Board, turnIndexBeforeMove: number) {
   const possibleMoves: IMove<IState>[] = [];
   const dim = board.length;
   for (let i = 0; i < dim; i++) {
     for (let j = 0; j < dim; j++) {
       const delta = {row: i, col: j};
       try {
-        const testmove = createMove(board, passes, null, delta, turnIndexBeforeMove);
+        const testmove = createMove(board,  delta, turnIndexBeforeMove);
         possibleMoves.push(testmove);
       } catch (e) {
         // cell in that position was full
@@ -96,7 +94,7 @@ export function createComputerMove(board: Board, passes: number, turnIndexBefore
   }
   try {
     const delta = {row: -1, col: -1};
-    const testmove = createMove(board, passes, null, delta, turnIndexBeforeMove);
+    const testmove = createMove(board, delta, turnIndexBeforeMove);
     possibleMoves.push(testmove);
   } catch (e) {
     // Couldn't add pass as a move?
@@ -116,29 +114,20 @@ function getboardNum(board: Board, turnIndex: number): number {
 
 export function createMove(
   board: Board,
-  passes: number,
-  deadBoard: boolean[][] | null,
   delta: BoardDelta,
   turnIndexBeforeMove: number,
   riddleWin?: number[],
   riddleData?: RiddleData
 ): IMove<IState> {
-  if (!passes) passes = 0;
+
 
   const setnumBefore = getboardNum(board, turnIndexBeforeMove);
 
   const boardAfterMove = copyObject(board);
-  let passesAfterMove = passes;
 
   const row = delta.row;
   const col = delta.col;
-  if (row === -1 && col === -1) {
-    // delta of {-1, -1} indicates a pass (no move made)
-    passesAfterMove++;
-    if (passesAfterMove > 2) {
-      throw Error('Exceeded number of possible passes.');
-    }
-  } else if (boardAfterMove[row][col] !== '') {
+ if (boardAfterMove[row][col] !== '') {
     // if space isn't '' then bad move
     throw Error('Space is not empty!');
   } else {
@@ -150,23 +139,38 @@ export function createMove(
     // //////////////////////////
 
     boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'B' : 'W';
-    checkWinCondition(boardAfterMove, row, col, turnIndexBeforeMove === 0 ? 'B' : 'W');
-    passesAfterMove = 0; // if a move is made, passes is reset
+    // if(checkWinCondition(boardAfterMove, row, col, turnIndexBeforeMove === 0 ? 'B' : 'W')){
+    //   let endMatchScores: number[] | null = null;
+    //   endMatchScores=[1,0]
+    // }
+
+  }
+  let endMatchScores: number[] | null = null;
+  let turnIndexAfterMove = 1 - turnIndexBeforeMove;
+  //const boardAfterMove = deepClone(board);
+  boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'B' : 'W';
+  const winner = checkWinCondition(boardAfterMove, row, col, turnIndexBeforeMove === 0 ? 'B' : 'W');
+  let turnIndex: number;
+  if (winner !== '' || isGameOver(boardAfterMove)) {
+    // Game over.
+    turnIndexAfterMove = -1;
+    if(turnIndexAfterMove === -1) endMatchScores = winner === 'B' ? [1, 0] : winner === 'W' ? [0, 1] : [0, 0];
+  } else {
+    // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
+    turnIndex = 1 - turnIndexBeforeMove;
+    endMatchScores = null;
   }
 
   const setnumAfter = getboardNum(boardAfterMove, turnIndexBeforeMove);
 
-  if (setnumAfter <= setnumBefore && passes === passesAfterMove) throw Error('you can not suicide.');
+  if (setnumAfter <= setnumBefore) throw Error('you can not suicide.');
 
-  if (deepEquals(board, boardAfterMove) && passes === passesAfterMove)
-    throw Error('don’t allow a move that brings the game back to stateBeforeMove.');
+  // let endMatchScores: number[] | null = null;
 
-  let endMatchScores: number[] | null = null;
-  let turnIndexAfterMove = 1 - turnIndexBeforeMove;
-  if (isBoardFull(boardAfterMove)) {
-    endMatchScores = [-1, -1];
-    turnIndexAfterMove = -1;
-  }
+  // if (isBoardFull(boardAfterMove)) {
+  //   endMatchScores = [-1, -1];
+  //   turnIndexAfterMove = -1;
+  // }
 
   let riddleWon = false;
   if (riddleData) {
@@ -185,8 +189,6 @@ export function createMove(
       board: boardAfterMove,
       boardBeforeMove: board,
       delta: delta,
-      passes: passesAfterMove,
-      deadBoard: deadBoard,
       riddleWon: riddleWon,
       difficulty: Difficulty.NOVICE,
     },
@@ -206,24 +208,21 @@ export function getInitialState(): IState {
     board: createNewBoard(9),
     boardBeforeMove: createNewBoard(9),
     delta: {row: 0, col: 0},
-    passes: 0,
-    deadBoard: null,
     difficulty: Difficulty.NOVICE,
   };
 }
 
 // #region  Win Check
-function checkWinCondition(board: string[][], row: number, col: number, playerColor: string): boolean {
+function checkWinCondition(board: string[][], row: number, col: number, playerColor: string): string {
   if (
     checkRow(board, row, col, playerColor) ||
     checkColumn(board, row, col, playerColor) ||
     checkDiagonal(board, row, col, playerColor)
   ) {
-    gameFinished(playerColor);
-    return true;
+    return playerColor;
   }
   // gameFinished("no one");
-  return false;
+  return '';
   // if (checkDraw()) gameFinished("no one");
 }
 
@@ -234,7 +233,7 @@ function checkRow(board: string[][], row: number, col: number, playerColor: stri
       winnerCells.push({row: row, column: i});
     } else break;
   }
-  if (winnerCells.length == 5) {
+  if (winnerCells.length == 4) {
     return true;
   }
 
@@ -243,7 +242,7 @@ function checkRow(board: string[][], row: number, col: number, playerColor: stri
       winnerCells.push({row: row, column: i});
     } else break;
   }
-  if (winnerCells.length == 5) {
+  if (winnerCells.length == 4) {
     return true;
   }
 
@@ -257,14 +256,14 @@ function checkColumn(board: string[][], row: number, col: number, playerColor: s
       winnerCells.push({row: i, column: col});
     } else break;
   }
-  if (winnerCells.length == 5) return true;
+  if (winnerCells.length == 4) return true;
 
   for (let i = row - 1; i >= 0; i--) {
     if (board[i][col] === playerColor) {
       winnerCells.push({row: i, column: col});
     } else break;
   }
-  if (winnerCells.length == 5) return true;
+  if (winnerCells.length == 4) return true;
 
   return false;
 }
@@ -280,7 +279,7 @@ function checkDiagonal(board: string[][], row: number, col: number, playerColor:
       winnerCells.push({row: row + i, column: col + i});
     } else break;
   }
-  if (winnerCells.length == 5) return true;
+  if (winnerCells.length == 4) return true;
 
   for (let i = 1; i < 9; i++) {
     if (row - i < 0 || col - i < 0) {
@@ -291,7 +290,7 @@ function checkDiagonal(board: string[][], row: number, col: number, playerColor:
       winnerCells.push({row: row - i, column: col - i});
     } else break;
   }
-  if (winnerCells.length == 5) return true;
+  if (winnerCells.length == 4) return true;
 
   //  OTHER DIAG /
   winnerCells = [];
@@ -305,7 +304,7 @@ function checkDiagonal(board: string[][], row: number, col: number, playerColor:
     } else break;
   }
 
-  if (winnerCells.length == 5) {
+  if (winnerCells.length == 4) {
     return true;
   }
 
@@ -319,14 +318,23 @@ function checkDiagonal(board: string[][], row: number, col: number, playerColor:
     } else break;
   }
 
-  if (winnerCells.length == 5) {
+  if (winnerCells.length == 4) {
     return true;
   }
 
   return false;
 }
 
-function gameFinished(playerColor: string): boolean {
-  console.log(playerColor + ' won');
+
+function isGameOver(board: Board): boolean {
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j < board.length; j++) {
+      if (board[i][j] === '') {
+        // If there is an empty cell then we do not have a tie.
+        return false;
+      }
+    }
+  }
+  // No empty cells, so we have a tie!
   return true;
 }
