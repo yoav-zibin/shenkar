@@ -22,9 +22,8 @@ export interface IState {
   riddleWon?: boolean;
 }
 
-
 export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
-return true;
+  return true;
 }
 
 // returns a new [empty] weiqi board
@@ -55,7 +54,7 @@ export function createComputerMove(board: Board, turnIndexBeforeMove: number) {
     for (let j = 0; j < dim; j++) {
       const delta = {row: i, col: j};
       try {
-        const testmove = createMove(board,  delta, turnIndexBeforeMove);
+        const testmove = createMove(board, delta, turnIndexBeforeMove);
         possibleMoves.push(testmove);
       } catch (e) {
         // cell in that position was full
@@ -82,22 +81,16 @@ export function createMove(
   riddleWin?: number[],
   riddleData?: RiddleData
 ): IMove<IState> {
-
-
   const setnumBefore = getboardNum(board, turnIndexBeforeMove);
 
   const boardAfterMove = copyObject(board);
 
   const row = delta.row;
   const col = delta.col;
- if (boardAfterMove[row][col] !== '') {
+  if (boardAfterMove[row][col] !== '') {
     throw Error('Space is not empty!');
   } else {
-
-
     boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'B' : 'W';
-
-
   }
   let endMatchScores: number[] | null = null;
   let turnIndexAfterMove = 1 - turnIndexBeforeMove;
@@ -107,7 +100,7 @@ export function createMove(
   if (winner !== '' || isGameOver(boardAfterMove)) {
     // Game over.
     turnIndexAfterMove = -1;
-    if(turnIndexAfterMove === -1) endMatchScores = winner === 'B' ? [1, 0] : winner === 'W' ? [0, 1] : [0, 0];
+    if (turnIndexAfterMove === -1) endMatchScores = winner === 'B' ? [1, 0] : winner === 'W' ? [0, 1] : [0, 0];
   } else {
     // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
     turnIndex = 1 - turnIndexBeforeMove;
@@ -168,7 +161,6 @@ function checkWinCondition(board: string[][], row: number, col: number, playerCo
     return playerColor;
   }
   return '';
-
 }
 
 function checkRow(board: string[][], row: number, col: number, playerColor: string): boolean {
@@ -269,7 +261,6 @@ function checkDiagonal(board: string[][], row: number, col: number, playerColor:
 
   return false;
 }
-
 
 function isGameOver(board: Board): boolean {
   for (let i = 0; i < board.length; i++) {

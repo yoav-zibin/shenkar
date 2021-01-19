@@ -8,9 +8,7 @@ export function getPossibleMoves(state: IState, turnIndex: number): IMove<IState
       try {
         const delta = {row: i, col: j};
         if (state.board[i][j] == '')
-          possibleMoves.push(
-            createMove(state.board,  delta, turnIndex, state.riddleWin, state.riddleData)
-          );
+          possibleMoves.push(createMove(state.board, delta, turnIndex, state.riddleWin, state.riddleData));
       } catch (e) {
         // The cell in that position was full.
       }
@@ -20,7 +18,7 @@ export function getPossibleMoves(state: IState, turnIndex: number): IMove<IState
 }
 
 export function getStateScoreForIndex0(state: IState, turnIndex: number): number {
-return 0
+  return 0;
 }
 
 export const aiService: AiService<IState> = {
@@ -28,6 +26,3 @@ export const aiService: AiService<IState> = {
   getPossibleMoves,
   getStateScoreForIndex0,
 };
-
-
-

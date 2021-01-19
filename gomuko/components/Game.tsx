@@ -132,7 +132,7 @@ const GomokuComponent: React.FunctionComponent<GameProps<IState>> = (props: Game
       return;
     }
     try {
-      const move = createMove(state.board,  {row, col}, 0, riddleWin, riddleData);
+      const move = createMove(state.board, {row, col}, 0, riddleWin, riddleData);
       setMove(move);
     } catch (e) {
       console.info('Cell is already full in position:', row, col);
