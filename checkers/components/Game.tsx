@@ -23,8 +23,6 @@ let selectedMovingPiece: BoardDelta;
 let pieceIsSelected = false;
 
 const styles = StyleSheet.create({
-  // See how to have a square component using aspectRatio=1
-  // https://reactnative.fun/2017/06/21/ratio/
   fixedRatio: {
     flex: 1,
     aspectRatio: 1,

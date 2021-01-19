@@ -16,5 +16,5 @@ export const DEBUGGING_OPTIONS = {
   // (instead of waiting for 10-30 seconds)
   SHOW_HINT_AFTER_ONE_SECOND: true,
 
-  IGNORE_ASYNC_STORAGE: true,
+  IGNORE_ASYNC_STORAGE: false,
 };
