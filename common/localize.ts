@@ -31,7 +31,22 @@ const LOCALIZE_ID_TO_NAME = {
     en: 'Change activity',
     he: 'החלף פעילות',
   },
-
+  BACKGROUNDMUSIC: {
+    en: 'Background Music',
+    he: 'מוסיקת רקע',
+  },
+  MOVESOUND: {
+    en: 'player move sound',
+    he: 'קול במהלך שחקן',
+  },
+  YES: {
+    en: 'ON',
+    he: 'פעיל',
+  },
+  NO: {
+    en: 'OFF',
+    he: 'כבוי',
+  },
   PASS_AND_PLAY: {
     en: 'Play against another human',
     he: 'שחק נגד אדם אחר',

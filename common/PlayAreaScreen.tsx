@@ -37,7 +37,7 @@ export function PlayAreaScreen() {
   const [sound, setSound] = React.useState<Sound | undefined>(undefined);
   const navigation = useNavigation();
   const {appState, dispatch} = useStoreContext();
-  const {activityState, selectedGameId, activity} = appState;
+  const {activityState, selectedGameId, activity, moveSound} = appState;
   const gameModule = findGameModule(selectedGameId);
   if (!activity || !activityState) {
     return null;
@@ -175,6 +175,7 @@ export function PlayAreaScreen() {
   function setMove(chosenMove: IMove<unknown>) {
     const didTurnIndexChange = currentMove.turnIndex != chosenMove.turnIndex;
     const nextYourPlayerIndex = activityType == 'PASS_AND_PLAY' ? chosenMove.turnIndex : yourPlayerIndex;
+    if (moveSound) playSound();
     dispatch({
       setActivityState: {
         yourPlayerIndex: nextYourPlayerIndex,
@@ -185,7 +186,6 @@ export function PlayAreaScreen() {
         showHint: false,
       },
     });
-    playSound();
   }
 
   return (

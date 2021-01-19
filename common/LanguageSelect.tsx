@@ -9,6 +9,7 @@ import {useStoreContext} from './store';
 const LanguageSelect = () => {
   const {dispatch} = useStoreContext();
   const selectLanguage = React.useContext(AuthContext)?.selectLanguage;
+
   return (
     <Background>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -36,18 +37,19 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 32,
     width: '64%',
-    paddingTop: 128,
     borderRadius: 10,
   },
   optionContainer: {
-    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   option: {
     fontSize: 22,
     color: 'white',
     fontWeight: 'bold',
+    textAlign: 'center',
+    paddingVertical: 14,
   },
   title: {
     position: 'absolute',
