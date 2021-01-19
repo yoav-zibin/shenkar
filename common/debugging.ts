@@ -1,11 +1,11 @@
 export const DEBUGGING_OPTIONS = {
   // To skip the <ChooseLanguage> component, set it to a language Id,
   // e.g., 'he'
-  SKIP_CHOOSE_LANGUAGE_AND_USE: '',
+  SKIP_CHOOSE_LANGUAGE_AND_USE: 'en',
 
   // To skip the <ChooseGame> component, set it to a game Id,
   // e.g., 'tictactoe'
-  SKIP_CHOOSE_GAME_AND_JUMP_TO: '',
+  SKIP_CHOOSE_GAME_AND_JUMP_TO: 'cheacers',
 
   // To skip the <ChooseGame> component, set it to an activity,
   // e.g., {activityType: 'PASS_AND_PLAY'}
@@ -16,5 +16,5 @@ export const DEBUGGING_OPTIONS = {
   // (instead of waiting for 10-30 seconds)
   SHOW_HINT_AFTER_ONE_SECOND: true,
 
-  IGNORE_ASYNC_STORAGE: false,
+  IGNORE_ASYNC_STORAGE: true,
 };

@@ -1,161 +1,165 @@
-/* eslint-disable @typescript-eslint/no-explicit-any
- */
-
-import React, {Fragment} from 'react';
-import {StyleSheet, Text} from 'react-native';
-import * as firebase from 'firebase';
-import * as Facebook from 'expo-facebook';
-
+/* eslint-disable @typescript-eslint/no-explicit-any*/
+import 'react-native-gesture-handler';
+import React from 'react';
+import {StateProvider, useStoreContext} from './common/store';
+import {StyleSheet, View} from 'react-native';
+import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useFonts} from 'expo-font';
+import {AppLoading} from 'expo';
+import {StatusBar} from 'expo-status-bar';
+import AlertProvider from './common/alerts/AlertProvider';
 import Home from './home';
-
-// Initialize Firebase
-const firebaseConfig = {
-  apiKey: 'AIzaSyBbs01R7oXNzuVjhtVCpexnn2mjQuYV-zU',
-  authDomain: 'shenkar-games.firebaseapp.com',
-  projectId: 'shenkar-games',
-  storageBucket: 'shenkar-games.appspot.com',
-};
-const f: any = firebase;
-const facebook: any = Facebook;
-!f.apps.length ? f.initializeApp(firebaseConfig) : f.app();
-
-import {Container, Form, Input, Item, Button, Label} from 'native-base';
-
-export default class App extends React.Component<any, any> {
-  constructor(props: any) {
-    super(props);
-    this.signUpUser = this.signUpUser.bind(this);
-    this.loginUser = this.loginUser.bind(this);
-    this.loginWithFacebook = this.loginWithFacebook.bind(this);
-    this.state = {
-      email: '',
-      password: '',
-      isLogged: false,
-    };
-  }
-
-  componentDidMount() {
-    f.auth().onAuthStateChanged((user: any) => {
-      if (user != null) {
-        console.log(user);
-      }
-    });
-  }
-
-  signUpUser(email: string, password: string) {
-    try {
-      if (this.state.password.length < 6) {
-        alert('Please enter atleast 6 characters');
-        return;
-      }
-
-      f.auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          this.setState({isLogged: true});
-        })
-        .catch((error: string) => {
-          alert(error);
-        });
-    } catch (error) {
-      console.log(error.toString());
-    }
-  }
-  loginUser(email: string, password: string) {
-    try {
-      f.auth()
-        .signInWithEmailAndPassword(email, password)
-        .then((firebaseUser: any) => {
-          if (firebaseUser) {
-            this.setState({isLogged: true});
-          }
-        })
-
-        .catch((error: string) => {
-          alert(error);
-        });
-    } catch (error) {
-      console.log(error.toString());
-    }
-  }
-  async loginWithFacebook() {
-    await facebook.initializeAsync({
-      appId: '878071626358300',
-    });
-
-    const {type, token} = await facebook.logInWithReadPermissionsAsync({permissions: ['public_profile']});
-
-    if (type == 'success') {
-      const credential = f.auth.FacebookAuthProvider.credential(token);
-
-      f.auth()
-        .signInWithCredential(credential)
-        .then(() => this.setState({isLogged: true}))
-        .catch((error: string) => {
-          console.log(error);
-          alert(error.toString());
-        });
-    }
-  }
-
-  render() {
-    const {isLogged} = this.state;
-    return (
-      <Fragment>
-        {isLogged ? (
-          <Home />
-        ) : (
-          <Container style={styles.container}>
-            <Form>
-              <Item floatingLabel>
-                <Label>Email</Label>
-                <Input autoCorrect={false} autoCapitalize="none" onChangeText={(email) => this.setState({email})} />
-              </Item>
-              <Item floatingLabel>
-                <Label>Password</Label>
-                <Input
-                  secureTextEntry={true}
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  onChangeText={(password) => this.setState({password})}
-                />
-              </Item>
-              <Button
-                style={{marginTop: 10}}
-                full
-                rounded
-                success
-                onPress={() => this.loginUser(this.state.email, this.state.password)}>
-                <Text style={{color: 'white'}}> Login</Text>
-              </Button>
-              <Button
-                style={{marginTop: 10}}
-                full
-                rounded
-                primary
-                onPress={() => this.signUpUser(this.state.email, this.state.password)}>
-                <Text style={{color: 'white'}}> Sign Up</Text>
-              </Button>
-
-              <Button style={{marginTop: 10}} full rounded primary onPress={() => this.loginWithFacebook()}>
-                <Text style={{color: 'white'}}> Login With Facebook</Text>
-              </Button>
-              <Button style={{marginTop: 10}} full rounded primary onPress={() => this.setState({isLogged: true})}>
-                <Text style={{color: 'white'}}> Anonymous user</Text>
-              </Button>
-            </Form>
-          </Container>
-        )}
-      </Fragment>
-    );
-  }
-}
+import {NavigationContainer} from '@react-navigation/native';
+import Login from './Login';
+import {createStackNavigator} from '@react-navigation/stack';
+import {ChooseActivityScreen} from './common/ChooseActivityScreen';
+import {ChooseGameScreen} from './common/ChooseGameScreen';
+import {localize} from './common/localize';
+import {PlayAreaScreen} from './common/PlayAreaScreen';
+import {DEBUGGING_OPTIONS} from './common/debugging';
+import LanguageSelect from './common/LanguageSelect';
+import SettingsScreen from './common/SettingsScreen';
 
 const styles = StyleSheet.create({
+  statusBar: {
+    height: Constants.statusBarHeight,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    padding: 10,
   },
 });
+
+export type authContext =
+  | {
+      signIn: () => void;
+      signOut: () => void;
+      selectLanguage: (languageId: string) => void;
+    }
+  | undefined;
+
+export const AuthContext = React.createContext<authContext>(undefined);
+
+export default function App() {
+  const {appState} = useStoreContext();
+
+  const [state, dispatch] = React.useReducer(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (prevState: any, action: any) => {
+      switch (action.type) {
+        case 'SIGN_IN':
+          return {
+            ...prevState,
+            isLogged: true,
+          };
+        case 'SIGN_OUT':
+          return {
+            ...prevState,
+            isLogged: true,
+            languageId: null,
+          };
+        case 'LANGUAGE_SELECT':
+          return {
+            ...prevState,
+            languageId: action.payload,
+          };
+      }
+    },
+    {
+      isLogged: false,
+      languageId: null,
+    }
+  );
+
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const language = DEBUGGING_OPTIONS.IGNORE_ASYNC_STORAGE ? null : await AsyncStorage.getItem('language');
+        dispatch({type: 'LANGUAGE_SELECT', payload: language});
+      } catch (e) {
+        console.error('Error: restoring language failed at APP.js => error: ', e);
+      }
+    })();
+  }, []);
+
+  const authContext: authContext = React.useMemo(
+    () => ({
+      signIn: () => {
+        dispatch({type: 'SIGN_IN'});
+      },
+      signOut: () => {
+        AsyncStorage.removeItem('language');
+        dispatch({type: 'SIGN_OUT'});
+      },
+      selectLanguage: (languageId: string) => {
+        dispatch({type: 'LANGUAGE_SELECT', payload: languageId});
+      },
+    }),
+    []
+  );
+
+  const [fontsLoaded] = useFonts({
+    gan: require('./assets/fonts/gan.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
+
+  type LoginStackRoutes = {
+    Login: undefined;
+    LanguageSelect: undefined;
+  };
+  type GameStackRoutes = {
+    Home: undefined;
+    Settings: undefined;
+    ChooseGame: undefined;
+    ChooseActivity: undefined;
+    PlayArea: undefined;
+  };
+  const LoginStack = createStackNavigator<LoginStackRoutes>();
+  const GameStack = createStackNavigator<GameStackRoutes>();
+
+  return (
+    <AuthContext.Provider value={authContext}>
+      <StateProvider>
+        <AlertProvider>
+          <View style={styles.container}>
+            <StatusBar backgroundColor="rgba(255,255,255,.1)" />
+            <NavigationContainer>
+              {state.isLogged === false || !state.languageId ? (
+                <LoginStack.Navigator>
+                  {state.isLogged === false ? (
+                    <LoginStack.Screen name="Login" component={Login} options={{headerShown: false}} />
+                  ) : (
+                    <LoginStack.Screen
+                      name="LanguageSelect"
+                      component={LanguageSelect}
+                      options={{headerShown: false}}
+                    />
+                  )}
+                </LoginStack.Navigator>
+              ) : (
+                <GameStack.Navigator initialRouteName="Home">
+                  <GameStack.Screen name="Home" component={Home} options={{headerShown: false}} />
+                  <GameStack.Screen
+                    name="ChooseGame"
+                    component={ChooseGameScreen}
+                    options={{headerTitle: localize('CHOOSE_GAME_SCREEN', appState)}}
+                  />
+                  <GameStack.Screen name="Settings" component={SettingsScreen} options={{headerShown: false}} />
+                  <GameStack.Screen
+                    name="ChooseActivity"
+                    component={ChooseActivityScreen}
+                    options={{headerTitle: localize('CHOOSE_ACTIVITY_SCREEN', appState)}}
+                  />
+                  <GameStack.Screen name="PlayArea" component={PlayAreaScreen} options={{headerTitle: 'שם המשחק'}} />
+                </GameStack.Navigator>
+              )}
+            </NavigationContainer>
+          </View>
+        </AlertProvider>
+      </StateProvider>
+    </AuthContext.Provider>
+  );
+}

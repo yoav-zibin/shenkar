@@ -16,7 +16,7 @@ export function ChooseGameScreen() {
   console.log('Render ChooseGameScreen.');
   return (
     <View style={commonStyles.screen}>
-      <TitleBar />
+      <TitleBar></TitleBar>
       <FlatListChooser
         choices={choices}
         setChoice={(choice) => {
