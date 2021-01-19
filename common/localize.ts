@@ -111,6 +111,75 @@ const LOCALIZE_ID_TO_NAME = {
   },
   // TICTACTOE ends.
   // Checkers starts.
+  CHECKERS_GAME_NAME: {
+    en: 'Çheckers',
+    he: 'דמקה',
+  },
+  CHECKERS_LEVEL1: {
+    en: 'Posibble Moves',
+    he: 'מהלכים אפשריים',
+  },
+  CHECKERS_LEVEL2: {
+    en: 'Offence',
+    he: 'התקפה',
+  },
+  CHECKERS_LEVEL3: {
+    en: 'Defence',
+    he: 'הגנה',
+  },
+  CHECKERS_LEVEL4: {
+    en: 'Crown A King',
+    he: 'להפוך למלך',
+  },
+  CHECKERS_LEVEL5: {
+    en: 'King Moves',
+    he: 'מהלכי מלך',
+  },
+  // Illegal selection
+  ILLEGAL_IGNORE_MANDATORY_JUMP: {
+    en: 'Ignored Mandatory Jump',
+    he: 'התעלמת מאכילת כלי יריב ',
+  },
+  ILLEGAL_SIMPLE_MOVE: {
+    en: 'Illegal Simple Move',
+    he: 'מהלך פשוט לא חוקי',
+  },
+  ILLEGAL_MOVE: {
+    en: 'Illegal Simple Move',
+    he: 'מהלך פשוט לא חוקי',
+  },
+  ILLEGAL_JUMP_MOVE: {
+    en: 'Illegal Jump Move',
+    he: 'מהלך קפיצה לא חוקי',
+  },
+  ILLEGAL_DELTA: {
+    en: 'Illegal Delta',
+    he: 'מרחק לא חוקי',
+  },
+  ILLEGAL_COLOR_CHANGED: {
+    en: 'Illegal Color',
+    he: 'צבע לא נכון',
+  },
+  ILLEGAL_CROWNED: {
+    en: 'Illegal Crown',
+    he: 'המלכה לא נכונה',
+  },
+  ILLEGAL_UNCROWNED: {
+    en: 'Illegal Crown',
+    he: 'המלכה לא נכונה',
+  },
+  ILLEGAL_SET_TURN: {
+    en: 'It is not your turn',
+    he: 'זה לא התור שלך',
+  },
+  ILLEGAL_END_MATCH_SCORE: {
+    en: 'Illegal End Match Score',
+    he: 'תוצאת סיום לא תקינה',
+  },
+  ILLEGAL_CODE: {
+    en: 'Illegal Code',
+    he: 'טעות כללית במשחק',
+  },
   // Checkers ends.
   // Reversi starts.
   // Reversi ends.
@@ -120,20 +189,20 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'גו!',
   },
   GO_LEVEL1: {
-    en: 'Black wins in 1 move',
-    he: 'שחור מנצח במסע אחד',
+    en: 'Black conquer white in 1 move',
+    he: 'שחור כובש את הלבן במסע אחד',
   },
   GO_LEVEL2: {
-    en: 'Black wins in 1 move',
-    he: 'שחור מנצח במסע אחד',
+    en: 'Black blocks white in 1 move',
+    he: 'שחור חוסם את הלבן במסע אחד',
   },
   GO_LEVEL3: {
-    en: 'Black wins in 1 move',
-    he: 'שחור מנצח במסע אחד',
+    en: 'Black conquer white in 2 move',
+    he: 'שחור כובש את הלבן בשני מסעים',
   },
   GO_LEVEL4: {
-    en: 'Black wins in 1 move',
-    he: 'שחור מנצח במסע אחד',
+    en: 'Black blocks white in 2 move',
+    he: 'שחור חוסם את הלבן בשני מסעים',
   },
 
   // GO! ends.
@@ -143,20 +212,20 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'ארבע בשורה',
   },
   CONNECT4_LEVEL1: {
-    en: 'Y wins in 1 move',
-    he: 'Y מנצח במסע אחד',
+    en: 'level1 - Y wins in 1 move',
+    he: 'Y שלב 1 - מנצח במסע אחד',
   },
   CONNECT4_LEVEL2: {
-    en: 'Y wins in 1 move Without help',
-    he: 'ללא עזרה Y מנצח במסע אחד',
+    en: 'level2 - Y wins in 1 move',
+    he: 'Y שלב 2 - מנצח במסע אחד',
   },
   CONNECT4_LEVEL3: {
-    en: 'Victory up to 4 step',
-    he: 'ניצחון בטוח עד 4 צעדים',
+    en: 'level3 - Advanced',
+    he: 'שלב 3 - למתקדמים',
   },
   CONNECT4_LEVEL4: {
-    en: 'Victory up to 4 step',
-    he: 'ניצחון בטוח עד 4 צעדים',
+    en: 'level3-Advanced Tricks',
+    he: 'שלב 4 - טריקים למתקדמים',
   },
   // Connect4 ends.
   // Dots and Boxes starts.
