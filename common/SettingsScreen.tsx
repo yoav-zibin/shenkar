@@ -6,7 +6,7 @@ import Background from './Background';
 import {LanguageId, LANGUAGES} from './localize';
 import {useStoreContext} from './store';
 
-const LanguageSelect = () => {
+const SettingsScreen = () => {
   const {dispatch} = useStoreContext();
   const navigation = useNavigation();
   return (
@@ -58,4 +58,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LanguageSelect;
+export default SettingsScreen;
