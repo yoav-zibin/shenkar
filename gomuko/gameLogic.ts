@@ -128,26 +128,16 @@ export function createMove(
   const row = delta.row;
   const col = delta.col;
  if (boardAfterMove[row][col] !== '') {
-    // if space isn't '' then bad move
     throw Error('Space is not empty!');
   } else {
-    // //////////////////////////
-    // //////////////////////////
-    // //////////////////////////
-    // //////////////////////////
-    // //////////////////////////
-    // //////////////////////////
+
 
     boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'B' : 'W';
-    // if(checkWinCondition(boardAfterMove, row, col, turnIndexBeforeMove === 0 ? 'B' : 'W')){
-    //   let endMatchScores: number[] | null = null;
-    //   endMatchScores=[1,0]
-    // }
+
 
   }
   let endMatchScores: number[] | null = null;
   let turnIndexAfterMove = 1 - turnIndexBeforeMove;
-  //const boardAfterMove = deepClone(board);
   boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'B' : 'W';
   const winner = checkWinCondition(boardAfterMove, row, col, turnIndexBeforeMove === 0 ? 'B' : 'W');
   let turnIndex: number;
@@ -164,13 +154,6 @@ export function createMove(
   const setnumAfter = getboardNum(boardAfterMove, turnIndexBeforeMove);
 
   if (setnumAfter <= setnumBefore) throw Error('you can not suicide.');
-
-  // let endMatchScores: number[] | null = null;
-
-  // if (isBoardFull(boardAfterMove)) {
-  //   endMatchScores = [-1, -1];
-  //   turnIndexAfterMove = -1;
-  // }
 
   let riddleWon = false;
   if (riddleData) {
@@ -221,9 +204,8 @@ function checkWinCondition(board: string[][], row: number, col: number, playerCo
   ) {
     return playerColor;
   }
-  // gameFinished("no one");
   return '';
-  // if (checkDraw()) gameFinished("no one");
+
 }
 
 function checkRow(board: string[][], row: number, col: number, playerColor: string): boolean {
