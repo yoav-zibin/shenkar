@@ -251,6 +251,26 @@ const LOCALIZE_ID_TO_NAME = {
   },
   // Dots and Boxes ends.
   // Gomoku starts.
+  GOMOKU_GAME_NAME: {
+    en: 'Gomoku',
+    he: '5 בשורה',
+  },
+  GOMOKU_LEVEL1: {
+    en: 'WIN!',
+    he: 'ניצחון!',
+  },
+  GOMOKU_LEVEL2: {
+    en: 'Block White!',
+    he: 'חסום את לבן!',
+  },
+  GOMOKU_LEVEL3: {
+    en: 'WIN 2!',
+    he: 'ניצחון 2!',
+  },
+  GOMOKU_LEVEL4: {
+    en: 'Block and Win',
+    he: 'חסום ונצח',
+  },
   // Gomoku ends.
 };
 
