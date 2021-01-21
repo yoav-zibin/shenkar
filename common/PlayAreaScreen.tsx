@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-var-requires: "off" */
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {commonStyles, IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
@@ -5,16 +6,18 @@ import {createComputerMove} from './alphaBetaService';
 import {navigateNextFrame, useStoreContext} from './store';
 import {localize, LocalizeId} from './localize';
 import {DEBUGGING_OPTIONS} from './debugging';
-import {TitleBar} from './TitleBar';
+import {ProgressBar} from './ProgressBar';
 import {findGameModule} from './gameModules';
 import {useNavigation} from '@react-navigation/native';
+import {Audio} from 'expo-av';
+import {Sound} from 'expo-av/build/Audio';
 
 const styles = StyleSheet.create({
   bottomView: {
-    height: 100,
+    marginBottom: 100,
   },
   text: {
-    marginTop: 20,
+    marginTop: 10,
     fontSize: 19,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -27,10 +30,14 @@ const styles = StyleSheet.create({
   },
 });
 
+// checkers move sound flag, every move include two clicks
+let checkersFlag = true;
+
 export function PlayAreaScreen() {
+  const [sound, setSound] = React.useState<Sound | undefined>(undefined);
   const navigation = useNavigation();
   const {appState, dispatch} = useStoreContext();
-  const {activityState, selectedGameId, activity} = appState;
+  const {activityState, selectedGameId, activity, moveSound} = appState;
   const gameModule = findGameModule(selectedGameId);
   if (!activity || !activityState) {
     return null;
@@ -84,6 +91,25 @@ export function PlayAreaScreen() {
     return null;
   });
 
+  React.useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
+  async function playSound() {
+    if (gameModule.gameId == 'checkers' && checkersFlag) {
+      checkersFlag = false;
+      return;
+    }
+    const {sound} = await Audio.Sound.createAsync(require('./playbacks/move.mp3'));
+    setSound(sound);
+    await sound.playAsync();
+    checkersFlag = true;
+  }
+
   let gameOverLocalizeId: LocalizeId | null = null;
   if (isActivityOver) {
     if (endMatchScores) {
@@ -125,6 +151,7 @@ export function PlayAreaScreen() {
       if (riddleIndex < level.riddles.length - 1) {
         dispatch({setActivity: {riddleActivity: {levelIndex, riddleIndex: riddleIndex + 1}}});
       } else if (levelIndex < gameModule.riddleLevels.length - 1) {
+        console.log('here');
         dispatch({setActivity: {riddleActivity: {levelIndex: levelIndex + 1, riddleIndex: 0}}});
       } else {
         // Finished all activities!
@@ -147,7 +174,8 @@ export function PlayAreaScreen() {
 
   function setMove(chosenMove: IMove<unknown>) {
     const didTurnIndexChange = currentMove.turnIndex != chosenMove.turnIndex;
-    const nextYourPlayerIndex = activityType == 'PASS_AND_PLAY' ? 1 - yourPlayerIndex : yourPlayerIndex;
+    const nextYourPlayerIndex = activityType == 'PASS_AND_PLAY' ? chosenMove.turnIndex : yourPlayerIndex;
+    if (moveSound) playSound();
     dispatch({
       setActivityState: {
         yourPlayerIndex: nextYourPlayerIndex,
@@ -162,13 +190,13 @@ export function PlayAreaScreen() {
 
   return (
     <View style={commonStyles.screen}>
-      <TitleBar />
       {gameModule.component({
         move: currentMove,
         setMove: setHumanMove,
         yourPlayerIndex,
         showHint,
       })}
+      {nextActionLocalizeId ? null : <ProgressBar></ProgressBar>}
       <View style={styles.bottomView}>
         {gameOverLocalizeId && nextActionLocalizeId && (
           <>

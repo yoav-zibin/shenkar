@@ -20,6 +20,8 @@ export interface AppState {
   selectedGameId?: string;
   activity?: Activity;
   activityState?: ActivityState;
+  playBackgroundMusic?: boolean;
+  moveSound?: boolean;
 }
 export interface AppStateAction {
   setLanguageId?: LanguageId;
@@ -30,6 +32,8 @@ export interface AppStateAction {
   setStateFromAsyncStorage?: AppState;
   setNoStateInAsyncStorage?: true;
   setStreak?: true;
+  setPlayBackgroundMusic?: boolean;
+  setMoveSound?: boolean;
 }
 export const ACTIVITY_TYPES = ['PASS_AND_PLAY', 'AGAINST_COMPUTER'];
 
@@ -58,6 +62,8 @@ export const initialAppState: AppState = {
   selectedGameId: '',
   lastLogin: new Date().getTime(), // UTC timestamp
   dailyStreak: 0,
+  playBackgroundMusic: false,
+  moveSound: true,
 };
 
 const initialContext: AppContext = {
@@ -165,8 +171,16 @@ function ourReducer(appState: AppState, action: AppStateAction) {
     setStateFromAsyncStorage,
     setNoStateInAsyncStorage,
     setStreak,
+    setPlayBackgroundMusic,
+    setMoveSound,
   } = action;
 
+  if (setMoveSound !== undefined) {
+    return {...appState, moveSound: setMoveSound};
+  }
+  if (setPlayBackgroundMusic !== undefined) {
+    return {...appState, playBackgroundMusic: setPlayBackgroundMusic};
+  }
   if (setStreak) {
     return {...appState};
   }
