@@ -13,7 +13,7 @@ const Background = ({children}: BackgroundProps) => {
         style={StyleSheet.absoluteFillObject}
         start={{x: 0.2, y: 0.2}}
         end={{x: 1, y: 1}}
-        colors={['#0095B6', '#00DCB4']}
+        colors={['#e3c794', '#F6742B']}
       />
       {children}
     </View>
