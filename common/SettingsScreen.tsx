@@ -3,20 +3,24 @@ import {IMAGES} from './imgs/imagesRequires';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import React from 'react';
-import {Pressable, StyleSheet, Text, View, Switch,Image, Button} from 'react-native';
+import {Pressable, StyleSheet, Text, View, Switch,Image} from 'react-native';
 import Background from './Background';
 import {LanguageId, LANGUAGES, localize} from './localize';
 import {useStoreContext} from './store';
 import {Audio} from 'expo-av';
 import {Sound} from 'expo-av/build/Audio';
-const CustomButton = ({ title, onPress }) => {
+interface Props {
+  title: string;
+  onPress: () => void;
+}
+function CustomButton(props: Props) {
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={props.onPress}>
       <View style={styles.CustomButtonContainer}>
-        <Text  style={styles.CustomButtonTitle}> {title} </Text>
+        <Text style={styles.CustomButtonTitle}> {props.title} </Text>
       </View>
     </Pressable>
-  )
+  );
 }
 const SettingsScreen = () => {
   const [backgroundSound, setBackgroundSound] = React.useState<Sound | undefined>(undefined);
