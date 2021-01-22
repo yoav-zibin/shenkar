@@ -3,14 +3,14 @@ import getGoGameModule from '../go_game/components/Game';
 import {getConnect4Module} from '../connect4/components/Game';
 import {getCheckersGameModule} from '../checkers/components/Game';
 import {AnyGameModule} from './common';
-// import getGomokuGameModule from '../gomuko/components/Game';
+import getGomokuGameModule from '../gomuko/components/Game';
 
 const allGameModules: AnyGameModule[] = [
   getCheckersGameModule(),
   getTicTacToeGameModule(),
   getGoGameModule(),
   getConnect4Module(),
-  // getGomokuGameModule(),
+  getGomokuGameModule(),
 ];
 
 export function getAllGameModules(): AnyGameModule[] {
