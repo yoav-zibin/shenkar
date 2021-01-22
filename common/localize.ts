@@ -67,6 +67,11 @@ const LOCALIZE_ID_TO_NAME = {
     en: 'Play again!',
     he: 'שחק שוב!',
   },
+
+  LEVEL_SUCCESS: {
+    en: 'Good Job! Level finished',
+    he: 'כל הכבוד! שלב הסתיים',
+  },
   // For riddles
   RIDDLE_SOLVED: {
     en: 'Riddle solved!',

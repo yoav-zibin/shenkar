@@ -8,6 +8,7 @@ import {DEBUGGING_OPTIONS} from './debugging';
 import {ProgressBar} from './ProgressBar';
 import {findGameModule} from './gameModules';
 import {useNavigation} from '@react-navigation/native';
+import PassedStage from './PassedStage';
 
 const styles = StyleSheet.create({
   bottomView: {
@@ -36,7 +37,6 @@ export function PlayAreaScreen() {
     return null;
   }
   console.log('Render PlayArea activity=', activity);
-
   const {riddleActivity, activityType} = activity;
   const {yourPlayerIndex, initialMove, currentMove, currentMoveNum, maxMovesNum, showHint} = activityState;
   const opponentPlayerIndex = 1 - yourPlayerIndex;
@@ -83,7 +83,6 @@ export function PlayAreaScreen() {
     }
     return null;
   });
-
   let gameOverLocalizeId: LocalizeId | null = null;
   if (isActivityOver) {
     if (endMatchScores) {
@@ -106,7 +105,6 @@ export function PlayAreaScreen() {
       gameOverLocalizeId = 'RIDDLE_FAILED';
     }
   }
-
   const nextActionLocalizeId: LocalizeId | null =
     gameOverLocalizeId == 'RIDDLE_FAILED'
       ? 'TRY_RIDDLE_AGAIN'
@@ -120,13 +118,13 @@ export function PlayAreaScreen() {
     if (nextActionLocalizeId == 'TRY_RIDDLE_AGAIN') {
       dispatch({setActivity: activity});
     } else if (nextActionLocalizeId == 'NEXT_RIDDLE' && riddleActivity) {
-      const {levelIndex, riddleIndex} = riddleActivity;
+      const {levelIndex} = riddleActivity;
+      const {riddleIndex} = riddleActivity;
       const level = gameModule.riddleLevels[levelIndex];
       if (riddleIndex < level.riddles.length - 1) {
-        dispatch({setActivity: {riddleActivity: {levelIndex, riddleIndex: riddleIndex + 1}}});
+        dispatch({setActivity: {riddleActivity: {levelIndex, riddleIndex: riddleIndex + 1, riddleFinished: false}}});
       } else if (levelIndex < gameModule.riddleLevels.length - 1) {
-        console.log('here');
-        dispatch({setActivity: {riddleActivity: {levelIndex: levelIndex + 1, riddleIndex: 0}}});
+        dispatch({setActivity: {riddleActivity: {levelIndex: levelIndex + 1, riddleIndex: 0, riddleFinished: true}}});
       } else {
         // Finished all activities!
         // TODO: we should show something fun!
@@ -171,6 +169,8 @@ export function PlayAreaScreen() {
       })}
       {nextActionLocalizeId ? null : <ProgressBar></ProgressBar>}
       <View style={styles.bottomView}>
+        {riddleActivity?.riddleFinished ? <PassedStage></PassedStage> : <></>}
+
         {gameOverLocalizeId && nextActionLocalizeId && (
           <>
             <Text style={styles.text}>{localize(gameOverLocalizeId, appState)}</Text>
