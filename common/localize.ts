@@ -210,17 +210,14 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'W מנצח במסע אחד',
   },
   REVERSI_LEVEL3: {
-    en: 'B blocks and then wins',
-    he: 'B חוסם ואז מנצח',
+    en: 'B wins in 1 move',
+    he: 'B מנצח במסע אחד',
   },
   REVERSI_LEVEL4: {
-    en: 'B forces W to block and then wins',
-    he: 'B מכריח את W לחסום ואז מנצח',
+    en: 'B wins in 3 move',
+    he: 'B מנצח ב 3 מסעים  ',
   },
-  REVERSI_LEVEL5: {
-    en: 'B wins eventually',
-    he: 'B מנצח בסוף',
-  },
+
   // Reversi ends.
   // GO! starts.
   GO_GAME_NAME: {

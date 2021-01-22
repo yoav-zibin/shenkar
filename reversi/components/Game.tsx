@@ -126,7 +126,7 @@ const ReversiComponent: React.FunctionComponent<GameProps<IState>> = (props: Gam
   const {turnIndex, state} = move;
   const {board, delta} = state;
   const [boardHeight, setBoardHeight] = useState(300);
-  console.log('Render Reversi delta=', delta, boardHeight);
+  const possibleMoves = getPossibleMoves(state, turnIndex);
 
   const animValue = new Animated.Value(0);
   Animated.timing(animValue, {
@@ -179,7 +179,17 @@ const ReversiComponent: React.FunctionComponent<GameProps<IState>> = (props: Gam
       return null;
     }
 
-    if (board[r][c] == '') return null;
+    if (board[r][c] == '') {
+      const isPossibleMove = possibleMoves.some((move) => move.state.delta?.row === r && move.state.delta?.col === c);
+      if (!isPossibleMove || turnIndex !== yourPlayerIndex) {
+        return null;
+      }
+      return (
+        <Animated.View>
+          <Image style={styles.pieceImage} source={require('../imgs/possibleMove.png')} />
+        </Animated.View>
+      );
+    }
     const shouldAnimate = delta && delta.row == r && delta.col == c;
     const animStyle = shouldAnimate ? getAnimationStyle(r) : {};
 
