@@ -42,7 +42,7 @@ export function PlayAreaScreen() {
   if (!activity || !activityState) {
     return null;
   }
-  console.log('Render PlayArea activity=', activity);
+  // console.log('Render PlayArea activity=', activity);
 
   const {riddleActivity, activityType} = activity;
   const {yourPlayerIndex, initialMove, currentMove, currentMoveNum, maxMovesNum, showHint} = activityState;

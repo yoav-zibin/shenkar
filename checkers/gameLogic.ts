@@ -60,6 +60,11 @@ export interface IState {
   miniMoves?: MiniMove[];
   riddleData?: RiddleData;
   error?: string | null;
+  winRiddle?: RiddleData;
+  riddleEnd?: boolean;
+  allPossibleMoves?: BoardDelta[];
+  selectedMovingPiece?: BoardDelta;
+  pieceIsSelected?: boolean;
 }
 
 export const ENUM = {
@@ -942,6 +947,7 @@ export function createMiniMove(
       turnIndex = 1 - turnIndexBeforeMove;
     }
   }
+
   const state: IState = {
     miniMoves: [{fromDelta: fromDelta, toDelta: toDelta}],
     board: board,
@@ -950,12 +956,20 @@ export function createMiniMove(
   return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
 }
 
-export function createMove(board: Board | null, miniMoves: MiniMove[], turnIndexBeforeMove: number): IMove<IState> {
+export function createMove(
+  board: Board | null,
+  miniMoves: MiniMove[],
+  turnIndexBeforeMove: number,
+  winRiddle?: RiddleData
+): IMove<IState> {
   if (!board) board = getInitialBoard();
   const originalBoard = deepClone(board);
   if (miniMoves.length === 0) throw new Error('Must have at least one mini-move');
   let megaMove: IMove<IState> | null = null;
   let lastMiniMove: MiniMove | null = null;
+  let riddleEnd = false;
+  let endMatchScores: number[] | null;
+  let turnIndex: number;
   for (const miniMove of miniMoves) {
     if (megaMove) {
       if (megaMove.turnIndex !== turnIndexBeforeMove) throw new Error('Mini-moves must be done by the same player');
@@ -967,15 +981,42 @@ export function createMove(board: Board | null, miniMoves: MiniMove[], turnIndex
     lastMiniMove = miniMove;
     megaMove = createMiniMove(board, miniMove.fromDelta, miniMove.toDelta, turnIndexBeforeMove);
     board = deepClone(megaMove.state.board);
+    // //////////////////////////////
+    if (winRiddle) {
+      if (miniMove.toDelta.row == parseInt(winRiddle[0], 10) && miniMove.toDelta.col == parseInt(winRiddle[1], 10)) {
+        riddleEnd = true;
+        endMatchScores = [1, 0];
+        turnIndex = -1;
+        return {
+          endMatchScores: endMatchScores,
+          turnIndex: turnIndex,
+          state: {
+            board: board,
+            boardBeforeMove: originalBoard,
+            miniMoves: miniMoves,
+            riddleEnd: riddleEnd,
+          },
+        };
+      }
+    }
   }
   if (!megaMove) throw new Error('Impossible: we had at least one mini-move');
   megaMove.state.miniMoves = miniMoves;
   megaMove.state.boardBeforeMove = originalBoard;
+  if (winRiddle) {
+    megaMove.state.winRiddle = winRiddle;
+  }
   return megaMove;
 }
 
 export function getInitialState(): IState {
-  return {miniMoves: [], board: getInitialBoard(), boardBeforeMove: getInitialBoard()};
+  return {
+    miniMoves: [],
+    board: getInitialBoard(),
+    boardBeforeMove: getInitialBoard(),
+    allPossibleMoves: [],
+    pieceIsSelected: false,
+  };
 }
 
 /**
@@ -993,18 +1034,7 @@ export function getInitialBoard(): Board {
     ['WM', '--', 'WM', '--', 'WM', '--', 'WM', '--'],
   ];
 }
-// function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
-//   switch (hint) {
-//     case 's1':
-//       return row == 0;
-//     case 's2':
-//       return row == 1;
-//     case 's3':
-//       return row == 2;
-//   }
-// }
-export function checkRiddleData(/* state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[] */): boolean {
-  // const {riddleData} = state;
-  // return !riddleData ? false : firstMoveSolutions.some((firstMove) => firstMove.state.miniMoves);
+
+export function checkRiddleData(): boolean {
   return true;
 }
