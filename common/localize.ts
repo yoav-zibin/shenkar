@@ -197,6 +197,27 @@ const LOCALIZE_ID_TO_NAME = {
   },
   // Checkers ends.
   // Reversi starts.
+  REVERSI_GAME_NAME: {
+    en: 'Reversi',
+    he: 'רברסי',
+  },
+  REVERSI_LEVEL1: {
+    en: 'B wins in 1 move',
+    he: 'B מנצח במסע אחד',
+  },
+  REVERSI_LEVEL2: {
+    en: 'W wins in 1 move',
+    he: 'W מנצח במסע אחד',
+  },
+  REVERSI_LEVEL3: {
+    en: 'B wins in 1 move',
+    he: 'B מנצח במסע אחד',
+  },
+  REVERSI_LEVEL4: {
+    en: 'B wins in 3 move',
+    he: 'B מנצח ב 3 מסעים  ',
+  },
+
   // Reversi ends.
   // GO! starts.
   GO_GAME_NAME: {

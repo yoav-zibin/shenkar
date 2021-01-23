@@ -4,6 +4,7 @@ import {getConnect4Module} from '../connect4/components/Game';
 import {getCheckersGameModule} from '../checkers/components/Game';
 import {AnyGameModule} from './common';
 import getGomokuGameModule from '../gomuko/components/Game';
+import {getReversiGameModule} from '../reversi/components/Game';
 
 const allGameModules: AnyGameModule[] = [
   getCheckersGameModule(),
@@ -11,6 +12,7 @@ const allGameModules: AnyGameModule[] = [
   getGoGameModule(),
   getConnect4Module(),
   getGomokuGameModule(),
+  getReversiGameModule(),
 ];
 
 export function getAllGameModules(): AnyGameModule[] {
