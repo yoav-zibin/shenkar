@@ -36,7 +36,7 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'מוסיקת רקע',
   },
   MOVESOUND: {
-    en: 'player move sound',
+    en: 'Player Move Sound',
     he: 'קול במהלך שחקן',
   },
   YES: {
@@ -287,6 +287,23 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'חסום ונצח',
   },
   // Gomoku ends.
+  // Mancala Starts
+  MANCALA_GAME_NAME: {
+    en: 'Mancala',
+    he: 'מנקלה',
+  },
+  MANCALA_LEVEL1: {
+    en: 'Get an Extra Turn',
+    he: 'קבל תור נוסף',
+  },
+  MANCALA_LEVEL2: {
+    en: 'Get Oponnets Stones',
+    he: 'לקחת את אבני המתחרה',
+  },
+  MANCALA_LEVEL3: {
+    en: 'Finish the Game',
+    he: 'לסיים את המשחק',
+  },
 };
 
 export type LocalizeId = keyof typeof LOCALIZE_ID_TO_NAME;

@@ -5,9 +5,15 @@ export const COLS = 8;
 const maxRow = ROWS - 1;
 const maxCol = COLS - 1;
 
+export interface RiddleData {
+  solutionRow: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  solutionCol: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+}
+
 export interface IState {
   board?: Board;
   delta?: BoardDelta;
+  riddleData?: RiddleData;
 }
 
 // declare type IMove = IOperation[];
@@ -510,15 +516,6 @@ export function createMove(
     } else {
       turnIndex = turnIndexBeforeMove;
     }
-    // var nextToBeOpponent: string = turnIndexBeforeMove == 0 ? 0 : 1; // 0
-    // var nextCurrentPlayer: string = turnIndexBeforeMove == 0 ? 1 : 0; // 1
-    // var turn = hasValidMoves(nextCurrentPlayer, nextToBeOpponent, result.tempBoard);
-    // if (turn) {
-    //     turnIndex = 1 - turnIndexBeforeMove; // 1
-    // }
-    // else {
-    //     turnIndex = turnIndexBeforeMove; // 0
-    // }
   }
 
   return {
@@ -660,7 +657,11 @@ export function isMoveOk(params: IIsMoveOk): boolean {
  * @param arrayOfRowColComment
  * @returns {Array}
  */
-function exampleMoves(initTurnIndex: number, initState: IState, arrayOfRowColComment: IRowColComment[]): IIsMoveOk {
+export function exampleMoves(
+  initTurnIndex: number,
+  initState: IState,
+  arrayOfRowColComment: IRowColComment[]
+): IIsMoveOk {
   let state: IState = initState;
   let temp: IMove<IState>;
   let store: IIsMoveOk = {};
@@ -742,52 +743,16 @@ export function exampleGame(): IIsMoveOk {
   );
 }
 
-/**
- * riddles
- * @returns {*[]}
- */
-export function riddles() {
-  return [
-    exampleMoves(
-      1,
-      {
-        board: [
-          ['', '', 'B', 'W', 'W', 'W', 'B', ''],
-          ['', 'B', 'B', 'B', 'W', 'W', 'W', ''],
-          ['W', 'W', 'B', 'W', 'W', 'W', 'B', 'B'],
-          ['W', 'B', 'W', 'W', 'B', 'W', 'B', 'B'],
-          ['W', 'W', 'B', 'W', 'B', 'B', 'B', 'B'],
-          ['W', 'W', 'W', 'B', 'W', 'B', 'W', 'W'],
-          ['', '', 'W', 'W', 'B', 'B', '', ''],
-          ['', '', 'W', 'B', 'B', 'B', '', ''],
-        ],
-        delta: {row: 2, col: 0},
-      },
-      [
-        {row: 0, col: 0, comment: 'Where should White play to get an advantage on his next turn?'},
-        {row: 6, col: 6, comment: 'Black plays row 6, col 6'},
-        {row: 7, col: 7, comment: 'White captures diagonal!'},
-      ]
-    ),
-    exampleMoves(
-      0,
-      {
-        board: [
-          ['', 'B', 'B', 'B', 'B', 'B', 'B', ''],
-          ['', '', 'B', 'B', 'W', 'W', '', ''],
-          ['W', 'W', 'B', 'W', 'W', 'W', 'B', 'B'],
-          ['W', 'B', 'W', 'W', 'B', 'W', 'B', 'B'],
-          ['W', 'W', 'B', 'W', 'B', 'B', 'B', 'B'],
-          ['W', 'W', 'W', 'B', 'W', 'B', 'W', 'W'],
-          ['', '', 'W', 'W', 'B', 'B', '', ''],
-          ['', '', 'B', 'B', 'B', 'B', 'B', ''],
-        ],
-        delta: {row: 3, col: 0},
-      },
-      [
-        {row: 7, col: 1, comment: 'Where should Black play to not give White an advantage on his next turn?'},
-        {row: 1, col: 7, comment: 'White in (1,7)'},
-      ]
-    ),
-  ];
+function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
+  return hint.solutionRow === row && hint.solutionCol === col;
+}
+
+export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
+  const {riddleData} = state;
+  return !riddleData
+    ? false
+    : firstMoveSolutions.some(
+        (firstMove) =>
+          firstMove.state.delta && isPosOnHintLine(firstMove.state.delta.row, firstMove.state.delta.col, riddleData)
+      );
 }

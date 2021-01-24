@@ -3,7 +3,7 @@ import {checkAiService} from '../../common/utilsForTests';
 import {Board, IState, getInitialBoard} from '../gameLogic';
 import {IMove, deepEquals} from '../../common/common';
 import {createComputerMove} from '../../common/alphaBetaService';
-import {getPossibleMoves} from '../aiService';
+import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 
 describe('aiService', () => {
   function createComMove(board: Board, turnIndex: number, maxDepth: number): IMove<IState> {
@@ -356,6 +356,250 @@ describe('aiService', () => {
         3
       );
       expect(deepEquals(move.state.delta, {row: 0, col: 0})).toBe(true);
+    });
+  });
+
+  describe('getStateScoreForIndex0', () => {
+    it('center cell of B should return 2', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', 'B', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(2);
+    });
+
+    it('center cell of W should return -2', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', 'W', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(-2);
+    });
+
+    it('right to  the center cell of B should return 3', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', 'B', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(3);
+    });
+
+    it('cright to  the center cell of W should return -3', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', 'W', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(-3);
+    });
+
+    it('two positions right to  the center cell of B should return 1', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', 'B', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(1);
+    });
+
+    it('two positions right to  the center cell of W should return -1', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', 'W', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(-1);
+    });
+
+    it('border (not corner) cell of B should return 4', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', 'B'],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(4);
+    });
+
+    it('border (not corner) cell of W should return -4', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', 'W'],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(-4);
+    });
+
+    it('corner cell of B should return 8', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', 'B'],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(8);
+    });
+
+    it('corner cell of W should return -8', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', 'W'],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(-8);
+    });
+
+    it('near the corner cell of B should return 3', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', 'B'],
+        ['', '', '', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(3);
+    });
+
+    it('near the corner cell of W should return -3', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', 'W'],
+        ['', '', '', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(-3);
+    });
+
+    it('should return 0', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', 'B'],
+        ['W', '', '', '', '', '', 'W', 'B'],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(0);
+    });
+
+    it('initial board should return 0', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', 'W', 'B', '', '', ''],
+        ['', '', '', 'B', 'W', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(0);
+    });
+
+    it('initial board should return 16', () => {
+      const board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', 'W', 'B', '', '', ''],
+        ['', 'W', 'W', 'B', 'W', '', '', ''],
+        ['', 'B', 'B', 'B', '', '', '', ''],
+        ['W', 'W', 'B', 'B', '', '', '', ''],
+        ['B', 'B', 'B', '', '', '', '', ''],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(16);
+    });
+
+    it('W is the winner', () => {
+      const board = [
+        ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
+        ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
+        ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
+        ['W', 'W', 'W', 'W', 'B', 'B', 'B', 'B'],
+        ['W', 'W', 'W', 'B', 'W', 'W', 'B', 'B'],
+        ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+        ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+        ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(-6);
+    });
+
+    it('B is the winner', () => {
+      const board = [
+        ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
+        ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
+        ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
+        ['B', 'W', 'W', 'W', 'B', 'B', 'B', 'B'],
+        ['B', 'W', 'W', 'B', 'W', 'W', 'B', 'B'],
+        ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+        ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+        ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+      ];
+      expect(getStateScoreForIndex0({board})).toBe(10);
+    });
+
+    it('should return 0 when no board', () => {
+      expect(getStateScoreForIndex0({})).toBe(0);
     });
   });
 });

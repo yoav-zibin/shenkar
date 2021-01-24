@@ -8,4 +8,5 @@ export const IMAGES = {
   dotsandboxes: require('./dotsandboxes.png'),
   connect4: require('./connect4.png'),
   checkers: require('./checkers.jpg'),
+  gomoku: require('./gomoku.png'),
 };
