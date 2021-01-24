@@ -136,7 +136,7 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'דמקה',
   },
   CHECKERS_LEVEL1: {
-    en: 'Posibble Moves',
+    en: 'Possible Moves',
     he: 'מהלכים אפשריים',
   },
   CHECKERS_LEVEL2: {
