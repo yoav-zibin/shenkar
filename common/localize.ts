@@ -36,7 +36,7 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'מוסיקת רקע',
   },
   MOVESOUND: {
-    en: 'player move sound',
+    en: 'Player Move Sound',
     he: 'קול במהלך שחקן',
   },
   YES: {
@@ -197,27 +197,6 @@ const LOCALIZE_ID_TO_NAME = {
   },
   // Checkers ends.
   // Reversi starts.
-  REVERSI_GAME_NAME: {
-    en: 'Reversi',
-    he: 'רברסי',
-  },
-  REVERSI_LEVEL1: {
-    en: 'B wins in 1 move',
-    he: 'B מנצח במסע אחד',
-  },
-  REVERSI_LEVEL2: {
-    en: 'W wins in 1 move',
-    he: 'W מנצח במסע אחד',
-  },
-  REVERSI_LEVEL3: {
-    en: 'B wins in 1 move',
-    he: 'B מנצח במסע אחד',
-  },
-  REVERSI_LEVEL4: {
-    en: 'B wins in 3 move',
-    he: 'B מנצח ב 3 מסעים  ',
-  },
-
   // Reversi ends.
   // GO! starts.
   GO_GAME_NAME: {
@@ -308,6 +287,23 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'חסום ונצח',
   },
   // Gomoku ends.
+  // Mancala Starts
+  MANCALA_GAME_NAME: {
+    en: 'Mancala',
+    he: 'מנקלה',
+  },
+  MANCALA_LEVEL1: {
+    en: 'Get an Extra Turn',
+    he: 'קבל תור נוסף',
+  },
+  MANCALA_LEVEL2: {
+    en: 'Get Oponnets Stones',
+    he: 'לקחת את אבני המתחרה',
+  },
+  MANCALA_LEVEL3: {
+    en: 'Finish the Game',
+    he: 'לסיים את המשחק',
+  },
 };
 
 export type LocalizeId = keyof typeof LOCALIZE_ID_TO_NAME;
