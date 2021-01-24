@@ -82,6 +82,10 @@ const LOCALIZE_ID_TO_NAME = {
     en: 'Play again!',
     he: 'שחק שוב!',
   },
+  LEVEL_SUCCESS: {
+    en: 'Good Job! Level finished',
+    he: 'כל הכבוד! שלב הסתיים',
+  },
   // For riddles
   RIDDLE_SOLVED: {
     en: 'Riddle solved!',
@@ -99,6 +103,7 @@ const LOCALIZE_ID_TO_NAME = {
     en: 'Try again',
     he: 'נסה שוב',
   },
+
   //  TICTACTOE starts.
   TICTACTOE_GAME_NAME: {
     en: 'TicTacToe',

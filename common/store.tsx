@@ -54,6 +54,7 @@ export interface ActivityState {
 export interface RiddleActivity {
   levelIndex: number;
   riddleIndex: number;
+  riddleFinished?: boolean | null;
 }
 
 export const initialAppState: AppState = {

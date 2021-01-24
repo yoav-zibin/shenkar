@@ -11,6 +11,7 @@ import {findGameModule} from './gameModules';
 import {useNavigation} from '@react-navigation/native';
 import {Audio} from 'expo-av';
 import {Sound} from 'expo-av/build/Audio';
+import PassedStage from './PassedStage';
 
 const styles = StyleSheet.create({
   bottomView: {
@@ -149,14 +150,16 @@ export function PlayAreaScreen() {
       const {levelIndex, riddleIndex} = riddleActivity;
       const level = gameModule.riddleLevels[levelIndex];
       if (riddleIndex < level.riddles.length - 1) {
-        dispatch({setActivity: {riddleActivity: {levelIndex, riddleIndex: riddleIndex + 1}}});
+        dispatch({setActivity: {riddleActivity: {levelIndex, riddleIndex: riddleIndex + 1, riddleFinished: false}}});
       } else if (levelIndex < gameModule.riddleLevels.length - 1) {
         console.log('here');
-        dispatch({setActivity: {riddleActivity: {levelIndex: levelIndex + 1, riddleIndex: 0}}});
+        console.log(riddleActivity.riddleFinished);
+        dispatch({setActivity: {riddleActivity: {levelIndex: levelIndex + 1, riddleIndex: 0, riddleFinished: true}}});
       } else {
         // Finished all activities!
         // TODO: we should show something fun!
         // Clearing activity (to let the user choose what next).
+        console.log(riddleActivity.riddleFinished);
         dispatch({clearActivity: true});
         navigateNextFrame('ChooseActivity', navigation);
       }
@@ -198,6 +201,7 @@ export function PlayAreaScreen() {
       })}
       {nextActionLocalizeId ? null : <ProgressBar></ProgressBar>}
       <View style={styles.bottomView}>
+        {riddleActivity?.riddleFinished ? <PassedStage></PassedStage> : <></>}
         {gameOverLocalizeId && nextActionLocalizeId && (
           <>
             <Text style={styles.text}>{localize(gameOverLocalizeId, appState)}</Text>
