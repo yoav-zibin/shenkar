@@ -157,7 +157,7 @@ export function reducerAndStoreState(appState: AppState, action: AppStateAction)
   } catch (e) {
     console.error('Error saving local state', e);
   }
-  console.log('Performing action:', action, ' and state changed to: ', nextState);
+  // console.log('Performing action:', action, ' and state changed to: ', nextState);
   return nextState;
 }
 

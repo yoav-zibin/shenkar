@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, Text} from 'react-native';
+import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, Text} from 'react-native';
 import {GameModule, GameProps} from '../../common/common';
 import {localize} from '../../common/localize';
 import {useStoreContext} from '../../common/store';
@@ -11,16 +11,15 @@ import {
   checkRiddleData,
   isOwnColor,
   getColor,
-  BoardDelta,
   getAllPossibleMoves,
-  createMiniMove,
+  createMove,
 } from '../gameLogic';
 import {getPossibleMoves, getStateScoreForIndex0} from '../aiService';
 import {riddleLevels} from '../riddles';
 
-let allPossibleMoves: BoardDelta[] = [];
-let selectedMovingPiece: BoardDelta;
-let pieceIsSelected = false;
+// let allPossibleMoves: BoardDelta[] = [];
+// let selectedMovingPiece: BoardDelta;
+// let pieceIsSelected: boolean = false;
 
 const styles = StyleSheet.create({
   fixedRatio: {
@@ -68,6 +67,7 @@ const styles = StyleSheet.create({
     height: '80%',
   },
   bottomView: {
+    top: 100,
     height: 100,
   },
   text: {
@@ -95,62 +95,57 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
   const {appState} = useStoreContext();
   const {move, setMove, showHint} = props;
   const {turnIndex, state} = move;
-  const {riddleData, board /* miniMoves */} = state;
+  const {riddleData, winRiddle, board, miniMoves} = state;
 
-  let hint: boolean | null = false;
-  let rowHint: boolean | null = false;
+  const animValueShow = new Animated.Value(0);
+  Animated.timing(animValueShow, {
+    toValue: 1,
+    duration: 500,
+    useNativeDriver: true,
+  }).start();
+
+  let hint: boolean | undefined;
   let ridRow: number;
   let ridCol: number;
 
   if (showHint && riddleData) {
-    if (riddleData.length == 1) {
-      ridRow = parseInt(riddleData[0], 10);
-      rowHint = true;
-    } else {
-      ridRow = parseInt(riddleData[0], 10);
-      ridCol = parseInt(riddleData[1], 10);
-      hint = true;
-    }
+    ridRow = parseInt(riddleData[0], 10);
+    ridCol = parseInt(riddleData[1], 10);
+    hint = true;
   } else {
-    rowHint = false;
     hint = false;
   }
 
   function showPossibleMoves() {
-    allPossibleMoves.forEach((element) => {
+    state.allPossibleMoves?.forEach((element) => {
       board[element.row][element.col] = 'SH';
     });
+    state.miniMoves = [];
     setMove(move);
   }
   function removeSHFromBoard() {
-    allPossibleMoves.forEach((element) => {
+    state.allPossibleMoves?.forEach((element) => {
       board[element.row][element.col] = 'DS';
     });
   }
 
   function clickedOn(row: number, col: number) {
-    if (riddleData && hint) {
-      board[ridRow][ridCol] = 'WM';
-    }
-    if (riddleData && rowHint) {
-      for (let i = 0; i < 7; i += 2) {
-        board[ridRow][i] = 'WM';
-      }
-    }
     state.error = null;
     try {
-      if (pieceIsSelected) {
-        pieceIsSelected = false;
+      if (state.pieceIsSelected) {
+        state.pieceIsSelected = false;
         removeSHFromBoard();
         const toDelta = {col: col, row: row};
-        const fromDelta = {col: selectedMovingPiece.col, row: selectedMovingPiece.row};
-        const Nmove = createMiniMove(board, fromDelta, toDelta, turnIndex);
-        setMove(Nmove);
+        if (state.selectedMovingPiece) {
+          const fromDelta = {col: state.selectedMovingPiece.col, row: state.selectedMovingPiece.row};
+          const Nmove = createMove(board, [{fromDelta: fromDelta, toDelta: toDelta}], turnIndex, winRiddle);
+          setMove(Nmove);
+        }
       }
       if (isOwnColor(turnIndex, getColor(board[row][col]))) {
-        pieceIsSelected = true;
-        selectedMovingPiece = {col: col, row: row};
-        allPossibleMoves = getAllPossibleMoves(board, selectedMovingPiece, turnIndex);
+        state.pieceIsSelected = true;
+        state.selectedMovingPiece = {col: col, row: row};
+        state.allPossibleMoves = getAllPossibleMoves(board, state.selectedMovingPiece, turnIndex);
         showPossibleMoves();
       }
     } catch (e) {
@@ -168,15 +163,18 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
   function getPiece(r: number, c: number) {
     if (board[r][c] == '--') return null;
     if (board[r][c] == 'DS') return null;
+
+    const shouldAnimate = miniMoves && miniMoves[0]?.toDelta.col == c && miniMoves[0]?.toDelta.row == r;
+    const animStyleShow = shouldAnimate ? {opacity: animValueShow} : {};
+
     let piece;
+
     if (hint) {
-      board[ridRow][ridCol] = 'WMH';
-    }
-    if (rowHint) {
-      for (let i = 0; i < 7; i += 2) {
-        board[ridRow][i] = 'WMH';
+      if (board[ridRow][ridCol] == 'WM') {
+        board[ridRow][ridCol] = 'WMH';
       }
     }
+
     switch (board[r][c]) {
       case 'BM': {
         piece = require('../imgs/black_man.png');
@@ -203,12 +201,17 @@ const CheckersComponent: React.FunctionComponent<GameProps<IState>> = (props: Ga
         break;
       }
     }
-
-    return <Image style={styles.pieceImage} source={piece} />;
+    return shouldAnimate ? (
+      <Animated.View style={animStyleShow}>
+        <Image style={styles.pieceImage} source={piece} />
+      </Animated.View>
+    ) : (
+      <Image style={styles.pieceImage} source={piece} />
+    );
   }
   return (
     <ImageBackground
-      source={require('../imgs/back.jpg')}
+      source={require('../imgs/back.jpeg')}
       style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
       imageStyle={{opacity: 0.8}}>
       <View style={styles.container}>

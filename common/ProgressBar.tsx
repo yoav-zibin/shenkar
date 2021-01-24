@@ -40,11 +40,11 @@ export function ProgressBar() {
   return (
     <View>
       <Text style={styles.text}>{getScreenTitle(route.name as RouteName, appState)}</Text>
-      {
+      {riddleIndex || riddleIndex == 0 ? (
         <Text style={styles.instructions}>
-          {riddleIndex}/{size}
+          {riddleIndex + 1}/{size}
         </Text>
-      }
+      ) : null}
     </View>
   );
 }

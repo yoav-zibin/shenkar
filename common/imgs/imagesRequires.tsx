@@ -7,5 +7,6 @@ export const IMAGES = {
   go: require('./go.png'),
   dotsandboxes: require('./dotsandboxes.png'),
   connect4: require('./connect4.png'),
+  checkers: require('./checkers.jpg'),
   gomoku: require('./gomoku.png'),
 };
