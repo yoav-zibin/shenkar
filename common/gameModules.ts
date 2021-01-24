@@ -5,6 +5,7 @@ import {getCheckersGameModule} from '../checkers/components/Game';
 import {AnyGameModule} from './common';
 import getGomokuGameModule from '../gomuko/components/Game';
 import {getMancalaModule} from '../mancala/components/Game';
+import getDotsAndBoxesGameModule from '../dots_and_boxes/Game';
 
 const allGameModules: AnyGameModule[] = [
   getCheckersGameModule(),
@@ -13,6 +14,7 @@ const allGameModules: AnyGameModule[] = [
   getConnect4Module(),
   getGomokuGameModule(),
   getMancalaModule(),
+  getDotsAndBoxesGameModule(),
 ];
 
 export function getAllGameModules(): AnyGameModule[] {

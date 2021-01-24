@@ -1,5 +1,6 @@
 import React from 'react';
-import {ImageBackground, View} from 'react-native';
+import {View} from 'react-native';
+import Background from '../common/Background';
 import {GameModule, GameProps} from '../common/common';
 import {getPossibleMoves, getStateScoreForIndex0} from './aiService';
 import {BOARD_PHYSICAL_SIZE} from './components/consts';
@@ -33,30 +34,27 @@ const Game: React.FunctionComponent<GameProps<IState>> = ({move, setMove, yourPl
   }
 
   function onLineSelect(row: number, col: number, direction: lineDirection) {
-    if (turnIndex != yourPlayerIndex) {
-      return;
-    }
-    try {
-      const move = createMove(board, direction, row, col);
-      setMove(move);
-    } catch (e) {
-      console.info('Cell is already full in position:', row, col);
+    if (turnIndex === yourPlayerIndex) {
+      try {
+        const move = createMove(board, direction, row, col);
+        setMove(move);
+      } catch (e) {
+        console.info('Cell is already full in position:', row, col);
+      }
     }
   }
   const horizontalLineSelect = (row: number, col: number) => onLineSelect(row, col, lineDirection.HORIZONTAL);
   const verticalLineSelect = (row: number, col: number) => onLineSelect(row, col, lineDirection.VERTICAL);
 
   return (
-    <ImageBackground
-      source={require('./components/bg.jpg')}
-      style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
-      imageStyle={{opacity: 0.8}}>
+    <Background>
       <View
         style={{
           height: BOARD_PHYSICAL_SIZE + 16,
           width: BOARD_PHYSICAL_SIZE + 16,
           padding: 8,
-          backgroundColor: 'rgba(255,255,255,.8)',
+          margin: 8,
+          backgroundColor: 'rgba(255,255,255,.2)',
           borderRadius: 8,
         }}>
         {rows.map((row, key) => {
@@ -69,6 +67,6 @@ const Game: React.FunctionComponent<GameProps<IState>> = ({move, setMove, yourPl
         })}
         <HorizontalView row={BOARD_SIZE - 1} onLineSelect={horizontalLineSelect} board={board} />
       </View>
-    </ImageBackground>
+    </Background>
   );
 };
