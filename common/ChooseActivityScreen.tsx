@@ -1,12 +1,11 @@
-import {Choice, FlatListChooser} from './FlatListChooser';
+import {Choice} from './FlatListChooser';
 import React from 'react';
 import {Activity, navigateNextFrame, useStoreContext} from './store';
 import {localize, LocalizeId} from './localize';
 import {TitleBar} from './TitleBar';
 import {findGameModule} from './gameModules';
 import {useNavigation} from '@react-navigation/native';
-import {commonStyles} from './common';
-import {View} from 'react-native';
+import {View, StyleSheet, FlatList, Text, ImageBackground} from 'react-native';
 
 export function ChooseActivityScreen() {
   const {appState, dispatch} = useStoreContext();
@@ -37,15 +36,64 @@ export function ChooseActivityScreen() {
   choices.push(getActivityChoice('PASS_AND_PLAY', {activityType: 'PASS_AND_PLAY'}));
 
   return (
-    <View style={commonStyles.screen}>
-      <TitleBar />
-      <FlatListChooser
-        choices={choices}
-        setChoice={(choice) => {
-          dispatch({setActivity: choice.data});
-          navigateNextFrame('PlayArea', navigation);
-        }}
-      />
+    <View style={styles.container}>
+      <ImageBackground style={styles.logoBack} source={require('./activityBackImage.png')}>
+        <TitleBar />
+
+        <FlatList
+          contentContainerStyle={styles.list}
+          data={choices}
+          keyExtractor={(choice) => choice.id}
+          renderItem={({item}) => (
+            <Text
+              key={item.id}
+              style={styles.listItem}
+              onPress={() => {
+                dispatch({setActivity: item.data as Activity});
+                navigateNextFrame('PlayArea', navigation);
+              }}>
+              {'localizeId' in item ? localize(item.localizeId, appState) : item.text}
+            </Text>
+          )}
+        />
+      </ImageBackground>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#F6EEDF',
+    flex: 1,
+  },
+  list: {
+    flex: 1,
+    justifyContent: 'space-evenly',
+    alignContent: 'center',
+  },
+  listItem: {
+    backgroundColor: '#e3c794',
+    color: '#F6742B',
+    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: 'bold',
+    height: 80,
+    width: 400,
+    alignSelf: 'center',
+    borderRadius: 20,
+    shadowColor: ' rgba(235,188,112,0.82)',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+
+    elevation: 10,
+  },
+  logoBack: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+  },
+});

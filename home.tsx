@@ -1,28 +1,19 @@
-import 'react-native-gesture-handler';
-import React from 'react';
-import {LoadStateFromAsyncStorage} from './common/LoadStateFromAsyncStorage';
-import {StateProvider} from './common/store';
-import {StyleSheet, View} from 'react-native';
 import Constants from 'expo-constants';
+import React from 'react';
+import {StyleSheet, View} from 'react-native';
+import {LoadStateFromAsyncStorage} from './common/LoadStateFromAsyncStorage';
 
 const styles = StyleSheet.create({
   statusBar: {
     height: Constants.statusBarHeight,
-  },
-  container: {
-    flex: 1,
   },
 });
 
 export default function Home() {
   return (
     <View style={{flex: 1, backgroundColor: 'rgb(250,250,250)'}}>
-      <StateProvider>
-        <View style={styles.container}>
-          <View style={styles.statusBar} />
-          <LoadStateFromAsyncStorage />
-        </View>
-      </StateProvider>
+      <View style={styles.statusBar} />
+      <LoadStateFromAsyncStorage />
     </View>
   );
 }

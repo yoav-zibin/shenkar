@@ -9,12 +9,62 @@ export interface MiniMove {
   fromDelta: BoardDelta;
   toDelta: BoardDelta;
 }
+
+export type RiddleData =
+  | '0'
+  | '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '01'
+  | '03'
+  | '05'
+  | '07'
+  | '10'
+  | '12'
+  | '14'
+  | '16'
+  | '21'
+  | '23'
+  | '25'
+  | '27'
+  | '30'
+  | '32'
+  | '34'
+  | '36'
+  | '41'
+  | '43'
+  | '45'
+  | '47'
+  | '50'
+  | '52'
+  | '54'
+  | '56'
+  | '61'
+  | '63'
+  | '65'
+  | '67'
+  | '70'
+  | '72'
+  | '74'
+  | '76';
+
 export interface IState {
   board: Board;
-  boardBeforeMove: Board;
+  boardBeforeMove?: Board;
   // The mini-moves (e.g., a move or a series of jumps) that led to the current board. For animation purposes.
   // All mini-moves are done by the same color (white/black).
-  miniMoves: MiniMove[];
+  miniMoves?: MiniMove[];
+  riddleData?: RiddleData;
+  error?: string | null;
+  winRiddle?: RiddleData;
+  riddleEnd?: boolean;
+  allPossibleMoves?: BoardDelta[];
+  selectedMovingPiece?: BoardDelta;
+  pieceIsSelected?: boolean;
 }
 
 export const ENUM = {
@@ -127,7 +177,7 @@ function doesContainMove(moves: BoardDelta[], move: BoardDelta): boolean {
  * jumping piece. In another word, check whether the player is operating
  * his/her own piece.
  *
- * @param turnIndex 0 represents the black player and 1
+ * @param turnIndex 1 represents the black player and 0
  *        represents the white player.
  * @param color the color of the moving or jumping piece.
  * @returns true if the index matches the color, otherwise false.
@@ -897,6 +947,7 @@ export function createMiniMove(
       turnIndex = 1 - turnIndexBeforeMove;
     }
   }
+
   const state: IState = {
     miniMoves: [{fromDelta: fromDelta, toDelta: toDelta}],
     board: board,
@@ -905,12 +956,20 @@ export function createMiniMove(
   return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
 }
 
-export function createMove(board: Board | null, miniMoves: MiniMove[], turnIndexBeforeMove: number): IMove<IState> {
+export function createMove(
+  board: Board | null,
+  miniMoves: MiniMove[],
+  turnIndexBeforeMove: number,
+  winRiddle?: RiddleData
+): IMove<IState> {
   if (!board) board = getInitialBoard();
   const originalBoard = deepClone(board);
   if (miniMoves.length === 0) throw new Error('Must have at least one mini-move');
   let megaMove: IMove<IState> | null = null;
   let lastMiniMove: MiniMove | null = null;
+  let riddleEnd = false;
+  let endMatchScores: number[] | null;
+  let turnIndex: number;
   for (const miniMove of miniMoves) {
     if (megaMove) {
       if (megaMove.turnIndex !== turnIndexBeforeMove) throw new Error('Mini-moves must be done by the same player');
@@ -922,15 +981,42 @@ export function createMove(board: Board | null, miniMoves: MiniMove[], turnIndex
     lastMiniMove = miniMove;
     megaMove = createMiniMove(board, miniMove.fromDelta, miniMove.toDelta, turnIndexBeforeMove);
     board = deepClone(megaMove.state.board);
+    // //////////////////////////////
+    if (winRiddle) {
+      if (miniMove.toDelta.row == parseInt(winRiddle[0], 10) && miniMove.toDelta.col == parseInt(winRiddle[1], 10)) {
+        riddleEnd = true;
+        endMatchScores = [1, 0];
+        turnIndex = -1;
+        return {
+          endMatchScores: endMatchScores,
+          turnIndex: turnIndex,
+          state: {
+            board: board,
+            boardBeforeMove: originalBoard,
+            miniMoves: miniMoves,
+            riddleEnd: riddleEnd,
+          },
+        };
+      }
+    }
   }
   if (!megaMove) throw new Error('Impossible: we had at least one mini-move');
   megaMove.state.miniMoves = miniMoves;
   megaMove.state.boardBeforeMove = originalBoard;
+  if (winRiddle) {
+    megaMove.state.winRiddle = winRiddle;
+  }
   return megaMove;
 }
 
 export function getInitialState(): IState {
-  return {miniMoves: [], board: getInitialBoard(), boardBeforeMove: getInitialBoard()};
+  return {
+    miniMoves: [],
+    board: getInitialBoard(),
+    boardBeforeMove: getInitialBoard(),
+    allPossibleMoves: [],
+    pieceIsSelected: false,
+  };
 }
 
 /**
@@ -947,4 +1033,8 @@ export function getInitialBoard(): Board {
     ['--', 'WM', '--', 'WM', '--', 'WM', '--', 'WM'],
     ['WM', '--', 'WM', '--', 'WM', '--', 'WM', '--'],
   ];
+}
+
+export function checkRiddleData(): boolean {
+  return true;
 }

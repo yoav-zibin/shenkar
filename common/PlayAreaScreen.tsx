@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-var-requires: "off" */
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {commonStyles, IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
@@ -9,6 +10,8 @@ import {ProgressBar} from './ProgressBar';
 import {findGameModule} from './gameModules';
 import {useNavigation} from '@react-navigation/native';
 import PassedStage from './PassedStage';
+import {Audio} from 'expo-av';
+import {Sound} from 'expo-av/build/Audio';
 
 const styles = StyleSheet.create({
   bottomView: {
@@ -28,10 +31,14 @@ const styles = StyleSheet.create({
   },
 });
 
+// checkers move sound flag, every move include two clicks
+let checkersFlag = true;
+
 export function PlayAreaScreen() {
+  const [sound, setSound] = React.useState<Sound | undefined>(undefined);
   const navigation = useNavigation();
   const {appState, dispatch} = useStoreContext();
-  const {activityState, selectedGameId, activity} = appState;
+  const {activityState, selectedGameId, activity, moveSound} = appState;
   const gameModule = findGameModule(selectedGameId);
   if (!activity || !activityState) {
     return null;
@@ -83,6 +90,26 @@ export function PlayAreaScreen() {
     }
     return null;
   });
+
+  React.useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
+  async function playSound() {
+    if (gameModule.gameId == 'checkers' && checkersFlag) {
+      checkersFlag = false;
+      return;
+    }
+    const {sound} = await Audio.Sound.createAsync(require('./playbacks/move.mp3'));
+    setSound(sound);
+    await sound.playAsync();
+    checkersFlag = true;
+  }
+
   let gameOverLocalizeId: LocalizeId | null = null;
   if (isActivityOver) {
     if (endMatchScores) {
@@ -146,7 +173,8 @@ export function PlayAreaScreen() {
 
   function setMove(chosenMove: IMove<unknown>) {
     const didTurnIndexChange = currentMove.turnIndex != chosenMove.turnIndex;
-    const nextYourPlayerIndex = activityType == 'PASS_AND_PLAY' ? 1 - yourPlayerIndex : yourPlayerIndex;
+    const nextYourPlayerIndex = activityType == 'PASS_AND_PLAY' ? chosenMove.turnIndex : yourPlayerIndex;
+    if (moveSound) playSound();
     dispatch({
       setActivityState: {
         yourPlayerIndex: nextYourPlayerIndex,
