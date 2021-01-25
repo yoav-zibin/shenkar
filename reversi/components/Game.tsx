@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
   boardImage: {
     height: BOARD_PHYSICAL_SIZE,
     width: BOARD_PHYSICAL_SIZE,
-    margin: 8,
-    // width: '100%',
-    // height: '100%'
-    // resizeMode: 'stretch',
+    // margin:
+    //  width: '100%',
+    //  height: '100%',
+    //  resizeMode: 'stretch',
   },
   boardRowsContainer: {
     flex: 1,
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   pieceImage: {
-    margin: '7px',
+    margin: 7,
     width: CELL_SIZE - 14,
     height: CELL_SIZE - 14,
   },
