@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   image: {
-    padding: 150,
+    padding: '20% 15%',
     flexDirection: 'row',
     flex: 1,
     resizeMode: 'cover',
@@ -92,9 +92,9 @@ const styles = StyleSheet.create({
   },
   kuroKun: {
     position: 'absolute',
-    height: 250,
-    width: 250,
-    bottom: -90,
+    height: '60%',
+    width: '60%',
+    bottom: '-20%',
   },
 });
 
@@ -132,7 +132,7 @@ const GomokuComponent: React.FunctionComponent<GameProps<IState>> = (props: Game
       return;
     }
     try {
-      const move = createMove(state.board, {row, col}, 0, riddleWin, riddleData);
+      const move = createMove(state.board, {row, col}, turnIndex, riddleWin, riddleData);
       setMove(move);
     } catch (e) {
       console.info('Cell is already full in position:', row, col);
@@ -142,13 +142,33 @@ const GomokuComponent: React.FunctionComponent<GameProps<IState>> = (props: Game
   const rows = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   const cols = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
+  const complexGoldenRatioCalculation = (row: number) => {
+    let res = 0;
+    for (let i = 0; i <= row; ++i) {
+      const div = i % 3;
+      switch (div) {
+        case 0:
+          res += 0.5;
+          break;
+        case 1:
+          res += 0.7;
+          break;
+        case 2:
+          res += 0.6;
+          break;
+      }
+    }
+
+    return res;
+  };
+
   let hintLine = null;
   if (showHint && riddleData) {
     let style: ViewStyle = {};
-    if (riddleData.startsWith('r')) {
+    if (riddleData.startsWith('r') && riddleWin) {
       style = {...styles.hintLineRow};
-      const row = Number(riddleData.charAt(1));
-      style.top = 100 / 6.1 + row * (100 / 9) + '%';
+      const res = complexGoldenRatioCalculation(riddleWin[0]);
+      style.top = 100 / 6.1 + res * (100 / board.length) + '%';
     } else throw new Error('Illegal riddleData=' + riddleData);
     hintLine = <View style={style} />;
   }
