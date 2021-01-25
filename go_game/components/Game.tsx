@@ -1,5 +1,14 @@
 import React from 'react';
-import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle, Dimensions} from 'react-native';
+import {
+  Animated,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+  Image,
+  ImageBackground,
+  ViewStyle,
+  Dimensions,
+} from 'react-native';
 
 import {GameModule, GameProps, randomElement} from '../../common/common';
 
@@ -58,7 +67,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '10%',
     height: '10%',
-    borderRadius: (Math.round(Dimensions.get('window').width))/10/2,
+    borderRadius: Math.round(Dimensions.get('window').width) / 10 / 2,
     backgroundColor: hintLineColor,
   },
 });

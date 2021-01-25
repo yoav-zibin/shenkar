@@ -45,10 +45,9 @@ export interface IState {
 export type Points = number[][]; // A point (row,col) is represented as an array with 2 elements: [row,col].
 type Sets = {white: Points[]; black: Points[]};
 
-
 export function isPosOnHintDot(cRow: number, cCol: number, hint: RiddleData) {
-  let{row, col} = riddleHints(hint);
-  return cRow == row &&  cCol == col;
+  const {row, col} = riddleHints(hint);
+  return cRow == row && cCol == col;
 }
 
 export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
@@ -305,9 +304,9 @@ export function createMove(
 
   let endMatchScores: number[] | null = null;
   let turnIndexAfterMove = -1;
-  if(turnIndexBeforeMove == 0) turnIndexAfterMove = 1;
-  if(turnIndexBeforeMove == 1) turnIndexAfterMove = 0;
-   
+  if (turnIndexBeforeMove == 0) turnIndexAfterMove = 1;
+  if (turnIndexBeforeMove == 1) turnIndexAfterMove = 0;
+
   if (isBoardFull(boardAfterMove)) {
     endMatchScores = [-1, -1];
     turnIndexAfterMove = -1;

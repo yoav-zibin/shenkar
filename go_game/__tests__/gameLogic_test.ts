@@ -1,5 +1,5 @@
 import {IMove, deepEquals, createInitialMove} from '../../common/common';
-import {Board, IState, createNewBoard, createNewBoardWithElement, getInitialState, isPosOnHintLine} from '../gameLogic';
+import {Board, IState, createNewBoard, createNewBoardWithElement, getInitialState, isPosOnHintDot} from '../gameLogic';
 
 test('Create Board', function () {
   const board: Board = createNewBoard(9);
@@ -73,35 +73,35 @@ test('Initial move', function () {
 });
 
 test('Hint Dot 1', function () {
-  const isOnline: boolean = isPosOnHintLine(0, 4, 'r1');
+  const isOnline: boolean = isPosOnHintDot(0, 4, 'r1');
   const expectedBool = true;
 
   expect(deepEquals(isOnline, expectedBool)).toBe(true);
 });
 
 test('Hint Dot 2', function () {
-  const isOnline: boolean = isPosOnHintLine(1, 5, 'r2');
+  const isOnline: boolean = isPosOnHintDot(1, 5, 'r2');
   const expectedBool = true;
 
   expect(deepEquals(isOnline, expectedBool)).toBe(true);
 });
 
 test('Hint Dot 3', function () {
-  const isOnline: boolean = isPosOnHintLine(2, 5, 'r3');
+  const isOnline: boolean = isPosOnHintDot(2, 5, 'r3');
   const expectedBool = true;
 
   expect(deepEquals(isOnline, expectedBool)).toBe(true);
 });
 
 test('Hint Dot 4', function () {
-  const isOnline: boolean = isPosOnHintLine(3, 5, 'r4');
+  const isOnline: boolean = isPosOnHintDot(3, 5, 'r4');
   const expectedBool = true;
 
   expect(deepEquals(isOnline, expectedBool)).toBe(true);
 });
 
 test('Hint Dot 5', function () {
-  const isOnline: boolean = isPosOnHintLine(4, 4, 'r5');
+  const isOnline: boolean = isPosOnHintDot(4, 4, 'r5');
   const expectedBool = true;
 
   expect(deepEquals(isOnline, expectedBool)).toBe(true);
