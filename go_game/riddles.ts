@@ -65,7 +65,7 @@ export function riddleHints(riddle: RiddleData): {row: number; col: number} {
 export const riddleLevels: RiddlesLevel<IState>[] = [
   {
     levelLocalizeId: 'GO_LEVEL1',
-    difficulty: 'EASY',
+    difficulty: 'HARD',
     maxMovesNum: 1,
     turnIndex: 0,
     riddles: [

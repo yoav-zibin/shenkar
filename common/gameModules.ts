@@ -6,6 +6,7 @@ import {AnyGameModule} from './common';
 import getGomokuGameModule from '../gomuko/components/Game';
 import {getMancalaModule} from '../mancala/components/Game';
 import getDotsAndBoxesGameModule from '../dots_and_boxes/Game';
+import {getReversiGameModule} from '../reversi/components/Game';
 
 const allGameModules: AnyGameModule[] = [
   getCheckersGameModule(),
@@ -15,6 +16,7 @@ const allGameModules: AnyGameModule[] = [
   getGomokuGameModule(),
   getMancalaModule(),
   getDotsAndBoxesGameModule(),
+  getReversiGameModule(),
 ];
 
 export function getAllGameModules(): AnyGameModule[] {

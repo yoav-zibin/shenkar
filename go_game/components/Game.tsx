@@ -1,5 +1,14 @@
 import React from 'react';
-import {Animated, StyleSheet, TouchableWithoutFeedback, View, Image, ImageBackground, ViewStyle} from 'react-native';
+import {
+  Animated,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+  Image,
+  ImageBackground,
+  ViewStyle,
+  Dimensions,
+} from 'react-native';
 
 import {GameModule, GameProps, randomElement} from '../../common/common';
 
@@ -56,9 +65,9 @@ const styles = StyleSheet.create({
   },
   hintLineDot: {
     position: 'absolute',
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: '10%',
+    height: '10%',
+    borderRadius: Math.round(Dimensions.get('window').width) / 10 / 2,
     backgroundColor: hintLineColor,
   },
 });
@@ -98,7 +107,7 @@ const GoComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProp
       return;
     }
     try {
-      const move = createMove(state.board, 0, null, {row, col}, 0, null, riddleWin, riddleData);
+      const move = createMove(state.board, 0, null, {row, col}, turnIndex, null, riddleWin, riddleData);
       setMove(move);
     } catch (e) {
       console.info('Cell is already full in position:', row, col);
@@ -114,8 +123,8 @@ const GoComponent: React.FunctionComponent<GameProps<IState>> = (props: GameProp
     if (riddleData.startsWith('r')) {
       style = {...styles.hintLineDot};
       const {row, col}: {row: number; col: number} = riddleHints(riddleData);
-      style.top = 100 / 6.9 + (row - 1) * (100 / 9) + '%';
-      style.left = 100 / 6.9 + (col - 1) * (100 / 9) + '%';
+      style.top = 100 / 8.3 + (row - 1) * (100 / 9) + '%';
+      style.left = 100 / 8.3 + (col - 1) * (100 / 9) + '%';
     } else throw new Error('Illegal riddleData=' + riddleData);
     hintDot = <View style={style} pointerEvents="none" />;
   }

@@ -1,4 +1,5 @@
 import {IMove, deepClone, deepEquals} from '../common/common';
+import {riddleHints} from './riddles';
 
 export type Board = string[][]; // 'B' is black, 'W' is white, '' is empty
 export interface BoardDelta {
@@ -44,49 +45,9 @@ export interface IState {
 export type Points = number[][]; // A point (row,col) is represented as an array with 2 elements: [row,col].
 type Sets = {white: Points[]; black: Points[]};
 
-export function isPosOnHintLine(row: number, col: number, hint: RiddleData) {
-  switch (hint) {
-    case 'r1':
-      return row == 0 && col == 4;
-    case 'r2':
-      return row == 1 && col == 5;
-    case 'r3':
-      return row == 2 && col == 5;
-    case 'r4':
-      return row == 3 && col == 5;
-    case 'r5':
-      return row == 4 && col == 4;
-    case 'r6':
-      return row == 2 && col == 4;
-    case 'r7':
-      return row == 2 && col == 5;
-    case 'r8':
-      return row == 2 && col == 4;
-    case 'r9':
-      return row == 8 && col == 8;
-    case 'r10':
-      return row == 8 && col == 6;
-    case 'r11':
-      return row == 3 && col == 3;
-    case 'r12':
-      return row == 0 && col == 3;
-    case 'r13':
-      return row == 3 && col == 3;
-    case 'r14':
-      return row == 3 && col == 4;
-    case 'r15':
-      return row == 7 && col == 4;
-    case 'r16':
-      return row == 6 && col == 6;
-    case 'r17':
-      return row == 6 && col == 1;
-    case 'r18':
-      return row == 6 && col == 2;
-    case 'r19':
-      return row == 3 && col == 4;
-    case 'r20':
-      return row == 2 && col == 7;
-  }
+export function isPosOnHintDot(cRow: number, cCol: number, hint: RiddleData) {
+  const {row, col} = riddleHints(hint);
+  return cRow == row && cCol == col;
 }
 
 export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
@@ -95,7 +56,7 @@ export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolut
     ? false
     : firstMoveSolutions.some(
         (firstMove) =>
-          firstMove.state.delta && isPosOnHintLine(firstMove.state.delta.row, firstMove.state.delta.col, riddleData)
+          firstMove.state.delta && isPosOnHintDot(firstMove.state.delta.row, firstMove.state.delta.col, riddleData)
       );
 }
 
@@ -342,7 +303,10 @@ export function createMove(
   const posJustCapturedForKo = getPosJustCapturedForKo(board, boardAfterMove, turnIndexBeforeMove);
 
   let endMatchScores: number[] | null = null;
-  let turnIndexAfterMove = 1 - turnIndexBeforeMove;
+  let turnIndexAfterMove = -1;
+  if (turnIndexBeforeMove == 0) turnIndexAfterMove = 1;
+  if (turnIndexBeforeMove == 1) turnIndexAfterMove = 0;
+
   if (isBoardFull(boardAfterMove)) {
     endMatchScores = [-1, -1];
     turnIndexAfterMove = -1;
