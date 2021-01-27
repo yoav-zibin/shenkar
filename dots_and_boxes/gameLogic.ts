@@ -11,8 +11,8 @@ export enum player {
 
 export const cellColor = {
   NONE: 'transparent',
-  PLAYER_1: '#3B5998',
-  PLAYER_2: '#DD6B4D',
+  PLAYER_1: '#7ae7ff',
+  PLAYER_2: '#9d7aff',
 };
 
 export interface Board {
@@ -49,6 +49,7 @@ export type RiddleData =
   | 'h13'
   | 'h21'
   | 'h22'
+  | 'h28'
   | 'h23'
   | 'h31'
   | 'h32'
@@ -69,18 +70,22 @@ export type RiddleData =
   | 'v33'
   | 'v34';
 
-function isPosOnHintRow(direction: lineDirection, row: number, hint: RiddleData) {
-  switch (hint) {
-    case 'h11':
-      return direction === lineDirection.HORIZONTAL && row === 0;
-  }
+function isPosOnHintRow() {
+  // function isPosOnHintRow(direction: lineDirection, row: number, hint: RiddleData) {
+  //   switch (hint) {
+  //     case 'h11':
+  //       return direction === lineDirection.HORIZONTAL && row === 0;
+  //   }
+  return true;
 }
 
-function isPosOnHintCol(direction: lineDirection, col: number, hint: RiddleData) {
-  switch (hint) {
-    case 'v11':
-      return direction === lineDirection.HORIZONTAL && col === 0;
-  }
+function isPosOnHintCol() {
+  // function isPosOnHintCol(direction: lineDirection, col: number, hint: RiddleData) {
+  //   switch (hint) {
+  //     case 'v11':
+  //       return direction === lineDirection.HORIZONTAL && col === 0;
+  //   }
+  return true;
 }
 
 export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolutions: IMove<IState>[]): boolean {
@@ -88,10 +93,9 @@ export function checkRiddleData(state: IState, turnIndex: number, firstMoveSolut
   return !riddleData
     ? false
     : firstMoveSolutions.some(
-        (firstMove) =>
-          firstMove.state.delta &&
-          isPosOnHintRow(firstMove.state.delta.direction, firstMove.state.delta.row, riddleData) &&
-          isPosOnHintCol(firstMove.state.delta.direction, firstMove.state.delta.col, riddleData)
+        (firstMove) => firstMove.state.delta && isPosOnHintRow() && isPosOnHintCol()
+        //   isPosOnHintRow(firstMove.state.delta.direction, firstMove.state.delta.row, riddleData) &&
+        //   isPosOnHintCol(firstMove.state.delta.direction, firstMove.state.delta.col, riddleData)
       );
 }
 
@@ -221,14 +225,13 @@ export function updateBoard(board: Board, direction: lineDirection, row: number,
 }
 
 export function handleLinePaint(updatedBoard: Board, row: number, col: number): boolean {
-  let switchTurn = true;
-  if (updatedBoard.cellPaintedLines[row][col] === 3) {
-    updatedBoard.color[row][col] = player.ONE ? cellColor.PLAYER_1 : cellColor.PLAYER_2;
-    updatedBoard.turn === player.ONE ? updatedBoard.score.PLAYER_1++ : updatedBoard.score.PLAYER_2++;
-    switchTurn = false;
-  }
   updatedBoard.cellPaintedLines[row][col] += 1;
-  return switchTurn;
+  if (updatedBoard.cellPaintedLines[row][col] === 4) {
+    updatedBoard.color[row][col] = updatedBoard.turn === player.ONE ? cellColor.PLAYER_1 : cellColor.PLAYER_2;
+    updatedBoard.turn === player.ONE ? updatedBoard.score.PLAYER_1++ : updatedBoard.score.PLAYER_2++;
+    return false;
+  }
+  return true;
 }
 
 export function positionIsntFree(board: Board, direction: lineDirection, row: number, col: number): boolean {
@@ -249,14 +252,13 @@ export function createMove(board: Board, direction: lineDirection, row: number, 
   if (!board) {
     board = getInitialBoard();
   }
+
   if (moveIsIllegal(board.size, direction, row, col)) {
-    throw new Error('Move is illegal. Either row or column are out of bounds.');
-  }
-  if (positionIsntFree(board, direction, row, col)) {
-    throw new Error('One can only make a move in an empty position!');
-  }
-  if (board.isGameOver) {
-    throw new Error('Can only make a move if the game is not over!');
+    throw Error('Move is illegal. Either row or column are out of bounds.');
+  } else if (positionIsntFree(board, direction, row, col)) {
+    throw Error('One can only make a move in an empty position!');
+  } else if (board.isGameOver) {
+    throw Error('Can only make a move if the game is not over!');
   }
 
   const updatedBoard: Board = updateBoard(board, direction, row, col);
@@ -264,7 +266,7 @@ export function createMove(board: Board, direction: lineDirection, row: number, 
   const endMatchScores = updatedBoard.isGameOver ? [updatedBoard.score.PLAYER_1, updatedBoard.score.PLAYER_2] : null;
 
   const delta: BoardDelta = {direction, row, col};
-  console.log('endMatchScores', endMatchScores);
+
   return {
     endMatchScores,
     turnIndex: updatedBoard.turn,

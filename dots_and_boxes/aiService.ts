@@ -9,17 +9,18 @@ export function getPossibleMoves(state: IState): IMove<IState>[] {
       try {
         const move = createMove(state.board, lineDirection.HORIZONTAL, i, j);
         possibleMoves.push(move);
-      } catch (e) {
-        console.log(`ERROR int 'getPossibleMoves': [${i},${j}]: ${e}`);
+      } catch {
+        // do nothing
       }
     }
   }
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size + 1; j++) {
       try {
-        possibleMoves.push(createMove(state.board, lineDirection.VERTICAL, i, j));
-      } catch (e) {
-        console.log(`ERROR int 'getPossibleMoves': [${i},${j}]: ${e}`);
+        const move = createMove(state.board, lineDirection.VERTICAL, i, j);
+        possibleMoves.push(move);
+      } catch {
+        // do nothing
       }
     }
   }
