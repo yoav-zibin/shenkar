@@ -1,7 +1,6 @@
 /* eslint @typescript-eslint/no-var-requires: "off" */
 import {IMAGES} from './imgs/imagesRequires';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {Pressable, StyleSheet, Text, View, Switch, Image} from 'react-native';
 import Background from './Background';
@@ -9,26 +8,14 @@ import {LanguageId, LANGUAGES, localize} from './localize';
 import {useStoreContext} from './store';
 import {Audio} from 'expo-av';
 import {Sound} from 'expo-av/build/Audio';
-interface Props {
-  title: string;
-  onPress: () => void;
-}
-function CustomButton(props: Props) {
-  return (
-    <Pressable onPress={props.onPress}>
-      <View style={styles.CustomButtonContainer}>
-        <Text style={styles.CustomButtonTitle}> {props.title} </Text>
-      </View>
-    </Pressable>
-  );
-}
+
 const SettingsScreen = () => {
   const [backgroundSound, setBackgroundSound] = React.useState<Sound | undefined>(undefined);
   const [backSwitch, setBackSwitch] = React.useState<boolean>(false);
   const [moveSwitch, setMoveSwitch] = React.useState<boolean>(true);
   const {appState, dispatch} = useStoreContext();
+
   const {playBackgroundMusic, languageId} = appState;
-  const navigation = useNavigation();
   async function loadAndPlayBackround() {
     const {sound} = await Audio.Sound.createAsync(require('./playbacks/PatakasWorld.mp3'));
     setBackgroundSound(sound);
@@ -50,9 +37,6 @@ const SettingsScreen = () => {
   function soundToggle(switchValue: boolean) {
     setMoveSwitch(switchValue);
     dispatch({setMoveSound: switchValue});
-  }
-  function onPressClose() {
-    navigation.goBack();
   }
   React.useEffect(() => {
     if (!playBackgroundMusic) {
@@ -93,7 +77,6 @@ const SettingsScreen = () => {
             <Switch value={moveSwitch} onValueChange={(moveSwitch: boolean) => soundToggle(moveSwitch)} />
           </View>
         </View>
-        <CustomButton title="Close Settings" onPress={onPressClose}></CustomButton>
       </View>
     </Background>
   );
