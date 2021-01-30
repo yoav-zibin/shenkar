@@ -14,18 +14,17 @@ import PassedStage from './PassedStage';
 
 const styles = StyleSheet.create({
   bottomView: {
-    marginBottom: 100,
+    marginBottom: 50,
+    marginTop: 20,
   },
   text: {
-    marginTop: 10,
     fontSize: 19,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   instructions: {
-    marginTop: 20,
+    marginTop: 5,
     color: 'grey',
-    marginBottom: 5,
     textAlign: 'center',
   },
   hintButton: {
