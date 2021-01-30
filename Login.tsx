@@ -5,6 +5,7 @@ import React, {Fragment, useEffect, useState} from 'react';
 import {StyleSheet, Text} from 'react-native';
 import * as firebase from 'firebase';
 import * as Facebook from 'expo-facebook';
+import 'firebase/firestore';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -13,8 +14,11 @@ const firebaseConfig = {
   projectId: 'shenkar-games',
   storageBucket: 'shenkar-games.appspot.com',
 };
+
 const f: any = firebase;
+
 const facebook: any = Facebook;
+
 !f.apps.length ? f.initializeApp(firebaseConfig) : f.app();
 
 import {Container, Form, Input, Item, Button, Label} from 'native-base';
@@ -40,15 +44,18 @@ const Login = () => {
         alert('Please enter atleast 6 characters');
         return;
       }
-
       f.auth()
         .createUserWithEmailAndPassword(email, password)
-        .then(login)
-        .catch((error: string) => {
-          alert(error);
-        });
+        .then((credentials: any) => {
+          const user = {
+            email: credentials.user.email,
+            winConnect4: 0,
+          };
+          return f.firestore().collection('users').doc(credentials.user.uid).set(user).then(login(false));
+        })
+        .catch((error: string) => console.log(error));
     } catch (error) {
-      console.log(error.toString());
+      console.log(error);
     }
   };
 
@@ -58,7 +65,7 @@ const Login = () => {
         .signInWithEmailAndPassword(email, password)
         .then((firebaseUser: any) => {
           if (firebaseUser) {
-            login();
+            login(false);
           }
         })
 
@@ -66,7 +73,7 @@ const Login = () => {
           alert(error);
         });
     } catch (error) {
-      console.log(error.toString());
+      console.log(error);
     }
   };
   const loginWithFacebook = async () => {
@@ -81,15 +88,33 @@ const Login = () => {
 
       f.auth()
         .signInWithCredential(credential)
-        .then(login)
+        .then((credentials: any) => {
+          const user = {
+            email: credentials.user.email,
+            winConnect4: 0,
+          };
+          return f.firestore().collection('users').doc(credentials.user.uid).set(user).then(login(false));
+        })
         .catch((error: string) => {
-          console.log(error);
           alert(error.toString());
         });
     }
   };
-
-  const login = () => {
+  const signOutUser = async () => {
+    try {
+      await f.auth().signOut();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const login = (isAnonymous: boolean) => {
+    if (isAnonymous) {
+      f.auth().onAuthStateChanged(function (user: any) {
+        if (user) {
+          signOutUser();
+        }
+      });
+    }
     if (signIn) signIn();
   };
 
@@ -120,7 +145,7 @@ const Login = () => {
           <Button style={{marginTop: 10}} full rounded primary onPress={() => loginWithFacebook()}>
             <Text style={{color: 'white'}}> Login With Facebook</Text>
           </Button>
-          <Button style={{marginTop: 10}} full rounded primary onPress={login}>
+          <Button style={{marginTop: 10}} full rounded primary onPress={() => login(true)}>
             <Text style={{color: 'white'}}> Anonymous user</Text>
           </Button>
         </Form>

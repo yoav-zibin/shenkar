@@ -6,18 +6,19 @@ import {findGameModule} from './gameModules';
 
 const styles = StyleSheet.create({
   bottomView: {
-    paddingBottom: 100,
+    marginBottom: 50,
+    backgroundColor: 'red',
+    marginTop: 20,
   },
   text: {
-    marginTop: 20,
     fontSize: 19,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   instructions: {
-    marginTop: 20,
+    marginTop: 5,
     color: 'grey',
-    marginBottom: 5,
+
     textAlign: 'center',
   },
 });
