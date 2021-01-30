@@ -103,6 +103,10 @@ const LOCALIZE_ID_TO_NAME = {
     en: 'Try again',
     he: 'נסה שוב',
   },
+  GET_HINT: {
+    en: 'Get hint',
+    he: 'קבל רמז',
+  },
 
   //  TICTACTOE starts.
   TICTACTOE_GAME_NAME: {
