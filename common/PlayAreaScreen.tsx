@@ -1,11 +1,10 @@
 /* eslint @typescript-eslint/no-var-requires: "off" */
-import React from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {commonStyles, IMove, secondsToShowHint, useEffectToSetAndClearTimeout} from './common';
+import React, {ReactChild} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View, Button} from 'react-native';
+import {commonStyles, IMove, useEffectToSetAndClearTimeout} from './common';
 import {createComputerMove} from './alphaBetaService';
 import {navigateNextFrame, useStoreContext} from './store';
 import {localize, LocalizeId} from './localize';
-import {DEBUGGING_OPTIONS} from './debugging';
 import {ProgressBar} from './ProgressBar';
 import {findGameModule} from './gameModules';
 import {useNavigation} from '@react-navigation/native';
@@ -27,6 +26,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: 'grey',
     textAlign: 'center',
+  },
+  hintButton: {
+    paddingLeft: '35%',
+    paddingRight: '35%',
   },
 });
 
@@ -50,7 +53,6 @@ export function PlayAreaScreen() {
   const {turnIndex, endMatchScores, state} = currentMove;
   const isOverMaxMoves = maxMovesNum && currentMoveNum >= maxMovesNum;
   const isActivityOver = endMatchScores || isOverMaxMoves;
-
   // useEffect and useContext must be top level (not inside any conditions), see
   // https://reactjs.org/docs/hooks-rules.html
   useEffectToSetAndClearTimeout(() => {
@@ -69,27 +71,33 @@ export function PlayAreaScreen() {
     return null;
   });
 
-  useEffectToSetAndClearTimeout(() => {
-    // Show hint after a timeout if needed.
-    if (!showHint && riddleActivity && currentMoveNum == 0) {
-      const {levelIndex} = riddleActivity;
-      const level = gameModule.riddleLevels[levelIndex];
-      const millisUntilShowHint = DEBUGGING_OPTIONS.SHOW_HINT_AFTER_ONE_SECOND
-        ? 1000
-        : 1000 * secondsToShowHint(level.difficulty);
-      console.log('We will show hint in ' + millisUntilShowHint + ' millis');
-      return setTimeout(() => {
-        console.log('Showing hint');
-        dispatch({
-          setActivityState: {
-            ...activityState,
-            showHint: true,
-          },
-        });
-      }, millisUntilShowHint);
-    }
-    return null;
-  });
+  // Set the showHint to be true when the get hint button is pressed
+  const getHintPressed = () => {
+    dispatch({
+      setActivityState: {
+        ...activityState,
+        showHint: true,
+      },
+    });
+  };
+
+  // Button component only for the riddleActivity appState, will be visible only when the
+  // hint is not presented yet and the riddle is not over
+  let getHintButton: ReactChild | null = null;
+  if (riddleActivity && !isActivityOver) {
+    if (!showHint)
+      getHintButton = (
+        <View style={styles.hintButton}>
+          <Button title={localize('GET_HINT', appState)} color="grey" onPress={getHintPressed} />
+        </View>
+      );
+    else
+      getHintButton = (
+        <View style={styles.hintButton}>
+          <Button title={localize('GET_HINT', appState)} disabled color="grey" onPress={getHintPressed} />
+        </View>
+      );
+  }
 
   React.useEffect(() => {
     return sound
@@ -200,6 +208,7 @@ export function PlayAreaScreen() {
       })}
       {nextActionLocalizeId ? null : <ProgressBar></ProgressBar>}
       <View style={styles.bottomView}>
+        {getHintButton}
         {riddleActivity?.riddleFinished ? <PassedStage></PassedStage> : <></>}
         {gameOverLocalizeId && nextActionLocalizeId && (
           <>

@@ -11,7 +11,7 @@ import {StatusBar} from 'expo-status-bar';
 import AlertProvider from './common/alerts/AlertProvider';
 import Home from './home';
 import {NavigationContainer} from '@react-navigation/native';
-import Login from './Login';
+import Login, {authContext, AuthContext} from './Login';
 import {createStackNavigator} from '@react-navigation/stack';
 import {ChooseActivityScreen} from './common/ChooseActivityScreen';
 import {ChooseGameScreen} from './common/ChooseGameScreen';
@@ -29,16 +29,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-export type authContext =
-  | {
-      signIn: () => void;
-      signOut: () => void;
-      selectLanguage: (languageId: string) => void;
-    }
-  | undefined;
-
-export const AuthContext = React.createContext<authContext>(undefined);
 
 export default function App() {
   const {appState} = useStoreContext();
