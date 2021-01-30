@@ -14,10 +14,6 @@ export const LANGUAGES: LangToName = {
 };
 
 const LOCALIZE_ID_TO_NAME = {
-  GET_HINT: {
-    en: 'Show hint',
-    he: 'הראה רמז',
-  },
   // LeftMenu
   SETTINGS_SCREEN: {
     en: 'Settings',
@@ -50,6 +46,10 @@ const LOCALIZE_ID_TO_NAME = {
   NO: {
     en: 'OFF',
     he: 'כבוי',
+  },
+  SETTINGS_CLOSE_BUTTON: {
+    en: 'Close Settings',
+    he: 'סגור הגדרות',
   },
   PASS_AND_PLAY: {
     en: 'Play against another human',
@@ -86,10 +86,6 @@ const LOCALIZE_ID_TO_NAME = {
     en: 'Play again!',
     he: 'שחק שוב!',
   },
-  LEVEL_SUCCESS: {
-    en: 'Good Job! Level finished',
-    he: 'כל הכבוד! שלב הסתיים',
-  },
   // For riddles
   RIDDLE_SOLVED: {
     en: 'Riddle solved!',
@@ -107,7 +103,6 @@ const LOCALIZE_ID_TO_NAME = {
     en: 'Try again',
     he: 'נסה שוב',
   },
-
   //  TICTACTOE starts.
   TICTACTOE_GAME_NAME: {
     en: 'TicTacToe',
@@ -140,7 +135,7 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'דמקה',
   },
   CHECKERS_LEVEL1: {
-    en: 'Possible Moves',
+    en: 'Posibble Moves',
     he: 'מהלכים אפשריים',
   },
   CHECKERS_LEVEL2: {
@@ -206,27 +201,6 @@ const LOCALIZE_ID_TO_NAME = {
   },
   // Checkers ends.
   // Reversi starts.
-  REVERSI_GAME_NAME: {
-    en: 'Reversi',
-    he: 'רוורסי',
-  },
-  REVERSI_LEVEL1: {
-    en: 'B wins in 1 move',
-    he: 'B מנצח במסע אחד',
-  },
-  REVERSI_LEVEL2: {
-    en: 'W wins in 1 move',
-    he: 'W מנצח במסע אחד',
-  },
-  REVERSI_LEVEL3: {
-    en: 'B wins in 1 move',
-    he: 'B מנצח במסע אחד',
-  },
-  REVERSI_LEVEL4: {
-    en: 'B wins in 3 move',
-    he: 'B מנצח ב 3 מסעים  ',
-  },
-
   // Reversi ends.
   // GO! starts.
   GO_GAME_NAME: {
@@ -327,12 +301,20 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'קבל תור נוסף',
   },
   MANCALA_LEVEL2: {
-    en: 'Get Oponnets Stones',
+    en: 'Get Opponent Stones',
     he: 'לקחת את אבני המתחרה',
   },
   MANCALA_LEVEL3: {
     en: 'Finish the Game',
     he: 'לסיים את המשחק',
+  },
+  PLAYER_1_TITLE: {
+    en: 'Player 1',
+    he: 'שחקן 1',
+  },
+  PLAYER_2_TITLE: {
+    en: 'Player 2',
+    he: 'שחקן 2',
   },
 };
 
@@ -340,6 +322,5 @@ export type LocalizeId = keyof typeof LOCALIZE_ID_TO_NAME;
 export function localize(id: LocalizeId, appState: AppState): string {
   const languageId = appState.languageId;
   const langToStr = LOCALIZE_ID_TO_NAME[id];
-  if (!langToStr) throw new Error('Missing id=' + id + ' in LOCALIZE_ID_TO_NAME');
   return langToStr[languageId ? languageId : 'en'];
 }
