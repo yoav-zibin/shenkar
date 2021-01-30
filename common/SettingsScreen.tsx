@@ -27,7 +27,7 @@ const SettingsScreen = () => {
   const [backSwitch, setBackSwitch] = React.useState<boolean>(false);
   const [moveSwitch, setMoveSwitch] = React.useState<boolean>(true);
   const {appState, dispatch} = useStoreContext();
-  const {playBackgroundMusic, moveSound, languageId} = appState;
+  const {playBackgroundMusic, languageId} = appState;
   const navigation = useNavigation();
   async function loadAndPlayBackround() {
     const {sound} = await Audio.Sound.createAsync(require('./playbacks/PatakasWorld.mp3'));
@@ -48,10 +48,8 @@ const SettingsScreen = () => {
   }
 
   function soundToggle(switchValue: boolean) {
-    console.log(moveSound);
     setMoveSwitch(switchValue);
     dispatch({setMoveSound: switchValue});
-    console.log(moveSound);
   }
   function onPressClose() {
     navigation.goBack();
