@@ -16,7 +16,6 @@ const SettingsScreen = () => {
   const {appState, dispatch} = useStoreContext();
 
   const {playBackgroundMusic, languageId} = appState;
-  const navigation = useNavigation();
   async function loadAndPlayBackround() {
     const {sound} = await Audio.Sound.createAsync(require('./playbacks/PatakasWorld.mp3'));
     setBackgroundSound(sound);
