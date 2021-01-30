@@ -18,7 +18,16 @@ const facebook: any = Facebook;
 !f.apps.length ? f.initializeApp(firebaseConfig) : f.app();
 
 import {Container, Form, Input, Item, Button, Label} from 'native-base';
-import {AuthContext} from './App';
+
+export type authContext =
+  | {
+      signIn: () => void;
+      signOut: () => void;
+      selectLanguage: (languageId: string) => void;
+    }
+  | undefined;
+
+export const AuthContext = React.createContext<authContext>(undefined);
 
 const Login = () => {
   const [email, setEmail] = useState('');

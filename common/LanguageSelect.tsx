@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {AuthContext} from '../App';
+import {AuthContext} from '../Login';
 import Background from './Background';
 import {LanguageId, LANGUAGES} from './localize';
 import {useStoreContext} from './store';

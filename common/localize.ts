@@ -14,6 +14,10 @@ export const LANGUAGES: LangToName = {
 };
 
 const LOCALIZE_ID_TO_NAME = {
+  GET_HINT: {
+    en: 'Show hint',
+    he: 'הראה רמז',
+  },
   // LeftMenu
   SETTINGS_SCREEN: {
     en: 'Settings',
@@ -340,5 +344,6 @@ export type LocalizeId = keyof typeof LOCALIZE_ID_TO_NAME;
 export function localize(id: LocalizeId, appState: AppState): string {
   const languageId = appState.languageId;
   const langToStr = LOCALIZE_ID_TO_NAME[id];
+  if (!langToStr) throw new Error('Missing id=' + id + ' in LOCALIZE_ID_TO_NAME');
   return langToStr[languageId ? languageId : 'en'];
 }
