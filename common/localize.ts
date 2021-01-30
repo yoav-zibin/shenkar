@@ -208,20 +208,20 @@ const LOCALIZE_ID_TO_NAME = {
     he: 'גו!',
   },
   GO_LEVEL1: {
-    en: 'Black conquer white in 1 move',
+    en: 'Black conquer white in one move',
     he: 'שחור כובש את הלבן במסע אחד',
   },
   GO_LEVEL2: {
-    en: 'Black blocks white in 1 move',
+    en: 'Black blocks white in one move',
     he: 'שחור חוסם את הלבן במסע אחד',
   },
   GO_LEVEL3: {
-    en: 'Black conquer white in 2 move',
-    he: 'שחור כובש את הלבן בשני מסעים',
+    en: 'Black make eyes in one move',
+    he: 'שחור יוצר עיניים במהלך אחד',
   },
   GO_LEVEL4: {
-    en: 'Black blocks white in 2 move',
-    he: 'שחור חוסם את הלבן בשני מסעים',
+    en: 'Black blocks white eyes in one move',
+    he: 'שחור חוסם ללבן עיניים במהלך אחד',
   },
 
   // GO! ends.

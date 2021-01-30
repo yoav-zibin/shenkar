@@ -14,18 +14,17 @@ import PassedStage from './PassedStage';
 
 const styles = StyleSheet.create({
   bottomView: {
-    marginBottom: 100,
+    marginBottom: 50,
+    marginTop: 20,
   },
   text: {
-    marginTop: 10,
     fontSize: 19,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   instructions: {
-    marginTop: 20,
+    marginTop: 5,
     color: 'grey',
-    marginBottom: 5,
     textAlign: 'center',
   },
   hintButton: {
@@ -160,7 +159,6 @@ export function PlayAreaScreen() {
       if (riddleIndex < level.riddles.length - 1) {
         dispatch({setActivity: {riddleActivity: {levelIndex, riddleIndex: riddleIndex + 1, riddleFinished: false}}});
       } else if (levelIndex < gameModule.riddleLevels.length - 1) {
-        console.log('here');
         console.log(riddleActivity.riddleFinished);
         dispatch({setActivity: {riddleActivity: {levelIndex: levelIndex + 1, riddleIndex: 0, riddleFinished: true}}});
       } else {
