@@ -16,6 +16,17 @@ const SettingsScreen = () => {
   const {appState, dispatch} = useStoreContext();
 
   const {playBackgroundMusic, languageId} = appState;
+
+  React.useEffect(() => {
+    if (!playBackgroundMusic) {
+      if (backgroundSound !== undefined) {
+        backgroundSound.unloadAsync();
+      }
+      loadAndPlayBackround();
+      dispatch({setPlayBackgroundMusic: true});
+    }
+  });
+
   async function loadAndPlayBackround() {
     const {sound} = await Audio.Sound.createAsync(require('./playbacks/PatakasWorld.mp3'));
     setBackgroundSound(sound);
@@ -38,12 +49,6 @@ const SettingsScreen = () => {
     setMoveSwitch(switchValue);
     dispatch({setMoveSound: switchValue});
   }
-  React.useEffect(() => {
-    if (!playBackgroundMusic) {
-      loadAndPlayBackround();
-      dispatch({setPlayBackgroundMusic: true});
-    }
-  });
 
   return (
     <Background>
