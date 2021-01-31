@@ -14,6 +14,10 @@ export const LANGUAGES: LangToName = {
 };
 
 const LOCALIZE_ID_TO_NAME = {
+  GET_HINT: {
+    en: 'Get hint',
+    he: 'קבל רמז',
+  },
   // LeftMenu
   SETTINGS_SCREEN: {
     en: 'Settings',
