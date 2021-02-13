@@ -14,7 +14,7 @@ import PassedStage from './PassedStage';
 
 const styles = StyleSheet.create({
   bottomView: {
-    marginBottom: 50,
+    marginBottom: 20,
     marginTop: 20,
   },
   text: {

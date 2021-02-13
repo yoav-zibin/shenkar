@@ -18,7 +18,7 @@ const LanguageSelect = () => {
           {Object.entries(LANGUAGES).map((i, key) => {
             const onSelect = async () => {
               dispatch({setLanguageId: i[0] as LanguageId});
-              await AsyncStorage.setItem('language', i[0]);
+              await AsyncStorage.setItem('language', JSON.stringify(i[0]));
               if (selectLanguage) selectLanguage(i[0]);
             };
             return (

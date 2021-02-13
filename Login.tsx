@@ -155,7 +155,7 @@ const Login = () => {
             <Text style={{color: 'white'}}> Login With Facebook</Text>
           </Button>
           <Button style={{marginTop: 10}} full rounded primary onPress={() => login(true)}>
-            <Text style={{color: 'white'}}> Anonymous user</Text>
+            <Text style={{color: 'white'}}> Guest user</Text>
           </Button>
         </Form>
       </Container>

@@ -11,6 +11,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   text: {
+    marginTop: 20,
     fontSize: 19,
     fontWeight: 'bold',
     textAlign: 'center',

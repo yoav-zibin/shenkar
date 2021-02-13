@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any
  */
 import React, {useState, useEffect} from 'react';
-import {Text, StyleSheet, Image, View} from 'react-native';
+import {Text, StyleSheet, Image, View, ActivityIndicator} from 'react-native';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 const f: any = firebase;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 30,
     height: '100%',
     flexDirection: 'row',
   },
@@ -51,7 +50,7 @@ function updatehWinScore(prevNum: number, setIsLogin: any) {
 // score Bar component
 export function Score(props: {move: any}) {
   const {move} = props;
-  const [winScore, setWinScore] = useState('Loading Score...');
+  const [winScore, setWinScore] = useState('loading');
   const [isLogin, setIsLogin] = useState(true);
   const getWinScore = async () => {
     try {
@@ -91,10 +90,10 @@ export function Score(props: {move: any}) {
   if (!isLogin) {
     return null;
   }
-  if (loading)
+  if (loading || winScore == 'loading')
     return (
       <View style={styles.container}>
-        <Text>Loading Score...</Text>
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   // Displays the score

@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     justifyContent: 'space-between',
     padding: 0,
-    marginBottom: 5,
   },
   boardCell: {
     width: '12%',
@@ -143,6 +142,7 @@ const styles = StyleSheet.create({
   },
   scoreContainer: {
     flex: 1,
+    marginTop: 20,
     width: '100%',
   },
 });
@@ -172,6 +172,10 @@ const connect4Component: React.FunctionComponent<GameProps<IState>> = (props: Ga
     useNativeDriver: true,
   }).start();
 
+  /*
+    @ function clickedOn
+    Creates the move the player made on the game board
+*/
   function clickedOn(row: number, col: number) {
     if (turnIndex != yourPlayerIndex) {
       return;
@@ -184,6 +188,11 @@ const connect4Component: React.FunctionComponent<GameProps<IState>> = (props: Ga
     }
   }
 
+  /*
+    @ function getAnimationStyle
+    Gets the value of the column that the player
+    pressed and calculates the fall height of the piece
+*/
   function getAnimationStyle(r: number) {
     const rowHeight = boardHeight / ROWS;
     const startYPosition = -rowHeight * (r + 1);
@@ -199,6 +208,10 @@ const connect4Component: React.FunctionComponent<GameProps<IState>> = (props: Ga
     };
   }
 
+  /*
+    @ for line 217-277
+    Analysis of the riddleData to create the hint
+*/
   const rows = [0, 1, 2, 3, 4, 5];
   const cols = [0, 1, 2, 3, 4, 5, 6];
   let hintLine = null;
@@ -260,6 +273,12 @@ const connect4Component: React.FunctionComponent<GameProps<IState>> = (props: Ga
     } else throw new Error('Illegal riddleData=' + riddleData);
     hintLine = <View style={style} />;
   }
+
+  /*
+    @ function getplace
+    Gets the column where the player clicked. 
+    Returns the free row on the board
+*/
   function getplace(c: number) {
     let i = 5;
     while (i >= 0) {
@@ -271,6 +290,11 @@ const connect4Component: React.FunctionComponent<GameProps<IState>> = (props: Ga
     return -1;
   }
 
+  /*
+    @ function GetPiece
+    Checks for each cell on the board if it empty or not  
+    if it does not return a component of the piece
+*/
   function GetPiece(props: {r: number; c: number}) {
     const {r, c} = props;
     if (board[r][c] == ' ') return null;
@@ -288,7 +312,7 @@ const connect4Component: React.FunctionComponent<GameProps<IState>> = (props: Ga
     );
   }
   return (
-    <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-between'}}>
+    <View style={{flex: 1, flexDirection: 'column', justifyContent: 'flex-start'}}>
       <View style={styles.scoreContainer}>
         <Score move={move} />
       </View>
