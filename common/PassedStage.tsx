@@ -5,7 +5,6 @@ import {useStoreContext} from './store';
 import Emoji from 'react-native-emoji';
 
 const PassedStage = () => {
-  console.log('Modal');
   const [modalVisible, setModalVisible] = useState(true);
   const {appState} = useStoreContext();
 

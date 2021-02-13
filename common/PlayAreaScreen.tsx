@@ -159,7 +159,6 @@ export function PlayAreaScreen() {
       if (riddleIndex < level.riddles.length - 1) {
         dispatch({setActivity: {riddleActivity: {levelIndex, riddleIndex: riddleIndex + 1, riddleFinished: false}}});
       } else if (levelIndex < gameModule.riddleLevels.length - 1) {
-        console.log('here');
         console.log(riddleActivity.riddleFinished);
         dispatch({setActivity: {riddleActivity: {levelIndex: levelIndex + 1, riddleIndex: 0, riddleFinished: true}}});
       } else {

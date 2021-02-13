@@ -203,7 +203,7 @@ function ourReducer(appState: AppState, action: AppStateAction) {
     return {...appState, activityState: setActivityState};
   }
   if (setStateFromAsyncStorage) {
-    return {...addDebugOptionsToState(setStateFromAsyncStorage), isInitialState: false};
+    return {...addDebugOptionsToState(setStateFromAsyncStorage), isInitialState: false, playBackgroundMusic: false};
   }
   if (setNoStateInAsyncStorage) {
     return {...appState, isInitialState: false};
